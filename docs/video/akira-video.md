@@ -17,6 +17,10 @@ video/edit/      # 按需
 
 目录以人容易浏览为优先，不预建空分类。跨镜头重复使用的 Prompt、图片和参考资料放在 `video/materials/`；单个镜头自己的 `SHOT.md`、Prompt 版本、Take、图片和声音集中在对应 `video/shots/<shot-id>/`。
 
+## 专业能力
+
+Router 按当前真实制作任务加载：`video-script`、`video-materials`、`video-shot`、`video-generation`、`video-review` 或 `video-editing`。品牌与产品项目按需增加 `video-advertising`；模型专用参数和 Prompt 规则不进入 Router。
+
 ## 外部生成
 
 用户可以在外部 AI 平台实际生成。Agent 根据正式项目内容整理一次性生成包，把当前所需 Prompt、参考素材和返回文件名放进 `.tmp/`；生成结果返回后归档到正式目录，临时包删除。

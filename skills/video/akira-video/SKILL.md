@@ -41,7 +41,17 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 根据用户当前目标和已有项目内容选择下一项实际制作工作。完整项目不要求机械经过所有能力；已经有脚本时可以直接进入镜头，已经有镜头与素材时可以直接准备生成包，返回 Take 后直接进入审片。
 
-当前稳定专业能力必须通过其 canonical Skill 执行。Router 只保存职责摘要，不复制它们的具体流程。
+按当前任务加载 canonical Skill：
+
+- 从小说、章节、brief 或其他上游内容形成/修订视频脚本、人物表演、场景或镜头总览 → `video-script`；
+- 规划或维护跨镜头复用的人物、场景、道具、产品 Prompt 与参考素材 → `video-materials`；
+- 把镜头总览展开成 `SHOT.md`，处理动作、摄影、声音与相邻镜头连续性 → `video-shot`；
+- 编写当前生成 Prompt、选择最小参考集、整理一次性生成包、导回用户生成结果 → `video-generation`；
+- 用户带回图片或 Take 后判断采用、调整后续、后期修复、重生成或重写 → `video-review`；
+- 多个采用 Shot 进入 Premiere Pro、After Effects、DaVinci Resolve 等整片后期 → `video-editing`；
+- 品牌、产品植入或广告需要核验产品功能、结构、官方素材与广告表达边界 → 按需加载可选 `video-advertising`。
+
+Router 只保存上述职责摘要；进入任一分支后，以实际加载的 canonical Skill 为该专业方法的 source of truth。
 
 若目标需要某个尚未安装的模型专用适配 Skill，只声明所需能力并交给 `akira` Router / Skiloom 正常发现与安装；不要把模型参数或 Provider 细节硬编码进 `akira-video`。
 
