@@ -2,6 +2,18 @@
 
 稳定 AI 视频制作 Skills 位于本目录。
 
-- `akira-video`：用户显式进入的 Primary Router；拥有项目入口、`VIDEO.md` 和专业 Skill 路由。
+## User-invoked
 
-其余专业 Skill 按真实产品边界逐步加入；不要为了目录对称建立空 Skill。
+- `akira-video`：Primary Router；拥有项目入口、`VIDEO.md` 与专业 Skill 路由。
+
+## Model-invoked
+
+- `video-script`：视频脚本层。
+- `video-materials`：跨镜头复用素材。
+- `video-shot`：单镜头生产定义。
+- `video-generation`：Prompt、一次性生成包与结果导回。
+- `video-review`：生成结果审片与采用判断。
+- `video-editing`：整片级后期。
+- `video-advertising`：品牌与产品项目的可选领域能力。
+
+模型专用适配能力在稳定前放入 `skills/in-progress/`；不要为了目录对称建立空 Skill。

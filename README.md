@@ -26,9 +26,19 @@ PROJECT/
 
 稳定 Skill 位于 `skills/video/`。尚未稳定的模型适配能力位于 `skills/in-progress/`。
 
-当前入口：
+稳定核心：
 
 - `akira-video`：完整 AI 视频制作 Primary Router。
+- `video-script`：把上游内容转换成当前视频脚本层。
+- `video-materials`：管理跨镜头复用的 Prompt、图片与参考素材。
+- `video-shot`：维护单镜头 `SHOT.md`、连续性与生产定义。
+- `video-generation`：编写生成 Prompt、整理一次性生成包并导回结果。
+- `video-review`：审核复用素材和 Take，决定采用、后期修复或重生成。
+- `video-editing`：按需组织整片级后期工程和最终成片。
+
+可选领域：
+
+- `video-advertising`：品牌、产品真实性与广告叙事边界。
 
 ## Installation
 

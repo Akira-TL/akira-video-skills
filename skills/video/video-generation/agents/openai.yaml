@@ -1,0 +1,3 @@
+interface:
+  display_name: "Video Generation"
+  short_description: "Prepare prompts and disposable AI generation packs"

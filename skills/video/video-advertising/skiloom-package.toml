@@ -1,9 +1,6 @@
 schema = 1
 
 [dependencies]
-"akira-tl/akira-video-skills/video-editing" = "*"
-"akira-tl/akira-video-skills/video-generation" = "*"
 "akira-tl/akira-video-skills/video-materials" = "*"
-"akira-tl/akira-video-skills/video-review" = "*"
 "akira-tl/akira-video-skills/video-script" = "*"
 "akira-tl/akira-video-skills/video-shot" = "*"
