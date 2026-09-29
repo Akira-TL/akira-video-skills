@@ -1,0 +1,8 @@
+schema = 1
+
+[discovery]
+include = [
+  "skills/video/*",
+  "skills/in-progress/*",
+]
+exclude = []

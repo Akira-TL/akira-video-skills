@@ -1,0 +1,5 @@
+interface:
+  display_name: "Akira Video"
+  short_description: "Route and manage an AI video production project"
+policy:
+  allow_implicit_invocation: false
