@@ -1,6 +1,6 @@
 ---
 name: akira-video
-description: 进入并持续推进一个 AI 视频制作项目；读取或建立 VIDEO.md，根据当前视频脚本、复用素材、镜头、生成结果和整片后期状态，按需路由到 canonical 视频专业 Skill，而不是把所有制作规则塞进一个总 Prompt。
+description: 进入并持续推进一个 AI 视频制作项目；读取或建立 VIDEO.md，根据当前视频脚本、复用素材、镜头、生成结果和整片后期状态，按需路由到 canonical 视频专业 Skill，而不是把所有制作规则塞进一个总提示词。
 ---
 
 # Akira Video
@@ -35,29 +35,29 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 - 仍然影响后续的关键决定；
 - 到视频脚本、复用素材、镜头和整片后期的导航。
 
-普通 Prompt 历史、所有 Take、生成日志和已经被 Git 历史取代的旧决定不进入 `VIDEO.md`。
+普通提示词历史、所有生成结果、生成日志和已经被 Git 历史取代的旧决定不进入 `VIDEO.md`。
 
 详细写法见 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)。
 
 ## 3. 路由专业工作
 
-根据用户当前目标和已有项目内容选择下一项实际制作工作。完整项目不要求机械经过所有能力；已经有脚本时可以直接进入镜头，已经有镜头与素材时可以直接准备生成包，返回 Take 后直接进入审片。
+根据用户当前目标和已有项目内容选择下一项实际制作工作。完整项目不要求机械经过所有能力；已经有脚本时可以直接进入镜头，已经有镜头与素材时可以直接准备生成包，返回生成结果后直接进入审片。
 
 按当前任务加载 canonical Skill：
 
 - 从小说、章节、brief 或其他上游内容形成/修订视频脚本、人物表演、场景或镜头总览 → `video-script`；
 - 角色或场景只有功能描述、尚未形成具体外形 / 服装 / 材质 / 空间 / 光线设计 → `video-design`；
 - 角色需要跨镜头稳定音色、声音参考，或项目需要规划对白声音、环境声、音效与整片声音边界 → `video-audio`；
-- 规划或维护跨镜头复用的人物、场景、道具、产品 Prompt 与参考素材 → `video-materials`；
+- 规划或维护跨镜头复用的人物、场景、道具、产品提示词与参考素材 → `video-materials`；
 - 把镜头总览展开成 `SHOT.md`，处理动作、摄影、声音与相邻镜头连续性 → `video-shot`；
-- 编写当前生成 Prompt、选择最小参考集、整理一次性生成包、导回用户生成结果 → `video-generation`；
-- 用户带回图片或 Take 后判断采用、调整后续、后期修复、重生成或重写 → `video-review`；
-- 多个采用 Shot 进入 Premiere Pro、After Effects、DaVinci Resolve 等整片后期 → `video-editing`；
+- 编写当前生成提示词、选择最小参考集、整理一次性生成包、导回用户生成结果 → `video-generation`；
+- 用户带回图片或生成结果后判断采用、调整后续、后期修复、重生成或重写 → `video-review`；
+- 多个采用镜头进入 Premiere Pro、After Effects、DaVinci Resolve 等整片后期 → `video-editing`；
 - 品牌、产品植入或广告需要核验产品功能、结构、官方素材与广告表达边界 → 按需加载可选 `video-advertising`；当前 Target 未安装时使用明确 coordinate `akira-tl/akira-video-skills/video-advertising`，交给 `akira` Router / Skiloom 做 Candidate plan 与授权安装。
 
 Router 只保存上述职责摘要；进入任一分支后，以实际加载的 canonical Skill 为该专业方法的 source of truth。
 
-若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常 Candidate plan 与安装。不要把模型参数或 Provider 细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
+若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常 Candidate plan 与安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
 ## 4. 外部生成的人机边界
 
@@ -65,13 +65,13 @@ Router 只保存上述职责摘要；进入任一分支后，以实际加载的 
 
 正式项目内容 → `.tmp/` 一次性生成包 → 用户外部生成 → 结果返回 → 归档正式目录 → 删除临时包。
 
-一次性生成包是派生物，不成为长期项目事实源；长期 Prompt 留在 owning 素材或镜头目录，临时包只复制当前生成真正需要的内容。
+一次性生成包是派生物，不成为长期项目事实源；长期提示词留在 owning 素材或镜头目录，临时包只复制当前生成真正需要的内容。
 
 ## 5. 重新路由与停止边界
 
 每次专业 Skill 完成一个有边界动作后：
 
-1. 把返回的正式素材、Take、镜头决定或整片工程归档到 owning 目录；
+1. 把返回的正式素材、生成结果、镜头决定或整片工程归档到 owning 目录；
 2. 更新仍影响当前制作的 `VIDEO.md`；
 3. 根据用户目标与当前产物决定下一项制作工作。
 

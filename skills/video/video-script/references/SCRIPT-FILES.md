@@ -15,7 +15,7 @@
 - 角色对白；
 - 关键因果与转折。
 
-不在这里详细设计摄影机、焦段、模型参数和参考图；这些属于 Shot / Generation。
+不在这里详细设计摄影机、焦段、模型参数和参考图；这些属于镜头 / Generation。
 
 ## CHARACTERS.md
 
@@ -38,7 +38,7 @@
 
 适合保存：
 
-- Scene ID；
+- 场次 ID；
 - 地点 / 时间；
 - 场景叙事功能；
 - 当前出场角色；
@@ -54,13 +54,13 @@
 
 每条保持总览级信息：
 
-- Shot ID；
+- 镜头 ID；
 - 目标时长；
 - 镜头目的；
 - 主要画面 / 动作；
 - 必要的前后关系。
 
-详细机位、动作时间、参考素材、Continuity In / Out 和 Hard Constraints 进入对应 `video/shots/<shot-id>/SHOT.md`。
+详细机位、动作时间、参考素材、Continuity In / Out 和 硬性约束 进入对应 `video/shots/<shot-id>/SHOT.md`。
 
 ## 简单项目
 

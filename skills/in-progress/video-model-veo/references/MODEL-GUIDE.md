@@ -22,13 +22,13 @@ Google 的 Veo 能力会随使用入口、stable / preview endpoint 和产品形
 
 参考图 / ingredients、extension 等能力在不同 Google 页面 / 使用入口上存在差异，因此使用前必须核验所选入口的当前文档。
 
-## Prompt 方法
+## 提示词方法
 
-Google Cloud 的 Veo 3.1 创作指南建议从以下五类信息组织 Prompt：
+Google Cloud 的 Veo 3.1 创作指南建议从以下五类信息组织提示词：
 
 摄影语言 + 主体 + 动作 + 环境 / 上下文 + 风格 / 氛围。
 
-首尾帧工作流中，让图片负责端点视觉，Prompt 负责二者之间的运动、转变与声音。
+首尾帧工作流中，让图片负责端点视觉，提示词负责二者之间的运动、转变与声音。
 
 ## 官方来源
 

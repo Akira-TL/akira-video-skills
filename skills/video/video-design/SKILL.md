@@ -12,7 +12,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 - `video/materials/characters/CHR01_design.md`
 - `video/materials/scenes/LOC01_design.md`
 
-随后由 `video-materials` 把设计转成长期 Prompt、严格四视图和参考图片。
+随后由 `video-materials` 把设计转成长期提示词、严格四视图和参考图片。
 
 ## 1. 先读取设计约束
 
@@ -63,7 +63,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 - 关键视觉锚点；
 - 角色和关键道具可以怎样在空间里活动；
 - 哪些部分必须跨镜头稳定；
-- 哪些细节只属于某个 Shot，不进入公共场景设计。
+- 哪些细节只属于某个镜头，不进入公共场景设计。
 
 复杂场景按需读取 [`references/SCENE-DESIGN.md`](references/SCENE-DESIGN.md)。项目存在多个视觉世界时读取 [`references/WORLD-DESIGN.md`](references/WORLD-DESIGN.md)；主场景空间关系或陌生机械会直接影响多个镜头时读取 [`references/SPACE-MECHANISM.md`](references/SPACE-MECHANISM.md)。
 
@@ -91,11 +91,11 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 设计确认后：
 
-1. `video-materials` 根据设计建立长期图片 Prompt；
+1. `video-materials` 根据设计建立长期图片提示词；
 2. 需要稳定身份 / 结构时，按严格四视图模板生成参考图；
-3. 返回的图片和 Prompt 与设计文件共置或放在同一类别目录；
-4. 镜头专属动作、摄影和临时状态仍归对应 Shot。
+3. 返回的图片和提示词与设计文件共置或放在同一类别目录；
+4. 镜头专属动作、摄影和临时状态仍归对应镜头。
 
 ## 完成标准
 
-角色或场景已经从“功能描述”变成具体、可辨认、跨镜头可保持、且适合 AI 生成的视觉设计；下一步可以直接进入参考素材 Prompt 和四视图生成。
+角色或场景已经从“功能描述”变成具体、可辨认、跨镜头可保持、且适合 AI 生成的视觉设计；下一步可以直接进入参考素材提示词和四视图生成。

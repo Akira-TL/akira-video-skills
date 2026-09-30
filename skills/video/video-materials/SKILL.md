@@ -5,17 +5,17 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 
 # Video Materials
 
-本 Skill 只拥有 `video/materials/` 下跨镜头复用的内容。镜头专属图片、声音和生成结果跟随对应 Shot，不为了分类把同一素材复制到多个目录。
+本 Skill 只拥有 `video/materials/` 下跨镜头复用的内容。镜头专属图片、声音和生成结果跟随对应镜头，不为了分类把同一素材复制到多个目录。
 
-批量生成复用素材前先读取 [`references/MATERIAL-PLANNING.md`](references/MATERIAL-PLANNING.md)，从实际脚本 / Shot 反推需要哪些长期素材，避免为了数量预生成。
+批量生成复用素材前先读取 [`references/MATERIAL-PLANNING.md`](references/MATERIAL-PLANNING.md)，从实际脚本 / 镜头反推需要哪些长期素材，避免为了数量预生成。
 
 ## 1. 判断是否值得成为复用素材
 
 只有多个镜头会重复引用，或者稳定身份/结构必须被后续持续保持的内容才进入 `video/materials/`。
 
-常见类别包括人物、场景、道具、产品和视觉参考。类别目录只在真实需要时创建；Prompt 与对应图片可以放在一起，优先让人打开目录就能理解这个对象。
+常见类别包括人物、场景、道具、产品和视觉参考。类别目录只在真实需要时创建；提示词与对应图片可以放在一起，优先让人打开目录就能理解这个对象。
 
-如果人物或场景还没有形成具体视觉设计，先加载 `video-design`，不要直接把泛化描述写成生图 Prompt。
+如果人物或场景还没有形成具体视觉设计，先加载 `video-design`，不要直接把泛化描述写成生图提示词。
 
 需要建立人物 / 衣物 / 道具 / 场景四视图、陌生机械或产品结构参考时，读取 [`references/REFERENCE-DESIGN.md`](references/REFERENCE-DESIGN.md)。其中严格四视图模板见 [`references/FOUR-VIEW-PROMPTS.md`](references/FOUR-VIEW-PROMPTS.md)。
 
@@ -33,12 +33,12 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 
 具体状态只在当前项目真的需要同时区分时才写进文件名。
 
-## 3. Prompt 与参考图
+## 3. 提示词与参考图
 
-编写长期图片 Prompt 时读取 [`references/IMAGE-PROMPTS.md`](references/IMAGE-PROMPTS.md)；需要四视图时继续叠加 [`references/FOUR-VIEW-PROMPTS.md`](references/FOUR-VIEW-PROMPTS.md) 对应严格模板。
+编写长期图片提示词时读取 [`references/IMAGE-PROMPTS.md`](references/IMAGE-PROMPTS.md)；需要四视图时继续叠加 [`references/FOUR-VIEW-PROMPTS.md`](references/FOUR-VIEW-PROMPTS.md) 对应严格模板。
 
 
-长期可复用的图片 Prompt 与对应素材共同保存在 owning 目录。Prompt 描述稳定身份、结构、材质、视角或世界规则，不承担某一个镜头独有的动作和摄影。
+长期可复用的图片提示词与对应素材共同保存在 owning 目录。提示词描述稳定身份、结构、材质、视角或世界规则，不承担某一个镜头独有的动作和摄影。
 
 人物、衣物、道具和场景四视图属于按需制作配方，不是所有项目的固定要求；一旦当前对象需要四视图，就使用对应严格模板，不自行改成自由多视角。模型不理解的机械或装置可在素材旁增加简洁机制说明，明确固定部件、活动部件、运动方向和角色使用方式。
 

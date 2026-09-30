@@ -8,7 +8,7 @@
 
 Package：`akira-tl/akira-video-skills/video-model-runway`
 
-当前重点：Runway Gen-4.5 Text to Video / Image to Video Prompt 编译。
+当前重点：Runway Gen-4.5 Text to Video / Image to Video 提示词编译。
 
 ### Google Veo
 
@@ -31,8 +31,8 @@ Package：`akira-tl/akira-video-skills/video-model-seedance`
 
 ## 图片模型
 
-目前不建立图片模型专用适配器。长期生图 Prompt、角色 / 场景设计和严格四视图由 `video-design` + `video-materials` 负责；只有未来真实生产反复证明某图片模型存在稳定且不可由通用 Prompt 覆盖的差异时再拆。
+目前不建立图片模型专用适配器。长期生图提示词、角色 / 场景设计和严格四视图由 `video-design` + `video-materials` 负责；只有未来真实生产反复证明某图片模型存在稳定且不可由通用提示词覆盖的差异时再拆。
 
 ## 边界
 
-模型适配器只能编译当前 Shot / 素材意图，不能重新决定剧情、角色设计、产品事实或镜头目的。
+模型适配器只能编译当前镜头 / 素材意图，不能重新决定剧情、角色设计、产品事实或镜头目的。

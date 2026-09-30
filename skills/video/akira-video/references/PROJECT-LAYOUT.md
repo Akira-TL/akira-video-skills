@@ -43,7 +43,7 @@ video/materials/
 └── references/
 ```
 
-不预建空目录。一个类别目录可以同时包含 Prompt 与对应图片，例如：
+不预建空目录。一个类别目录可以同时包含提示词与对应图片，例如：
 
 ```text
 video/materials/characters/
@@ -54,7 +54,7 @@ video/materials/characters/
 
 ## shots
 
-每个 Shot 集中保存自己的长期内容：
+每个镜头集中保存自己的长期内容：
 
 ```text
 video/shots/SC01_SH010/
@@ -65,18 +65,18 @@ video/shots/SC01_SH010/
 └── take02.mp4
 ```
 
-镜头专属图片、对白、声音或其他产物也放这里。首帧、尾帧、Storyboard / Keyframe 等只服务当前镜头的图片不进入公共 `materials/`；常用命名见 `NAMING.md`。复杂项目只有在平铺已经影响阅读时，才在 `shots/` 内增加章节等组织层。
+镜头专属图片、对白、声音或其他产物也放这里。首帧、尾帧、分镜草图 / 关键帧等只服务当前镜头的图片不进入公共 `materials/`；常用命名见 `NAMING.md`。复杂项目只有在平铺已经影响阅读时，才在 `shots/` 内增加章节等组织层。
 
 ## edit
 
-只有进入整片级后期时才创建。保存 Premiere Pro、After Effects、DaVinci Resolve 等工程、全片级音乐/旁白/混音及最终成片。镜头专属内容仍留在对应 Shot。
+只有进入整片级后期时才创建。保存 Premiere Pro、After Effects、DaVinci Resolve 等工程、全片级音乐/旁白/混音及最终成片。镜头专属内容仍留在对应镜头。
 
 ## tmp
 
-`.tmp/` 保存一次性生成包。视频项目第一次需要 Generation Pack 前，确认目标项目自己的 `.gitignore` 包含：
+`.tmp/` 保存一次性生成包。视频项目第一次需要 一次性生成包 前，确认目标项目自己的 `.gitignore` 包含：
 
 ```text
 .tmp/
 ```
 
-不要求提前创建空 `.tmp/` 目录。包里的 Prompt 和参考素材均从正式项目复制或编译而来；生成结果已经导回 owning 目录后删除整个包。
+不要求提前创建空 `.tmp/` 目录。包里的提示词和参考素材均从正式项目复制或编译而来；生成结果已经导回 owning 目录后删除整个包。

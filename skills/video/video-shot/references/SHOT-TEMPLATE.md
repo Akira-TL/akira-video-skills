@@ -65,7 +65,7 @@
 - LOC01_four-view.png — 场景空间
 - PROD01_official-front.png — 产品结构
 
-## Hard Constraints
+## 硬性约束
 
 真正不能漂移的身份、结构、剧情或品牌事实。
 
@@ -75,8 +75,8 @@
 
 ## 当前采用
 
-Take：
-Prompt：
+生成结果：
+提示词：
 模型 / 使用入口：
 结论：
 实际出口：
@@ -87,6 +87,6 @@ Prompt：
 ## 使用规则
 
 - `当前采用` 只有生成并审片后才填写；
-- 计划的 `Continuity Out` 和采用 Take 的 `实际出口` 可以不同，两者都保留；
+- 计划的 `Continuity Out` 和采用生成结果的 `实际出口` 可以不同，两者都保留；
 - 模型具体参数不写进 `SHOT.md` 的长期镜头意图；
-- 字幕、Logo、精确剪切点等明显后期任务不塞进 Hard Constraints。
+- 字幕、Logo、精确剪切点等明显后期任务不塞进 硬性约束。

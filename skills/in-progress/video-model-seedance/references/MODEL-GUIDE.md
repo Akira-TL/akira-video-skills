@@ -4,7 +4,7 @@
 
 ## 当前重点
 
-BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与 Prompt 指南。
+BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与提示词指南。
 
 截至核验日，官方教程记录：
 
@@ -17,16 +17,16 @@ BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与 Prompt
 
 这些是上限，不是推荐目标。
 
-## Prompt 方法
+## 提示词方法
 
-官方 2.5 Prompt 指南强调：
+官方 2.5 提示词指南强调：
 
 - 每份 reference 先说明用途；
 - 抽象情绪转成可见动作；
 - 复杂任务可以使用 Main Idea + Timeline；
 - Camera / Action / Sound / Atmosphere 保持同一方向；
 - 最重要的 consistency 和 constraints 清楚写出；
-- 简单任务不需要为了结构写长 Prompt。
+- 简单任务不需要为了结构写长提示词。
 
 ## Video editing
 
@@ -39,4 +39,4 @@ BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与 Prompt
 - https://ai.byteplus.com/resources/how-to-write-better-seedance-2-5-prompts
 - https://docs.byteplus.com/en/docs/ModelArk/ark-document-skills
 
-BytePlus 还提供官方 `sd25-pe` Prompt 优化 Skill；本仓不复制其正文，本适配器只吸收可由官方文档核验的模型约束与 Prompt 方法。
+BytePlus 还提供官方 `sd25-pe` 提示词优化 Skill；本仓不复制其正文，本适配器只吸收可由官方文档核验的模型约束与提示词方法。

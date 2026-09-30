@@ -141,9 +141,9 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_naming_preserves_scene_location_and_take_semantics(self) -> None:
         naming = read(STABLE / "akira-video" / "references" / "NAMING.md")
-        self.assertIn("Scene 与 Location 不同", naming)
-        self.assertIn("Prop 与 Product 不同", naming)
-        self.assertIn("Take 编号在同一个 Shot 内单调递增", naming)
+        self.assertIn("场次与地点不同", naming)
+        self.assertIn("道具与产品不同", naming)
+        self.assertIn("生成结果编号在同一个镜头内单调递增", naming)
         self.assertIn("start-frame.png", naming)
         self.assertIn("这些图片只有在多个镜头确实复用时才升级到 `video/materials/`", naming)
 
