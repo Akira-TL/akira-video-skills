@@ -456,6 +456,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("产品结构优先于炫技摄影", camera)
         self.assertIn("一个镜头优先只有一个主要摄影运动", camera)
 
+    def test_lighting_preserves_world_space_and_product_readability(self) -> None:
+        lighting = read(STABLE / "video-design" / "references" / "environment" / "LIGHTING.md")
+        self.assertIn("主光方向是连续性状态", lighting)
+        self.assertIn("世界空间中的窗户仍在东侧", lighting)
+        self.assertIn("白天 / 夜晚状态", lighting)
+        self.assertIn("金属 / 玻璃反射不伪造不存在的结构", lighting)
+        self.assertIn("曝光与调色分开", lighting)
+        self.assertIn("不能用调色真正修复", lighting)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
