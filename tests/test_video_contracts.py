@@ -131,7 +131,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertEqual(offenders, [])
 
     def test_project_layout_has_no_top_level_audio_or_delivery_tree(self) -> None:
-        layout = read(STABLE / "akira-video" / "references" / "PROJECT-LAYOUT.md")
+        layout = read(STABLE / "akira-video" / "references" / "project" / "PROJECT-LAYOUT.md")
         self.assertNotIn("video/audio/", layout)
         self.assertNotIn("video/delivery/", layout)
         self.assertIn("└── edit/", layout)
@@ -140,7 +140,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn(".tmp/", layout)
 
     def test_naming_preserves_scene_location_and_take_semantics(self) -> None:
-        naming = read(STABLE / "akira-video" / "references" / "NAMING.md")
+        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
         self.assertIn("场次与地点不同", naming)
         self.assertIn("道具与产品不同", naming)
         self.assertIn("生成结果编号在同一个镜头内单调递增", naming)
@@ -169,7 +169,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, templates)
 
     def test_project_scaling_is_opt_in_and_git_remains_version_authority(self) -> None:
-        scaling = read(STABLE / "akira-video" / "references" / "SCALING-VERSIONS.md")
+        scaling = read(STABLE / "akira-video" / "references" / "project" / "SCALING-VERSIONS.md")
         for marker in (
             "默认不创建章节层级",
             "只有出现以下情况之一时才增加组织层",
@@ -188,7 +188,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("镜头不因为“看起来漂亮”就必须保留完整生成时长", editing)
 
     def test_production_flow_resumes_existing_work_and_stops_on_external_dependencies(self) -> None:
-        flow = read(STABLE / "akira-video" / "references" / "PRODUCTION-FLOW.md")
+        flow = read(STABLE / "akira-video" / "references" / "workflow" / "PRODUCTION-FLOW.md")
         self.assertIn("已有项目先读取 `VIDEO.md` 和当前实际文件，从当前工作继续", flow)
         self.assertIn("不能假装已经生成", flow)
         self.assertIn("长期角色 / 场景参考没有通过审片前，不拿它继续批量生成视频", flow)
@@ -197,7 +197,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
     def test_dialogue_timing_and_multiformat_rules_avoid_late_fixups(self) -> None:
         dialogue = read(STABLE / "video-script" / "references" / "DIALOGUE-TIMING.md")
         multiformat = read(STABLE / "video-shot" / "references" / "MULTI-FORMAT.md")
-        naming = read(STABLE / "akira-video" / "references" / "NAMING.md")
+        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
         self.assertIn("不要只用固定“每分钟多少字”替代真实语速", dialogue)
         self.assertIn("字幕不是生成任务", dialogue)
         self.assertIn("优先生成一个主版本", multiformat)
@@ -249,15 +249,22 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_shot_derivatives_and_media_cleanup_preserve_originals(self) -> None:
         derivatives = read(STABLE / "video-shot" / "references" / "SHOT-DERIVATIVES.md")
-        lifecycle = read(STABLE / "akira-video" / "references" / "MEDIA-LIFECYCLE.md")
+        lifecycle = read(STABLE / "akira-video" / "references" / "project" / "MEDIA-LIFECYCLE.md")
         self.assertIn("这些属于后期派生，不新建 Shot ID", derivatives)
         self.assertIn("后期修复后的片段不要覆盖原 `takeNN.mp4`", derivatives)
         self.assertIn("文件不是当前采用结果", lifecycle)
         self.assertIn("文件不是用户唯一原始输入", lifecycle)
         self.assertIn("不要让 `.tmp/.../returns/` 里的文件成为项目唯一正式副本", lifecycle)
 
+    def test_existing_media_is_reused_without_forcing_regeneration(self) -> None:
+        importing = read(STABLE / "akira-video" / "references" / "project" / "IMPORT-MEDIA.md")
+        self.assertIn("不要为了“流程完整”强制重新生成", importing)
+        self.assertIn("`source.mp4`", importing)
+        self.assertIn("不要把它误命名成 `take01.mp4`", importing)
+        self.assertIn("不强制补不存在的中间件", importing)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
-        home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
+        home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
             "## 项目定义",
             "## 交付要求",

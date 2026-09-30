@@ -38,7 +38,7 @@
 
 ## 4. 文件命名
 
-镜头源文件和提示词的画幅后缀统一按 `akira-video/references/NAMING.md`；只有多个独立画幅源确实同时存在时才加后缀。
+镜头源文件和提示词的画幅后缀统一按 `akira-video/references/project/NAMING.md`；只有多个独立画幅源确实同时存在时才加后缀。
 
 最终成片命名继续由 `video-editing/references/EDIT-PROJECT.md` 负责，不在这里维护第二套规则。
 

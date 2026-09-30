@@ -5,13 +5,15 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 # Akira Video
 
-`akira-video` 是 Akira Video Skills 的 Primary Router。它拥有视频制作入口、`VIDEO.md`、当前制作任务判断、专业 Skill 路由与停止边界；具体视频脚本、复用素材、镜头、生成包、审片和整片后期方法由对应专业 Skill 负责。完整项目的依赖与人机交接按 [`references/PRODUCTION-FLOW.md`](references/PRODUCTION-FLOW.md)；已有项目直接从当前实际工作续，不机械重跑上游步骤。
+`akira-video` 是 Akira Video Skills 的 Primary Router。它拥有视频制作入口、`VIDEO.md`、当前制作任务判断、专业 Skill 路由与停止边界；具体视频脚本、复用素材、镜头、生成包、审片和整片后期方法由对应专业 Skill 负责。完整项目的依赖与人机交接按 [`references/workflow/PRODUCTION-FLOW.md`](references/workflow/PRODUCTION-FLOW.md)；已有项目直接从当前实际工作续，不机械重跑上游步骤。
 
 整个制作始终优先保护：用户与来源事实 → 剧情 / 镜头意图（适用时）→ 人物 / 物体身份与结构 → 产品事实（广告时）→ 空间与时间连续性 → 画面美感 → 炫技。后面的目标不能以破坏前面的约束为代价。
 
 ## 1. 进入或接管项目
 
-先读取项目根目录 `VIDEO.md`。不存在时按 [`references/PROJECT-LAYOUT.md`](references/PROJECT-LAYOUT.md) 建立最小视频项目；项目定义与当前状态按 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)，命名按 [`references/NAMING.md`](references/NAMING.md)。只创建当前真实需要的目录和文件，不预生成空分类；第一次需要一次性生成包时再确保目标项目 `.gitignore` 忽略 `.tmp/`。
+先读取项目根目录 `VIDEO.md`。不存在时按 [`references/project/PROJECT-LAYOUT.md`](references/project/PROJECT-LAYOUT.md) 建立最小视频项目；项目定义与当前状态按 [`references/project/VIDEO-HOME.md`](references/project/VIDEO-HOME.md)，命名按 [`references/project/NAMING.md`](references/project/NAMING.md)。只创建当前真实需要的目录和文件，不预生成空分类；第一次需要一次性生成包时再确保目标项目 `.gitignore` 忽略 `.tmp/`。
+
+用户已经提供现成图片、视频、音频、粗剪或参考成片时，先按 [`references/project/IMPORT-MEDIA.md`](references/project/IMPORT-MEDIA.md) 判断它在当前项目里的真实用途；可直接复用的成果不强制重走设计或生成流程。
 
 然后按当前任务读取最小必要内容：
 
@@ -23,7 +25,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实 blocker。
 
-进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/SCALING-VERSIONS.md`](references/SCALING-VERSIONS.md)，不要预设长片目录。需要清理失败结果、一次性包、缓存或旧媒体时，按 [`references/MEDIA-LIFECYCLE.md`](references/MEDIA-LIFECYCLE.md) 先确认文件不是唯一输入、当前采用结果或后期工程唯一依赖。
+进入下一项昂贵制作前，按 [`references/workflow/PRODUCTION-GATES.md`](references/workflow/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/project/SCALING-VERSIONS.md`](references/project/SCALING-VERSIONS.md)，不要预设长片目录。需要清理失败结果、一次性包、缓存或旧媒体时，按 [`references/project/MEDIA-LIFECYCLE.md`](references/project/MEDIA-LIFECYCLE.md) 先确认文件不是唯一输入、当前采用结果或后期工程唯一依赖。
 
 ## 2. 维护 VIDEO.md
 
@@ -39,7 +41,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 普通提示词历史、所有生成结果、生成日志和已经被 Git 历史取代的旧决定不进入 `VIDEO.md`。
 
-详细写法见 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)。
+详细写法见 [`references/project/VIDEO-HOME.md`](references/project/VIDEO-HOME.md)。
 
 ## 3. 路由专业工作
 
@@ -59,7 +61,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 Router 只保存上述职责摘要；进入任一分支后，以实际加载的权威 Skill 为该专业方法的唯一权威来源。
 
-若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常生成候选计划（Candidate plan）并安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
+若目标需要视频模型专用适配，先读取 [`references/workflow/MODEL-ADAPTERS.md`](references/workflow/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常生成候选计划（Candidate plan）并安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
 ## 4. 外部生成的人机边界
 
