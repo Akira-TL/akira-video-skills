@@ -21,6 +21,8 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 
 需要建立人物 / 衣物 / 道具 / 场景四视图、陌生机械或产品结构参考时，读取 [`references/REFERENCE-DESIGN.md`](references/REFERENCE-DESIGN.md)。其中严格四视图模板见 [`references/FOUR-VIEW-PROMPTS.md`](references/FOUR-VIEW-PROMPTS.md)。
 
+同一角色、地点、产品或道具需要跨多轮生成持续复用时，读取 [`references/REFERENCE-CONTINUITY.md`](references/REFERENCE-CONTINUITY.md)，以后续已验收长期素材作为基准参考，而不是每轮从文字重新随机身份。
+
 ## 2. 身份与状态分开
 
 同一个人物、道具或产品先保持稳定身份，再为真实需要区分的状态单独命名，例如服装 A / B、完整 / 损坏、干燥 / 湿润。不要用一个模糊“final”素材代表所有状态。

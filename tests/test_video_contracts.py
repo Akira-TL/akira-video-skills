@@ -204,6 +204,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不应该强行裁切", multiformat)
         self.assertIn("prompt_vertical_v01.md", naming)
 
+    def test_reference_continuity_and_candidate_selection_prioritize_identity_over_aesthetics(self) -> None:
+        continuity = read(STABLE / "video-materials" / "references" / "REFERENCE-CONTINUITY.md")
+        selection = read(STABLE / "video-review" / "references" / "CANDIDATE-SELECTION.md")
+        self.assertIn("已验收素材是后续基准参考", continuity)
+        self.assertIn("不自动替换基准参考", continuity)
+        self.assertIn("先淘汰硬错误", selection)
+        self.assertIn("硬错误不能由“画面更漂亮”抵消", selection)
+        self.assertIn("“最好的一条”也可以全部不合格", selection)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
