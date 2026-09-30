@@ -147,6 +147,16 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("start-frame.png", naming)
         self.assertIn("这些图片只有在多个镜头确实复用时才升级到 `video/materials/`", naming)
 
+    def test_product_shot_contract_preserves_real_product_identity(self) -> None:
+        product_shots = read(STABLE / "video-advertising" / "references" / "PRODUCT-SHOTS.md")
+        for marker in (
+            "优先使用官方产品图作为图生视频起点",
+            "有限视差（2.5D）",
+            "现实品牌产品默认保留现实工业身份",
+            "不要求模型重新发明 Logo、接口、按钮或文字",
+        ):
+            self.assertIn(marker, product_shots)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (

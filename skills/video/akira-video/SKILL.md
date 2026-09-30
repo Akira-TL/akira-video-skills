@@ -23,6 +23,8 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实 blocker。
 
+进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。
+
 ## 2. 维护 VIDEO.md
 
 `VIDEO.md` 是给人和下一位 Agent 直接阅读的视频制作首页，只保存当前仍有用的信息。固定关注：
