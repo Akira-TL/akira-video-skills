@@ -9,6 +9,9 @@ description: 组织整片级剪辑、合成、全片声音和最终成片；当�
 
 ## 1. 按需创建 edit
 
+整片后期目录与导出命名按 [`references/EDIT-PROJECT.md`](references/EDIT-PROJECT.md) 保持最浅结构。
+
+
 只有项目真实进入整片后期时才创建 `video/edit/`。目录可以直接保存：
 
 - Premiere Pro、After Effects、DaVinci Resolve 或其他后期工程；

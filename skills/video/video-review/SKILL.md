@@ -45,6 +45,9 @@ description: 审核 AI 生成的人物/场景等复用素材或 Shot Take，判�
 
 ## 4. 记录采用结果
 
+Shot 采用决定按 [`references/TAKE-DECISION.md`](references/TAKE-DECISION.md) 保持简洁：记录当前 Take、实际出口、可接受偏差和仍需后期修复的项目，不建立额外数据库。
+
+
 Shot 采用哪个 Take，优先在该 Shot 的 `SHOT.md` 中维护一个简短“当前采用”字段或等价清晰记录，不复制一份 `final.mp4`。
 
 被淘汰 Take 仍可以保留用于比较；如果项目不需要长期保留失败输出，可按用户存储策略清理，但不得把尚未归档的唯一生成结果误删。

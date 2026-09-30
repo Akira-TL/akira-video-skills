@@ -57,7 +57,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 Router 只保存上述职责摘要；进入任一分支后，以实际加载的 canonical Skill 为该专业方法的 source of truth。
 
-若目标需要某个尚未安装的模型专用适配 Skill，只声明所需能力并交给 `akira` Router / Skiloom 正常发现与安装；不要把模型参数或 Provider 细节硬编码进 `akira-video`。
+若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常 Candidate plan 与安装。不要把模型参数或 Provider 细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
 ## 4. 外部生成的人机边界
 
