@@ -73,4 +73,10 @@ video/shots/SC01_SH010/
 
 ## tmp
 
-`.tmp/` 保存一次性生成包，必须 gitignore。包里的 Prompt 和参考素材均从正式项目复制或编译而来；生成结果已经导回 owning 目录后删除整个包。
+`.tmp/` 保存一次性生成包。视频项目第一次需要 Generation Pack 前，确认目标项目自己的 `.gitignore` 包含：
+
+```text
+.tmp/
+```
+
+不要求提前创建空 `.tmp/` 目录。包里的 Prompt 和参考素材均从正式项目复制或编译而来；生成结果已经导回 owning 目录后删除整个包。

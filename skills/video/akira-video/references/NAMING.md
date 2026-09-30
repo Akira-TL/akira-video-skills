@@ -40,8 +40,12 @@
 `CHR01_design.md`
 `CHR01_prompt.md`
 `CHR01_identity.png`
+`CHR01_four-view.png`
 `CHR01_costume-a.png`
+`CHR01_voice.md`
+`CHR01_voice-reference.wav`
 `LOC01_design.md`
+`LOC01_four-view.png`
 `LOC01_kitchen.png`
 `PROP01_damaged.png`
 `PROD01_truth.md`
@@ -60,7 +64,20 @@
 
 不要因为每改一句就创建新版本文件。
 
-## 5. Take
+## 5. 图片候选
+
+同一长期图片一次返回多个候选时，候选只在 Generation Pack 的 `returns/` 暂存，例如：
+
+`CHR01_identity_take01.png`
+`CHR01_identity_take02.png`
+
+审片选中后再归档成长期稳定名：
+
+`CHR01_identity.png`
+
+没有被选中的候选默认随临时包清理；如果用户明确要长期保留多个真正不同的状态 / 方案，再给它们明确状态名或用途名，而不是长期留下 `takeNN`。
+
+## 6. 视频 Take
 
 在镜头目录内：
 
@@ -73,7 +90,7 @@
 
 导回项目后可按镜头目录现有简洁命名整理。
 
-## 6. 禁止 final 链
+## 7. 禁止 final 链
 
 不要使用：
 
@@ -84,7 +101,7 @@
 
 当前采用哪个 Take 由 `SHOT.md` 或等价明确记录表示；整片当前导出也由 Git / 后期工程和清楚版本关系管理，不靠文件名猜。
 
-## 7. 文件名不承担的内容
+## 8. 文件名不承担的内容
 
 默认不把以下内容塞进媒体文件名：
 

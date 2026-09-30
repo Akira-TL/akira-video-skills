@@ -11,7 +11,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 ## 1. 进入或接管项目
 
-先读取项目根目录 `VIDEO.md`。不存在时按 [`references/PROJECT-LAYOUT.md`](references/PROJECT-LAYOUT.md) 建立最小视频项目；项目定义与当前状态按 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)，命名按 [`references/NAMING.md`](references/NAMING.md)。只创建当前真实需要的目录和文件，不预生成空分类。
+先读取项目根目录 `VIDEO.md`。不存在时按 [`references/PROJECT-LAYOUT.md`](references/PROJECT-LAYOUT.md) 建立最小视频项目；项目定义与当前状态按 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)，命名按 [`references/NAMING.md`](references/NAMING.md)。只创建当前真实需要的目录和文件，不预生成空分类；第一次需要一次性生成包时再确保目标项目 `.gitignore` 忽略 `.tmp/`。
 
 然后按当前任务读取最小必要内容：
 

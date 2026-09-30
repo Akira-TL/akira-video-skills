@@ -116,6 +116,8 @@ class VideoRepositoryContractTests(unittest.TestCase):
     def test_generation_pack_stays_inside_project_tmp(self) -> None:
         pack = read(STABLE / "video-generation" / "references" / "GENERATION-PACK.md")
         self.assertIn("当前项目 ForgeRelay 工作区内的 `.tmp/`", pack)
+        self.assertIn("returns/", pack)
+        self.assertIn("_take01.png", pack)
 
         roots = (STABLE, IN_PROGRESS, DOCS, REPO / "AGENTS.md", REPO / "CONTEXT.md", REPO / "README.md")
         offenders: list[str] = []
@@ -134,6 +136,8 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertNotIn("video/delivery/", layout)
         self.assertIn("└── edit/", layout)
         self.assertIn("video/shots/", layout)
+        self.assertIn("目标项目自己的 `.gitignore`", layout)
+        self.assertIn(".tmp/", layout)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
