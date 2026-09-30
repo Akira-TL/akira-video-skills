@@ -409,6 +409,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertEqual(dependencies(STABLE / "video-editing"), set())
         self.assertNotIn("video-script/references/", audio)
         self.assertNotIn("video-shot/references/", editing)
+        self.assertNotIn("video-audio/references/", editing)
 
     def test_temporal_review_checks_frame_to_frame_ai_drift(self) -> None:
         failures = read(STABLE / "video-review" / "references" / "FAILURE-MODES.md")
@@ -464,6 +465,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("金属 / 玻璃反射不伪造不存在的结构", lighting)
         self.assertIn("曝光与调色分开", lighting)
         self.assertIn("不能用调色真正修复", lighting)
+
+    def test_music_design_separates_temp_score_from_final_delivery(self) -> None:
+        music = read(STABLE / "video-audio" / "references" / "MUSIC.md")
+        self.assertIn("先区分临时音乐与最终音乐", music)
+        self.assertIn("不要为了卡节拍", music)
+        self.assertIn("不默认要求分轨", music)
+        self.assertIn("网上能播放不等于允许进入最终对外交付", music)
+        self.assertIn("如果关掉音乐后剧情完全不成立", music)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
