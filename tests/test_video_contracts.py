@@ -278,6 +278,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("反打要从空间另一观察方向重新构图，不能简单把上一镜水平翻转", direction)
         self.assertIn("动作匹配", direction)
 
+    def test_reference_roles_prevent_identity_and_structure_contamination(self) -> None:
+        roles = read(STABLE / "video-materials" / "references" / "REFERENCE-ROLES.md")
+        self.assertIn("动作参考视频", roles)
+        self.assertIn("默认不负责：", roles)
+        self.assertIn("不参考演员身份 / 服装 / 背景", roles)
+        self.assertIn("如果两份参考对同一个职责给出不同答案", roles)
+        self.assertIn("参考越多越稳", roles)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
