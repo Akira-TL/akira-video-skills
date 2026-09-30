@@ -213,6 +213,16 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("硬错误不能由“画面更漂亮”抵消", selection)
         self.assertIn("“最好的一条”也可以全部不合格", selection)
 
+    def test_design_approval_and_technical_qc_keep_human_and_media_boundaries(self) -> None:
+        approval = read(STABLE / "video-design" / "references" / "DESIGN-APPROVAL.md")
+        technical = read(STABLE / "video-editing" / "references" / "TECHNICAL-QC.md")
+        self.assertIn("应先让用户决定的高影响分叉", approval)
+        self.assertIn("用户已经授权 Agent 自主决定", approval)
+        self.assertIn("已确认设计不要反复重问", approval)
+        self.assertIn("文件基本可用", technical)
+        self.assertIn("每一个真正要交付的文件至少分别核对", technical)
+        self.assertIn("不能检查就明确保留", technical)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (

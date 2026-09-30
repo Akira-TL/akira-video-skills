@@ -34,7 +34,7 @@ description: 组织整片级剪辑、合成、全片声音和最终成片；当�
 
 不要因为生成模型可以尝试，就让它重做本可稳定后期解决的问题。
 
-准备最终导出或整片验收时，读取 [`references/FINAL-QC.md`](references/FINAL-QC.md)。
+准备最终导出或整片验收时，先按 [`references/FINAL-QC.md`](references/FINAL-QC.md) 检查整片内容，再按 [`references/TECHNICAL-QC.md`](references/TECHNICAL-QC.md) 检查每个正式交付文件能否正常解码以及时长、画幅、分辨率、音轨等明确交付要求。
 
 ## 4. 整片检查
 
