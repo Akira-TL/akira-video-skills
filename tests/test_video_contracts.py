@@ -294,6 +294,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不能自动升级为正式事实", authority)
         self.assertIn("在第一个真正错误的归属层修复", authority)
 
+    def test_model_comparison_keeps_one_shot_identity(self) -> None:
+        comparison = read(STABLE / "video-generation" / "references" / "MODEL-COMPARISON.md")
+        self.assertIn("模型不是镜头版本", comparison)
+        self.assertIn("不自动创建新的 Shot ID", comparison)
+        self.assertIn("生成结果编号不按模型重置", comparison)
+        self.assertIn("项目不会按模型复制一套镜头结构", comparison)
+        self.assertIn("不让模型差异反写镜头", comparison)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

@@ -22,6 +22,8 @@ Package：`akira-tl/akira-video-skills/video-model-seedance`
 
 当前重点：Seedance 2.5 多模态参考、时间线、同步声音、编辑与延长。
 
+同一镜头需要比较多个模型时，生成侧按 `video-generation/references/MODEL-COMPARISON.md` 保持单一镜头身份和可追溯的模型专用提示词，不为每个模型复制项目结构。
+
 ## 使用方式
 
 1. 当前会话已经加载对应适配器时直接使用；
