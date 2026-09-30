@@ -17,6 +17,8 @@ description: 审核 AI 生成的人物/场景等复用素材或 Shot Take，判�
 
 一次性生成包只用于定位本轮输入，不是更高优先级的事实源。
 
+需要进行详细 Take / 素材质量审查时，读取 [`references/TAKE-QA.md`](references/TAKE-QA.md)。
+
 ## 2. 审查维度
 
 只检查当前对象适用的维度：

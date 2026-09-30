@@ -7,6 +7,8 @@ description: 为品牌短片、产品植入剧情、广告或比赛作品建立�
 
 本 Skill 是可选领域能力，只在当前视频真实涉及品牌或具体产品时使用。它不把所有视频都改造成广告流程。
 
+建立或更新具体产品事实时，读取 [`references/PRODUCT-TRUTH.md`](references/PRODUCT-TRUTH.md)。
+
 ## 1. 产品事实
 
 先从用户提供或明确授权使用的官方资料建立当前产品的事实文件，建议与产品素材共置，例如 `video/materials/products/PROD01_truth.md`。

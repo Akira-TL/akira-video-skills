@@ -7,3 +7,4 @@
 - 建立 `akira-video` Primary Router。
 - 增加视频脚本、复用素材、镜头、生成包、审片、整片后期六个稳定核心 Skill。
 - 增加品牌与产品项目的可选 `video-advertising` Skill。
+- 将剧情因果与对白、多视角/机械参考、镜头导演与连续性、Take QA、最终成片 QC、产品事实等详细规范下沉为按需 references，避免稳定 Skill 主入口膨胀。

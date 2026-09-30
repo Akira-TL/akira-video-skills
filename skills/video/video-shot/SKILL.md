@@ -13,6 +13,8 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 复杂项目只有在平铺已影响浏览时，才在 `video/shots/` 内增加章节等组织目录。
 
+镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/DIRECTION.md`](references/DIRECTION.md)。
+
 ## 2. 写 SHOT.md
 
 `SHOT.md` 只保存当前有效镜头设计，通常包括：
