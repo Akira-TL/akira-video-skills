@@ -1,0 +1,3 @@
+interface:
+  display_name: "Video Model Runway"
+  short_description: "Compile Runway-specific AI video prompts"

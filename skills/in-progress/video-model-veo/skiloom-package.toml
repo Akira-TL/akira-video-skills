@@ -1,0 +1,4 @@
+schema = 1
+
+[dependencies]
+"akira-tl/akira-video-skills/video-generation" = "*"

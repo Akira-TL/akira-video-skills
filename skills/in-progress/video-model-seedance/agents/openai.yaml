@@ -1,0 +1,3 @@
+interface:
+  display_name: "Video Model Seedance"
+  short_description: "Compile Seedance-specific multimodal video prompts"
