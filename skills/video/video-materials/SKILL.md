@@ -9,6 +9,8 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 
 批量生成复用素材前先读取 [`references/MATERIAL-PLANNING.md`](references/MATERIAL-PLANNING.md)，从实际脚本 / 镜头反推需要哪些长期素材，避免为了数量预生成。
 
+涉及用户提供、网络第三方、真人、品牌、音乐、字体或其他来源受限素材时，先读取 [`references/SOURCE-RIGHTS.md`](references/SOURCE-RIGHTS.md)，只保留当前项目真正需要的来源与使用边界，不建立复杂授权数据库。
+
 ## 1. 判断是否值得成为复用素材
 
 只有多个镜头会重复引用，或者稳定身份/结构必须被后续持续保持的内容才进入 `video/materials/`。
