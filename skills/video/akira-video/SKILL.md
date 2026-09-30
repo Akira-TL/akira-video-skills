@@ -7,9 +7,11 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 `akira-video` 是 Akira Video Skills 的 Primary Router。它拥有视频制作入口、`VIDEO.md`、当前制作任务判断、专业 Skill 路由与停止边界；具体视频脚本、复用素材、镜头、生成包、审片和整片后期方法由对应专业 Skill 负责。
 
+整个制作始终优先保护：用户与来源事实 → 剧情 / 镜头意图（适用时）→ 人物 / 物体身份与结构 → 产品事实（广告时）→ 空间与时间连续性 → 画面美感 → 炫技。后面的目标不能以破坏前面的约束为代价。
+
 ## 1. 进入或接管项目
 
-先读取项目根目录 `VIDEO.md`。不存在时按 [`references/PROJECT-LAYOUT.md`](references/PROJECT-LAYOUT.md) 建立最小视频项目；只创建当前真实需要的目录和文件，不预生成空分类。
+先读取项目根目录 `VIDEO.md`。不存在时按 [`references/PROJECT-LAYOUT.md`](references/PROJECT-LAYOUT.md) 建立最小视频项目；项目定义与当前状态按 [`references/VIDEO-HOME.md`](references/VIDEO-HOME.md)，命名按 [`references/NAMING.md`](references/NAMING.md)。只创建当前真实需要的目录和文件，不预生成空分类。
 
 然后按当前任务读取最小必要内容：
 

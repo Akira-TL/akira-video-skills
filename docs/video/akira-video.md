@@ -27,4 +27,4 @@ Router 按当前真实制作任务加载：`video-script`、`video-design`、`vi
 
 ## VIDEO.md
 
-`VIDEO.md` 是当前制作首页和导航。它记录项目目标、交付要求、当前进度、当前工作、阻塞项和仍有效的关键决定，不保存全部 Take、Prompt 历史或生成日志。
+`VIDEO.md` 是当前制作首页和导航。它同时保存整片级项目定义、交付要求、来源 / 授权限制、当前进度、当前工作、阻塞项和仍有效的关键决定，不保存全部 Take、Prompt 历史或生成日志。对象和文件命名统一由 `akira-video/references/NAMING.md` 维护。

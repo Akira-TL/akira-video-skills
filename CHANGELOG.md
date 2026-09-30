@@ -12,3 +12,4 @@
 - 增加稳定 `video-design` Skill，专门负责角色与场景视觉设计；恢复人物、衣物角色、普通衣物、道具、场景五套严格 1:1、2×2 四视图生图模板，并由 `video-materials` 按需使用。
 - 增加稳定 `video-audio` Skill，管理角色跨镜头声音身份与声音参考，不新增独立 `audio/` 项目目录；补齐多世界、空间 / 机械设计与一次性 Generation Pack 的详细契约，并要求临时包只存在于当前 ForgeRelay 项目 `.tmp/`。
 - 补齐整体视觉方向、复用素材规划、通用生图 Prompt 与通用视频 Prompt 编译契约：四视图从已确认设计生成，`SHOT.md` 与最终模型 Prompt 明确分层，不为素材数量或 Prompt 长度制造复杂度。
+- 扩展 `VIDEO.md` 为整片级项目定义 / 来源限制 / 当前制作首页，新增统一对象与文件命名契约，并补齐剧情 / Shot 生成前 readiness gate 与广告落版约束。
