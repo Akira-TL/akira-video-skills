@@ -187,6 +187,13 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要用复杂转场掩盖", editing)
         self.assertIn("镜头不因为“看起来漂亮”就必须保留完整生成时长", editing)
 
+    def test_production_flow_resumes_existing_work_and_stops_on_external_dependencies(self) -> None:
+        flow = read(STABLE / "akira-video" / "references" / "PRODUCTION-FLOW.md")
+        self.assertIn("已有项目先读取 `VIDEO.md` 和当前实际文件，从当前工作继续", flow)
+        self.assertIn("不能假装已经生成", flow)
+        self.assertIn("长期角色 / 场景参考没有通过审片前，不拿它继续批量生成视频", flow)
+        self.assertIn("完整项目是依赖图，不是固定流水线", flow)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (

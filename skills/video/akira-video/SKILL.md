@@ -5,7 +5,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 # Akira Video
 
-`akira-video` 是 Akira Video Skills 的 Primary Router。它拥有视频制作入口、`VIDEO.md`、当前制作任务判断、专业 Skill 路由与停止边界；具体视频脚本、复用素材、镜头、生成包、审片和整片后期方法由对应专业 Skill 负责。
+`akira-video` 是 Akira Video Skills 的 Primary Router。它拥有视频制作入口、`VIDEO.md`、当前制作任务判断、专业 Skill 路由与停止边界；具体视频脚本、复用素材、镜头、生成包、审片和整片后期方法由对应专业 Skill 负责。完整项目的依赖与人机交接按 [`references/PRODUCTION-FLOW.md`](references/PRODUCTION-FLOW.md)；已有项目直接从当前实际工作续，不机械重跑上游步骤。
 
 整个制作始终优先保护：用户与来源事实 → 剧情 / 镜头意图（适用时）→ 人物 / 物体身份与结构 → 产品事实（广告时）→ 空间与时间连续性 → 画面美感 → 炫技。后面的目标不能以破坏前面的约束为代价。
 
