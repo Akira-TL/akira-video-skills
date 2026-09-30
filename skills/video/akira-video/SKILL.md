@@ -65,6 +65,8 @@ Router 只保存上述职责摘要；进入任一分支后，以实际加载的�
 
 若目标需要视频模型专用适配，先读取 [`references/workflow/MODEL-ADAPTERS.md`](references/workflow/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常生成候选计划（Candidate plan）并安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
+外部生成已经交给用户、需要跨会话等待时，按 [`references/workflow/WAITING-RESUME.md`](references/workflow/WAITING-RESUME.md) 在 `VIDEO.md` 只记录生成包路径、预期返回、下一步和真实 blocker；下一轮优先恢复现有包 / 返回结果，不因为换会话重复打包。
+
 ## 4. 外部生成的人机边界
 
 默认允许用户在外部图片/视频模型中完成实际生成。需要外部生成时，专业生成 Skill 从正式项目内容整理一次性生成包：

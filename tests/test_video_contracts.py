@@ -343,6 +343,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("Current Work 不是历史日志", recording)
         self.assertIn("不记录无意义机器细节", recording)
 
+    def test_external_generation_waiting_is_resumable_without_fake_progress(self) -> None:
+        waiting = read(STABLE / "akira-video" / "references" / "workflow" / "WAITING-RESUME.md")
+        self.assertIn("还没返回", waiting)
+        self.assertIn("不重复打包", waiting)
+        self.assertIn("部分返回", waiting)
+        self.assertIn("不按上传顺序或“看起来像”猜归属", waiting)
+        self.assertIn("不要说“后台继续处理”", waiting)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

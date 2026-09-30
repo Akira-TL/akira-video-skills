@@ -1,6 +1,6 @@
 # akira-video
 
-`akira-video` 是完整 AI 视频制作项目的入口。它维护项目根目录的 `VIDEO.md`，恢复当前制作上下文，再把具体工作交给视频脚本、视觉 / 声音设计、复用素材、镜头、生成、审片或整片后期的权威 Skill。用户已经有现成图片、视频、声音或粗剪时按 `references/project/IMPORT-MEDIA.md` 直接判断用途并复用，不为了流程完整强制重新生产。完整人机协作流程见 `references/workflow/PRODUCTION-FLOW.md`：已有项目从当前工作续，外部生成结果未返回时不假装推进依赖它的下游。不同制作层发生冲突时按 `references/workflow/AUTHORITY.md` 回到真正权威来源修复；提示词和一次性生成包不是项目事实源。
+`akira-video` 是完整 AI 视频制作项目的入口。它维护项目根目录的 `VIDEO.md`，恢复当前制作上下文，再把具体工作交给视频脚本、视觉 / 声音设计、复用素材、镜头、生成、审片或整片后期的权威 Skill。用户已经有现成图片、视频、声音或粗剪时按 `references/project/IMPORT-MEDIA.md` 直接判断用途并复用，不为了流程完整强制重新生产。完整人机协作流程见 `references/workflow/PRODUCTION-FLOW.md`：已有项目从当前工作续，外部生成结果未返回时不假装推进依赖它的下游；跨会话等待按 `references/workflow/WAITING-RESUME.md` 记录生成包、预期返回和下一步，下一轮先恢复现有包而不是重新打包。不同制作层发生冲突时按 `references/workflow/AUTHORITY.md` 回到真正权威来源修复；提示词和一次性生成包不是项目事实源。
 
 ## 项目目录
 
