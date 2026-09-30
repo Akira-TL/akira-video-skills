@@ -2,7 +2,7 @@
 
 最后人工核验：2026-09-30。
 
-精确能力会变化；当这些数值影响 一次性生成包 时重新检查官方页面。
+精确能力会变化；当这些数值影响一次性生成包时重新检查官方页面。
 
 ## 当前主线
 
@@ -31,9 +31,9 @@ Runway 当前提示词指南反复强调：
 ## 官方来源
 
 - https://help.runwayml.com/hc/en-us/articles/46974685288467-Creating-with-Gen-4-5
-- https://help.runwayml.com/hc/en-us/articles/42460036199443-Text-to-Video-提示词ing-Guide
-- https://help.runwayml.com/hc/en-us/articles/48324313115155-Image-to-Video-提示词ing-Guide
-- https://help.runwayml.com/hc/en-us/articles/47313698911891-Introduction-to-提示词ing
-- https://help.runwayml.com/hc/en-us/articles/46749315925395-Camera-Terms-提示词s-Examples
+- https://help.runwayml.com/hc/en-us/articles/42460036199443-Text-to-Video-Prompting-Guide
+- https://help.runwayml.com/hc/en-us/articles/48324313115155-Image-to-Video-Prompting-Guide
+- https://help.runwayml.com/hc/en-us/articles/47313698911891-Introduction-to-Prompting
+- https://help.runwayml.com/hc/en-us/articles/46749315925395-Camera-Terms-Prompts-Examples
 
 旧 Gen-4 / Gen-4 Turbo 的 5 / 10 秒等规则不自动代表 Gen-4.5。

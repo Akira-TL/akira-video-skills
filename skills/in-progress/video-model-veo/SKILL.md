@@ -5,7 +5,7 @@ description: 为 Google Veo 视频生成编译和检查提示词；当 video-gen
 
 # Video Model Veo
 
-本 Skill 是 Google Veo 模型适配层。它把既有 `SHOT.md` 和复用素材编译成 Veo 当前入口可执行的提示词；它不拥有镜头创意、人物事实或产品事实。
+本 Skill 是 Google Veo 模型适配层。开始前遵守依赖 `video-generation` 的统一模型适配器契约；本文件只保存 Veo 专用差异。它把既有 `SHOT.md` 和复用素材编译成 Veo 当前入口可执行的提示词；它不拥有镜头创意、人物事实或产品事实。
 
 ## 1. 先确定使用入口和 model
 
@@ -43,7 +43,7 @@ Google 不同使用入口以及 stable / preview model 的能力可能不同。�
 
 输出所选使用入口 / model / mode、当前提示词、输入图或参考用途、需要用户在界面确认的时长 / 比例 / 分辨率 / 声音选项；某项能力存在入口差异时明确标注。
 
-长期提示词和一次性 一次性生成包 仍由 `video-generation` 管理。
+长期提示词和一次性生成包仍由 `video-generation` 管理。
 
 ## 完成标准
 

@@ -128,6 +128,22 @@ class VideoRepositoryContractTests(unittest.TestCase):
             },
         )
 
+    def test_model_adapters_follow_one_contract_and_keep_current_guides(self) -> None:
+        contract = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-ADAPTER-CONTRACT.md")
+        self.assertIn("未知能力 fail closed", contract)
+        self.assertIn("适配器统一输出", contract)
+        self.assertIn("stable / preview", contract)
+        self.assertIn("第三方路由", contract)
+
+        for name in ("video-model-runway", "video-model-veo", "video-model-seedance"):
+            skill = read(IN_PROGRESS / name / "SKILL.md")
+            guide = read(IN_PROGRESS / name / "references" / "MODEL-GUIDE.md")
+            self.assertIn("统一模型适配器契约", skill, name)
+            self.assertIn("只保存", skill, name)
+            self.assertIn("最后人工核验：", guide, name)
+            self.assertNotIn("提示词ing", guide, name)
+            self.assertNotIn("一次性 一次性生成包", guide, name)
+
     def test_only_primary_router_is_user_invoked(self) -> None:
         router_metadata = read(STABLE / "akira-video" / "agents" / "openai.yaml")
         self.assertIn("allow_implicit_invocation: false", router_metadata)

@@ -22,7 +22,7 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 ## 2. 编写长期提示词
 
-为镜头编写通用视频提示词前读取 [`references/prompting/VIDEO-PROMPT.md`](references/prompting/VIDEO-PROMPT.md)；如果当前项目已安装对应模型适配器，再由适配器把通用镜头意图编译成该模型的最终执行提示词。同一个镜头需要并列测试多个模型时，再读取 [`references/prompting/MODEL-COMPARISON.md`](references/prompting/MODEL-COMPARISON.md)，保持同一 `SHOT.md` 和连续生成结果编号，不按模型复制镜头目录。
+为镜头编写通用视频提示词前读取 [`references/prompting/VIDEO-PROMPT.md`](references/prompting/VIDEO-PROMPT.md)；如果当前项目已安装对应模型适配器，再由适配器把通用镜头意图编译成该模型的最终执行提示词。所有模型适配器统一遵守 [`references/prompting/MODEL-ADAPTER-CONTRACT.md`](references/prompting/MODEL-ADAPTER-CONTRACT.md)，明确具体入口 / 模型 / 模式、当前官方能力核验、输入映射、执行设置和未知项。同一个镜头需要并列测试多个模型时，再读取 [`references/prompting/MODEL-COMPARISON.md`](references/prompting/MODEL-COMPARISON.md)，保持同一 `SHOT.md` 和连续生成结果编号，不按模型复制镜头目录。
 
 
 可复用素材的提示词保存在对应 `video/materials/` 目录；镜头提示词保存在对应镜头目录，使用 `prompt_v01.md`、`prompt_v02.md` 等少量明确版本。

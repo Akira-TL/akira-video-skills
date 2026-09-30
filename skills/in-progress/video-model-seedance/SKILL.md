@@ -5,7 +5,7 @@ description: 为 ByteDance / BytePlus Seedance 当前视频模型编译和检查
 
 # Video Model Seedance
 
-本 Skill 是 Seedance 模型适配层。它从既有 `SHOT.md`、复用素材和声音要求编译 Seedance 当前模型提示词，不重新决定镜头创意或长期项目事实。
+本 Skill 是 Seedance 模型适配层。开始前遵守依赖 `video-generation` 的统一模型适配器契约；本文件只保存 Seedance 专用差异。它从既有 `SHOT.md`、复用素材和声音要求编译 Seedance 当前模型提示词，不重新决定镜头创意或长期项目事实。
 
 ## 1. 固定具体模型 / 使用入口 / 任务模式
 
@@ -66,7 +66,7 @@ Extension 任务优先保持输入 / 输出格式和视听连续性；精确格�
 
 输出 Seedance model / 使用入口 / 任务模式、按上传顺序写清的 reference mapping、当前提示词、duration / ratio / output format 等用户需要确认的设置，以及每份参考的明确用途。
 
-一次性生成包 和结果导回仍由 `video-generation` 负责。
+一次性生成包和结果导回仍由 `video-generation` 负责。
 
 ## 完成标准
 
