@@ -3,6 +3,7 @@
 ## Unreleased
 
 - 初始化 Akira Video Skills 独立产品仓。
+- 同步仓库级 README / CONTEXT 到当前完整能力面：明确视觉 / 灯光、声音、外部生成交接、三个窄用途 CLI、统一模型适配器契约与 `tests/blackbox/` 独立验收入口，并修正 `Scene / Location` 术语映射。
 - 建立面向人的浅层视频项目目录、`VIDEO.md`、一次性生成包与镜头归档边界。
 - 建立 `akira-video` Primary Router。
 - 增加视频脚本、复用素材、镜头、生成包、审片、整片后期六个稳定核心 Skill。
