@@ -482,6 +482,16 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("旁白字幕从**最终确认的旁白文本 / 音频**生成", voiceover)
         self.assertIn("产品功能、参数和宣传表达仍受 `video-advertising` 的产品事实约束", voiceover)
 
+    def test_localization_reuses_project_assets_without_changing_facts(self) -> None:
+        localization = read(STABLE / "akira-video" / "references" / "workflow" / "LOCALIZATION.md")
+        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
+        self.assertIn("不为每种语言复制整套 `video/`", localization)
+        self.assertIn("不允许为了“更顺”改变", localization)
+        self.assertIn("明显正面口型", localization)
+        self.assertIn("只有目标语言真的改变画面时", localization)
+        self.assertIn("不要为了未来可能本地化提前给所有文件加语言后缀", naming)
+        self.assertIn("master.en-US.mp4", naming)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

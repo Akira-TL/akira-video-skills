@@ -59,6 +59,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 - 编写当前生成提示词、选择最小参考集、整理一次性生成包、导回用户生成结果 → `video-generation`；
 - 用户带回图片或生成结果后判断采用、调整后续、后期修复、重生成或重写 → `video-review`；
 - 多个采用镜头进入 Premiere Pro、After Effects、DaVinci Resolve 等整片后期 → `video-editing`；
+- 同一视频需要多语言字幕、旁白、配音或正式成片版本 → 先读取 [`references/workflow/LOCALIZATION.md`](references/workflow/LOCALIZATION.md)，翻译内容交给 `video-script`，声音交给 `video-audio`，字幕 / 图文 / 最终导出交给 `video-editing`，不复制整套项目；
 - 品牌、产品植入或广告需要核验产品功能、结构、官方素材与广告表达边界 → 按需加载可选 `video-advertising`；当前 Target 未安装时使用明确 coordinate `akira-tl/akira-video-skills/video-advertising`，交给 `akira` Router / Skiloom 生成候选计划（Candidate plan）并在授权后安装。
 
 Router 只保存上述职责摘要；进入任一分支后，以实际加载的权威 Skill 为该专业方法的唯一权威来源。
