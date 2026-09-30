@@ -33,6 +33,9 @@ Prompt 只编译当前生成模型真正需要的信息。内部 Shot / 素材�
 
 ## 4. 整理一次性生成包
 
+正式打包前读取 [`references/GENERATION-PACK.md`](references/GENERATION-PACK.md)，按图片包 / 视频包的返回命名、最小参考集、导回和删除边界执行。
+
+
 在项目 `.tmp/` 下创建描述性目录。包默认保持简单：
 
 ```text

@@ -63,7 +63,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 - 哪些部分必须跨镜头稳定；
 - 哪些细节只属于某个 Shot，不进入公共场景设计。
 
-复杂场景按需读取 [`references/SCENE-DESIGN.md`](references/SCENE-DESIGN.md)。
+复杂场景按需读取 [`references/SCENE-DESIGN.md`](references/SCENE-DESIGN.md)。项目存在多个视觉世界时读取 [`references/WORLD-DESIGN.md`](references/WORLD-DESIGN.md)；主场景空间关系或陌生机械会直接影响多个镜头时读取 [`references/SPACE-MECHANISM.md`](references/SPACE-MECHANISM.md)。
 
 ## 4. 设计方向不足时先做候选
 

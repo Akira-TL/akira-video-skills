@@ -9,7 +9,8 @@
 ## Model-invoked
 
 - `video-script`：视频脚本层。
-- `video-design`：角色与场景视觉设计。
+- `video-design`：角色、场景、世界、空间与机械视觉设计。
+- `video-audio`：角色跨镜头声音一致性与声音设计。
 - `video-materials`：跨镜头复用素材与严格四视图。
 - `video-shot`：单镜头生产定义。
 - `video-generation`：Prompt、一次性生成包与结果导回。

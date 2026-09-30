@@ -19,7 +19,7 @@ video/edit/      # 按需
 
 ## 专业能力
 
-Router 按当前真实制作任务加载：`video-script`、`video-design`、`video-materials`、`video-shot`、`video-generation`、`video-review` 或 `video-editing`。品牌与产品项目按需增加 `video-advertising`；模型专用参数和 Prompt 规则不进入 Router。
+Router 按当前真实制作任务加载：`video-script`、`video-design`、`video-audio`、`video-materials`、`video-shot`、`video-generation`、`video-review` 或 `video-editing`。品牌与产品项目按需增加 `video-advertising`；模型专用参数和 Prompt 规则不进入 Router。
 
 ## 外部生成
 

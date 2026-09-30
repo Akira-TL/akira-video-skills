@@ -16,7 +16,7 @@
 
 - 根目录 `VIDEO.md`：当前视频制作首页和导航。
 - `video/script/`：视频脚本层，只保存视频化后的 `SCRIPT.md`、`CHARACTERS.md`、`SCENES.md`、`SHOTS.md` 等实际需要文件。
-- `video/materials/`：跨镜头复用的提示词、图片、官方素材、道具、产品与其他参考素材；按真实内容再创建子目录，不预生成空分类。
+- `video/materials/`：跨镜头复用的提示词、图片、官方素材、道具、产品、角色声音定义 / 声音参考与其他素材；按真实内容再创建子目录，不预生成空分类。
 - `video/shots/<shot-id>/`：单镜头自己的 `SHOT.md`、提示词版本、生成图片/视频、镜头专属音频和其他产物。
 - `video/edit/`：只有进入整片后期时才创建，保存 Premiere Pro、After Effects、DaVinci Resolve 等整片工程、全片音频和最终成片。
 - `.tmp/`：一次性生成包；从正式项目资料复制或编译而来，不进入 Git，导回生成结果并归档后删除。
