@@ -474,6 +474,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("网上能播放不等于允许进入最终对外交付", music)
         self.assertIn("如果关掉音乐后剧情完全不成立", music)
 
+    def test_voiceover_is_scripted_narration_not_an_exposition_patch(self) -> None:
+        voiceover = read(STABLE / "video-audio" / "references" / "VOICEOVER.md")
+        self.assertIn("旁白不是剧情补丁", voiceover)
+        self.assertIn("小说原文旁白不能机械复制成视频旁白", voiceover)
+        self.assertIn("临时旁白不能因为已经剪进工程就自动变成最终声音", voiceover)
+        self.assertIn("旁白字幕从**最终确认的旁白文本 / 音频**生成", voiceover)
+        self.assertIn("产品功能、参数和宣传表达仍受 `video-advertising` 的产品事实约束", voiceover)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

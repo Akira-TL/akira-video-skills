@@ -14,7 +14,7 @@ description: 设计并维护 AI 视频中跨镜头复用的角色声音、音色
 
 某个镜头独有的对白、呼吸、音效或临时声音继续放在对应 `video/shots/<shot-id>/`；全片音乐、旁白、混音和最终声音工程进入 `video/edit/`。
 
-完整声音层次、原生生成声音与后期声音的职责边界见 [`references/SOUND-LAYERS.md`](references/SOUND-LAYERS.md)。视频需要背景音乐、品牌 / 角色动机、Animatic 临时音乐或 AI 生成配乐时，再读取 [`references/MUSIC.md`](references/MUSIC.md)：临时与正式音乐明确分开，音乐服务故事 / 对白 / 产品，不为了卡点破坏人物节奏。
+完整声音层次、原生生成声音与后期声音的职责边界见 [`references/SOUND-LAYERS.md`](references/SOUND-LAYERS.md)。视频需要背景音乐、品牌 / 角色动机、Animatic 临时音乐或 AI 生成配乐时，再读取 [`references/MUSIC.md`](references/MUSIC.md)：临时与正式音乐明确分开，音乐服务故事 / 对白 / 产品，不为了卡点破坏人物节奏。存在叙述者、角色内心画外音、品牌旁白或说明性 Voice-over 时，再读取 [`references/VOICEOVER.md`](references/VOICEOVER.md)：旁白文本归 `video-script`，声音身份 / 生成归本 Skill，最终整片旁白进入 `video/edit/`。
 
 ## 1. 先区分三类声音
 
