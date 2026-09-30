@@ -30,7 +30,7 @@ description: 组织整片级剪辑、合成、全片声音和最终成片；当�
 
 ## 3. 确定性后期
 
-能由后期工具精确完成的任务优先留给确定性后期，例如剪切与时间线、字幕与标题、Logo 和精确排版、画幅适配、简单合成、音量与混音、音视频同步、最终编码和导出。跨模型 / 批次的色彩、曝光、稳定、降噪、放大和质感统一按 [`references/FINISHING.md`](references/FINISHING.md)；能确定性修的差异不重生，但人物身份、产品结构和严重时序错误不能靠 finishing 掩盖。字幕、Logo、标题、产品文字和片尾主卡按 [`references/GRAPHICS-TITLES.md`](references/GRAPHICS-TITLES.md) 处理，不依赖生成模型准确画字。
+能由后期工具精确完成的任务优先留给确定性后期，例如剪切与时间线、字幕与标题、Logo 和精确排版、画幅适配、简单合成、音量与混音、音视频同步、最终编码和导出。跨模型 / 批次的色彩、曝光、稳定、降噪、放大和质感统一按 [`references/FINISHING.md`](references/FINISHING.md)；能确定性修的差异不重生，但人物身份、产品结构和严重时序错误不能靠 finishing 掩盖。字幕、Logo、标题、产品文字和片尾主卡按 [`references/GRAPHICS-TITLES.md`](references/GRAPHICS-TITLES.md) 处理，不依赖生成模型准确画字。项目需要对白 / 旁白字幕、外挂字幕、烧录字幕、无障碍字幕或多语言字幕时，再读取 [`references/SUBTITLES.md`](references/SUBTITLES.md)，从最终声音 / 文本生成并逐语言、逐画幅检查时序与安全区。
 
 不要因为生成模型可以尝试，就让它重做本可稳定后期解决的问题。
 

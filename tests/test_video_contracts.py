@@ -492,6 +492,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要为了未来可能本地化提前给所有文件加语言后缀", naming)
         self.assertIn("master.en-US.mp4", naming)
 
+    def test_subtitles_follow_final_audio_semantics_and_delivery_requirements(self) -> None:
+        subtitles = read(STABLE / "video-editing" / "references" / "SUBTITLES.md")
+        self.assertIn("字幕文本来自最终声音 / 最终脚本", subtitles)
+        self.assertIn("断句按语义，不按固定字符数", subtitles)
+        self.assertIn("无障碍字幕（CC）", subtitles)
+        self.assertIn("不写死一个全局每秒字符数", subtitles)
+        self.assertIn("自动转写可以作为初稿", subtitles)
+        self.assertIn("目标语言句长变化时重新检查", subtitles)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
