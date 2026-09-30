@@ -15,7 +15,7 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 复杂项目只有在平铺已影响浏览时，才在 `video/shots/` 内增加章节等组织目录。
 
-镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/direction/DIRECTION.md`](references/direction/DIRECTION.md)。多人接触、递交物体、手部操作、产品使用、复杂遮挡或机械交互时，再读取 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，明确主动作角色、手、接触点和动作前后状态。多镜头项目需要在昂贵生成前验证顺序、对白、总时长或产品可读性时，`references/planning/PREVIS.md` 允许用分镜 + 临时声音做轻量动态分镜（Animatic），不要求每个项目都做。镜头是否必须等待前一镜实际出口、哪些镜头可以并行，以及计划出口 / 实际出口如何交接，按 [`references/continuity/CONTINUITY-HANDOFF.md`](references/continuity/CONTINUITY-HANDOFF.md)。多角色走位、产品 / 机械交互、复杂摄影路径、首尾帧控制或相邻镜头空间关系在正式生成前仍有较大不确定性时，再读取 [`references/planning/PREVIS.md`](references/planning/PREVIS.md) 做最小必要预演 / 分镜。
+镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/direction/DIRECTION.md`](references/direction/DIRECTION.md)。需要明确景别、焦段 / 透视、机位、推拉 / 变焦、景深、焦点或产品摄影时，再读取 [`references/direction/CAMERA-LANGUAGE.md`](references/direction/CAMERA-LANGUAGE.md)，先定义可见摄影效果，再由模型适配器决定具体术语。多人接触、递交物体、手部操作、产品使用、复杂遮挡或机械交互时，再读取 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，明确主动作角色、手、接触点和动作前后状态。多镜头项目需要在昂贵生成前验证顺序、对白、总时长或产品可读性时，`references/planning/PREVIS.md` 允许用分镜 + 临时声音做轻量动态分镜（Animatic），不要求每个项目都做。镜头是否必须等待前一镜实际出口、哪些镜头可以并行，以及计划出口 / 实际出口如何交接，按 [`references/continuity/CONTINUITY-HANDOFF.md`](references/continuity/CONTINUITY-HANDOFF.md)。多角色走位、产品 / 机械交互、复杂摄影路径、首尾帧控制或相邻镜头空间关系在正式生成前仍有较大不确定性时，再读取 [`references/planning/PREVIS.md`](references/planning/PREVIS.md) 做最小必要预演 / 分镜。
 
 ## 2. 写 SHOT.md
 

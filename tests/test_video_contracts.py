@@ -447,6 +447,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("裁切后的有效分辨率是否足够", finishing)
         self.assertIn("没有非等比拉伸", technical)
 
+    def test_camera_language_distinguishes_framing_lens_and_motion(self) -> None:
+        camera = read(STABLE / "video-shot" / "references" / "direction" / "CAMERA-LANGUAGE.md")
+        self.assertIn("景别与焦段不是一回事", camera)
+        self.assertIn("推近 / 拉远（Dolly In / Out）", camera)
+        self.assertIn("变焦（Zoom）", camera)
+        self.assertIn("锁定机位也是主动选择", camera)
+        self.assertIn("产品结构优先于炫技摄影", camera)
+        self.assertIn("一个镜头优先只有一个主要摄影运动", camera)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
