@@ -194,6 +194,16 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("长期角色 / 场景参考没有通过审片前，不拿它继续批量生成视频", flow)
         self.assertIn("完整项目是依赖图，不是固定流水线", flow)
 
+    def test_dialogue_timing_and_multiformat_rules_avoid_late_fixups(self) -> None:
+        dialogue = read(STABLE / "video-script" / "references" / "DIALOGUE-TIMING.md")
+        multiformat = read(STABLE / "video-shot" / "references" / "MULTI-FORMAT.md")
+        naming = read(STABLE / "akira-video" / "references" / "NAMING.md")
+        self.assertIn("不要只用固定“每分钟多少字”替代真实语速", dialogue)
+        self.assertIn("字幕不是生成任务", dialogue)
+        self.assertIn("优先生成一个主版本", multiformat)
+        self.assertIn("不应该强行裁切", multiformat)
+        self.assertIn("prompt_vertical_v01.md", naming)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
