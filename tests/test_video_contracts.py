@@ -222,7 +222,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, scaling)
 
     def test_previs_and_editing_rhythm_remain_need_driven(self) -> None:
-        previs = read(STABLE / "video-shot" / "references" / "PREVIS.md")
+        previs = read(STABLE / "video-shot" / "references" / "planning" / "PREVIS.md")
         editing = read(STABLE / "video-editing" / "references" / "EDITING-RHYTHM.md")
         self.assertIn("按需工具", previs)
         self.assertIn("不需要额外创建 storyboard 目录", previs)
@@ -238,7 +238,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_dialogue_timing_and_multiformat_rules_avoid_late_fixups(self) -> None:
         dialogue = read(STABLE / "video-script" / "references" / "DIALOGUE-TIMING.md")
-        multiformat = read(STABLE / "video-shot" / "references" / "MULTI-FORMAT.md")
+        multiformat = read(STABLE / "video-shot" / "references" / "planning" / "MULTI-FORMAT.md")
         naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
         self.assertIn("不要只用固定“每分钟多少字”替代真实语速", dialogue)
         self.assertIn("字幕不是生成任务", dialogue)
@@ -290,7 +290,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("连续失败升级", repair)
 
     def test_shot_derivatives_and_media_cleanup_preserve_originals(self) -> None:
-        derivatives = read(STABLE / "video-shot" / "references" / "SHOT-DERIVATIVES.md")
+        derivatives = read(STABLE / "video-shot" / "references" / "continuity" / "SHOT-DERIVATIVES.md")
         lifecycle = read(STABLE / "akira-video" / "references" / "project" / "MEDIA-LIFECYCLE.md")
         self.assertIn("这些属于后期派生，不新建 Shot ID", derivatives)
         self.assertIn("后期修复后的片段不要覆盖原 `takeNN.mp4`", derivatives)
@@ -306,7 +306,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不强制补不存在的中间件", importing)
 
     def test_continuity_handoff_distinguishes_parallel_and_dependent_shots(self) -> None:
-        handoff = read(STABLE / "video-shot" / "references" / "CONTINUITY-HANDOFF.md")
+        handoff = read(STABLE / "video-shot" / "references" / "continuity" / "CONTINUITY-HANDOFF.md")
         self.assertIn("无（可独立生成）", handoff)
         self.assertIn("必须等前一镜结果的镜头", handoff)
         self.assertIn("计划出口不是已发生事实", handoff)
@@ -319,7 +319,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("状态词保持稳定", handoff)
 
     def test_direction_rules_preserve_screen_space_without_forbidding_intentional_axis_crossing(self) -> None:
-        direction = read(STABLE / "video-shot" / "references" / "DIRECTION.md")
+        direction = read(STABLE / "video-shot" / "references" / "direction" / "DIRECTION.md")
         self.assertIn("180° 轴线规则", direction)
         self.assertIn("这不是不可违反的硬规则", direction)
         self.assertIn("反打要从空间另一观察方向重新构图，不能简单把上一镜水平翻转", direction)
@@ -350,14 +350,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不让模型差异反写镜头", comparison)
 
     def test_coverage_is_need_driven_not_a_fixed_shot_package(self) -> None:
-        coverage = read(STABLE / "video-shot" / "references" / "COVERAGE.md")
+        coverage = read(STABLE / "video-shot" / "references" / "planning" / "COVERAGE.md")
         self.assertIn("不要求按传统覆盖套路机械生成", coverage)
         self.assertIn("不要每个动作后机械加一个“惊讶脸”", coverage)
         self.assertIn("同一动作不要重复展示", coverage)
         self.assertIn("备用镜头必须有明确可能用途", coverage)
 
     def test_animatic_and_finishing_reduce_cost_without_hiding_hard_errors(self) -> None:
-        previs = read(STABLE / "video-shot" / "references" / "PREVIS.md")
+        previs = read(STABLE / "video-shot" / "references" / "planning" / "PREVIS.md")
         finishing = read(STABLE / "video-editing" / "references" / "FINISHING.md")
         self.assertIn("动态分镜（Animatic）", previs)
         self.assertIn("如果只是一次性节奏验证，可以放 `.tmp/`", previs)
@@ -421,7 +421,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_performance_and_interaction_rules_make_acting_and_contact_observable(self) -> None:
         performance = read(STABLE / "video-script" / "references" / "PERFORMANCE.md")
-        interaction = read(STABLE / "video-shot" / "references" / "INTERACTION.md")
+        interaction = read(STABLE / "video-shot" / "references" / "direction" / "INTERACTION.md")
         self.assertIn("不把情绪词当表演指令终点", performance)
         self.assertIn("情绪要有触发点", performance)
         self.assertIn("多人场景中，当前叙事重点只有一个时", performance)

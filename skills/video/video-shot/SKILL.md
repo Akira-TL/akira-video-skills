@@ -7,7 +7,7 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 每个镜头是视频生成与剪辑的核心工作单元。本 Skill 拥有 `video/shots/<shot-id>/SHOT.md`，不拥有模型专用提示词编译或生成结果审片结论。
 
-从 `SHOTS.md` 展开一组镜头前，场次需要几个观察点、建立镜头 / 反应 / 插入 / 产品特写是否真实有用，按 [`references/COVERAGE.md`](references/COVERAGE.md) 判断；不机械套固定 coverage 套餐。
+从 `SHOTS.md` 展开一组镜头前，场次需要几个观察点、建立镜头 / 反应 / 插入 / 产品特写是否真实有用，按 [`references/planning/COVERAGE.md`](references/planning/COVERAGE.md) 判断；不机械套固定 coverage 套餐。
 
 ## 1. 建立镜头 ID 与目录
 
@@ -15,11 +15,11 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 复杂项目只有在平铺已影响浏览时，才在 `video/shots/` 内增加章节等组织目录。
 
-镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/DIRECTION.md`](references/DIRECTION.md)。多人接触、递交物体、手部操作、产品使用、复杂遮挡或机械交互时，再读取 [`references/INTERACTION.md`](references/INTERACTION.md)，明确主动作角色、手、接触点和动作前后状态。多镜头项目需要在昂贵生成前验证顺序、对白、总时长或产品可读性时，`references/PREVIS.md` 允许用分镜 + 临时声音做轻量动态分镜（Animatic），不要求每个项目都做。镜头是否必须等待前一镜实际出口、哪些镜头可以并行，以及计划出口 / 实际出口如何交接，按 [`references/CONTINUITY-HANDOFF.md`](references/CONTINUITY-HANDOFF.md)。多角色走位、产品 / 机械交互、复杂摄影路径、首尾帧控制或相邻镜头空间关系在正式生成前仍有较大不确定性时，再读取 [`references/PREVIS.md`](references/PREVIS.md) 做最小必要预演 / 分镜。
+镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/direction/DIRECTION.md`](references/direction/DIRECTION.md)。多人接触、递交物体、手部操作、产品使用、复杂遮挡或机械交互时，再读取 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，明确主动作角色、手、接触点和动作前后状态。多镜头项目需要在昂贵生成前验证顺序、对白、总时长或产品可读性时，`references/planning/PREVIS.md` 允许用分镜 + 临时声音做轻量动态分镜（Animatic），不要求每个项目都做。镜头是否必须等待前一镜实际出口、哪些镜头可以并行，以及计划出口 / 实际出口如何交接，按 [`references/continuity/CONTINUITY-HANDOFF.md`](references/continuity/CONTINUITY-HANDOFF.md)。多角色走位、产品 / 机械交互、复杂摄影路径、首尾帧控制或相邻镜头空间关系在正式生成前仍有较大不确定性时，再读取 [`references/planning/PREVIS.md`](references/planning/PREVIS.md) 做最小必要预演 / 分镜。
 
 ## 2. 写 SHOT.md
 
-复杂或需要交给外部生成的镜头可以直接按 [`references/SHOT-TEMPLATE.md`](references/SHOT-TEMPLATE.md) 编写；简单镜头只保留真正需要的字段。`VIDEO.md` 明确要求多个画幅版本时，再读取 [`references/MULTI-FORMAT.md`](references/MULTI-FORMAT.md) 判断是否可由主版本裁切，还是需要独立构图 / 生成。
+复杂或需要交给外部生成的镜头可以直接按 [`references/planning/SHOT-TEMPLATE.md`](references/planning/SHOT-TEMPLATE.md) 编写；简单镜头只保留真正需要的字段。`VIDEO.md` 明确要求多个画幅版本时，再读取 [`references/planning/MULTI-FORMAT.md`](references/planning/MULTI-FORMAT.md) 判断是否可由主版本裁切，还是需要独立构图 / 生成。
 
 `SHOT.md` 只保存当前有效镜头设计，通常包括：
 
@@ -48,7 +48,7 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 一个镜头可以有复杂内部动作，但必须能清楚说明它在剪辑中为什么是一个镜头。模型一次生成包含多个剪切时，项目仍按最终镜头语义组织，不因为模型能力把多个镜头永久揉成一个对象。
 
-同一镜头的裁切、调色、替换声音、多画幅派生和真正新镜头的边界按 [`references/SHOT-DERIVATIVES.md`](references/SHOT-DERIVATIVES.md)；后期派生不能覆盖镜头目录里的原始 `takeNN.mp4`。
+同一镜头的裁切、调色、替换声音、多画幅派生和真正新镜头的边界按 [`references/continuity/SHOT-DERIVATIVES.md`](references/continuity/SHOT-DERIVATIVES.md)；后期派生不能覆盖镜头目录里的原始 `takeNN.mp4`。
 
 ## 5. 进入生成前检查
 
