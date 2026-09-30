@@ -39,7 +39,7 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 ## 4. 整理一次性生成包
 
-正式打包前读取 [`references/planning/GENERATION-PACK.md`](references/planning/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、返回命名、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/planning/PACK-TEMPLATES.md`](references/planning/PACK-TEMPLATES.md) 生成自包含任务文件。
+正式打包前读取 [`references/planning/GENERATION-PACK.md`](references/planning/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、返回命名、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/planning/PACK-TEMPLATES.md`](references/planning/PACK-TEMPLATES.md) 生成自包含任务文件。项目内 pack 初始化、正式文件复制、returns 目录、状态检查、zip 与安全清理优先复用本 Skill 自带的 [`scripts/generation_pack.py`](scripts/generation_pack.py)，不要为每个项目重新写临时打包脚本；该 CLI 只处理文件生命周期，不决定 Prompt、参考职责或审片结论。
 
 
 在项目 `.tmp/` 下创建描述性目录。包默认保持简单：

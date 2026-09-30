@@ -2,7 +2,7 @@
 
 一次性生成包是给用户拿到外部 AI 平台执行的一次性派生包。它只从正式项目内容复制 / 编译，不成为长期事实源。
 
-具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。
+具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件层操作优先调用本 Skill 自带 `scripts/generation_pack.py`：`init` 创建项目内 `.tmp/<name>` 并确保 `.tmp/` 被项目 `.gitignore` 忽略，`copy` 只复制项目内正式文件，`returns` 创建返回目录，`status` 检查包内容，`zip` 生成同一项目 `.tmp/<name>.zip`，`cleanup` 只有在显式确认无唯一信息、且返回结果已正式归档后才删除。脚本不生成 README / Prompt，也不替代人工选择素材。
 
 ## 先按依赖分批
 
