@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import tomllib
 import unittest
 from pathlib import Path
@@ -20,7 +21,48 @@ def dependencies(package: Path) -> set[str]:
     return set(data.get("dependencies", {}))
 
 
+def markdown_files() -> list[Path]:
+    return [p for p in REPO.rglob("*.md") if ".git" not in p.parts]
+
+
+def resolved_local_markdown_links() -> tuple[list[tuple[Path, str]], set[Path]]:
+    pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+    broken: list[tuple[Path, str]] = []
+    targets: set[Path] = set()
+    for source in markdown_files():
+        for raw_target in pattern.findall(read(source)):
+            if "://" in raw_target or raw_target.startswith(("#", "mailto:")):
+                continue
+            target = raw_target.split("#", 1)[0]
+            if not target:
+                continue
+            resolved = (source.parent / target).resolve()
+            if resolved.exists():
+                targets.add(resolved)
+            else:
+                broken.append((source, raw_target))
+    return broken, targets
+
+
 class VideoRepositoryContractTests(unittest.TestCase):
+    def test_local_markdown_links_are_not_broken(self) -> None:
+        broken, _ = resolved_local_markdown_links()
+        self.assertEqual(
+            broken,
+            [],
+            "\n".join(f"{source.relative_to(REPO)} -> {target}" for source, target in broken),
+        )
+
+    def test_all_reference_markdown_is_reachable(self) -> None:
+        _, linked_targets = resolved_local_markdown_links()
+        references = {
+            p.resolve()
+            for root in (STABLE, IN_PROGRESS)
+            for p in root.glob("*/references/**/*.md")
+        }
+        unreachable = sorted(p.relative_to(REPO) for p in references - linked_targets)
+        self.assertEqual(unreachable, [])
+
     def test_stable_skill_packages_have_docs_and_metadata(self) -> None:
         expected = {
             "akira-video",
@@ -214,7 +256,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("“最好的一条”也可以全部不合格", selection)
 
     def test_design_approval_and_technical_qc_keep_human_and_media_boundaries(self) -> None:
-        approval = read(STABLE / "video-design" / "references" / "DESIGN-APPROVAL.md")
+        approval = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-APPROVAL.md")
         technical = read(STABLE / "video-editing" / "references" / "TECHNICAL-QC.md")
         self.assertIn("应先让用户决定的高影响分叉", approval)
         self.assertIn("用户已经授权 Agent 自主决定", approval)
@@ -224,7 +266,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不能检查就明确保留", technical)
 
     def test_design_outputs_keep_identity_separate_from_state(self) -> None:
-        outputs = read(STABLE / "video-design" / "references" / "DESIGN-OUTPUTS.md")
+        outputs = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-OUTPUTS.md")
         self.assertIn("服装不是新角色", outputs)
         self.assertIn("白天 / 夜晚不是新地点", outputs)
         self.assertIn("状态变化不改变角色 ID", outputs)
@@ -320,7 +362,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_script_and_design_templates_preserve_layer_boundaries(self) -> None:
         script_templates = read(STABLE / "video-script" / "references" / "SCRIPT-TEMPLATES.md")
-        design_templates = read(STABLE / "video-design" / "references" / "DESIGN-TEMPLATES.md")
+        design_templates = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-TEMPLATES.md")
         self.assertIn("不写详细摄影机和模型参数", script_templates)
         self.assertIn("模板是内容边界，不是文件清单", script_templates)
         self.assertIn("不写：", design_templates)
@@ -340,7 +382,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("聊天不是长期项目记录", recording)
         self.assertIn("VIDEO.md 只保存整片级当前摘要", recording)
         self.assertIn("当前采用与实际出口只写镜头", recording)
-        self.assertIn("Current Work 不是历史日志", recording)
+        self.assertIn("当前工作不是历史日志", recording)
         self.assertIn("不记录无意义机器细节", recording)
 
     def test_external_generation_waiting_is_resumable_without_fake_progress(self) -> None:

@@ -26,7 +26,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 只继承已经存在的事实与制作决定。脚本没有定义视觉细节时，本 Skill 可以提出设计方案，但不得把新设计反向冒充上游故事事实。
 
-项目需要统一整片视觉语言时，先读取 [`references/ART-DIRECTION.md`](references/ART-DIRECTION.md)，再进入具体角色 / 场景设计。
+项目需要统一整片视觉语言时，先读取 [`references/foundation/ART-DIRECTION.md`](references/foundation/ART-DIRECTION.md)，再进入具体角色 / 场景设计。
 
 ## 2. 角色设计
 
@@ -46,7 +46,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 - 哪些服装 / 状态允许变化；
 - 哪些设计容易导致生成漂移，应简化。
 
-复杂角色设计按需读取 [`references/CHARACTER-DESIGN.md`](references/CHARACTER-DESIGN.md)。
+复杂角色设计按需读取 [`references/character/CHARACTER-DESIGN.md`](references/character/CHARACTER-DESIGN.md)。
 
 ## 3. 场景设计
 
@@ -65,11 +65,11 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 - 哪些部分必须跨镜头稳定；
 - 哪些细节只属于某个镜头，不进入公共场景设计。
 
-复杂场景按需读取 [`references/SCENE-DESIGN.md`](references/SCENE-DESIGN.md)。项目存在多个视觉世界时读取 [`references/WORLD-DESIGN.md`](references/WORLD-DESIGN.md)；主场景空间关系或陌生机械会直接影响多个镜头时读取 [`references/SPACE-MECHANISM.md`](references/SPACE-MECHANISM.md)。
+复杂场景按需读取 [`references/environment/SCENE-DESIGN.md`](references/environment/SCENE-DESIGN.md)。项目存在多个视觉世界时读取 [`references/environment/WORLD-DESIGN.md`](references/environment/WORLD-DESIGN.md)；主场景空间关系或陌生机械会直接影响多个镜头时读取 [`references/environment/SPACE-MECHANISM.md`](references/environment/SPACE-MECHANISM.md)。
 
 ## 4. 设计方向不足时先做候选
 
-当选择会明显改变主角色视觉身份、整片视觉语言、主要场景或大量后续素材，而上游资料没有答案时，按 [`references/DESIGN-APPROVAL.md`](references/DESIGN-APPROVAL.md) 区分“Agent 可直接补全的实现细节”和“应先由用户选择 / 明确授权的高影响创意分叉”。
+当选择会明显改变主角色视觉身份、整片视觉语言、主要场景或大量后续素材，而上游资料没有答案时，按 [`references/foundation/DESIGN-APPROVAL.md`](references/foundation/DESIGN-APPROVAL.md) 区分“Agent 可直接补全的实现细节”和“应先由用户选择 / 明确授权的高影响创意分叉”。
 
 
 当输入只提供功能而没有明确视觉方向时，先提出少量真正不同的视觉方案，而不是立刻随机补细节。
@@ -86,7 +86,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 ## 5. 设计文件
 
-正式写 `VISUAL_DIRECTION.md`、`CHRxx_design.md`、`LOCxx_design.md` 或按需的虚构道具设计时，使用 [`references/DESIGN-TEMPLATES.md`](references/DESIGN-TEMPLATES.md) 保持职责边界；模板不要求项目创建所有文件。
+正式写 `VISUAL_DIRECTION.md`、`CHRxx_design.md`、`LOCxx_design.md` 或按需的虚构道具设计时，使用 [`references/foundation/DESIGN-TEMPLATES.md`](references/foundation/DESIGN-TEMPLATES.md) 保持职责边界；模板不要求项目创建所有文件。
 
 
 角色 `*_design.md` 只保存视觉设计当前有效版本，场景同理。Git 保存历史，不创建 `design_final2.md` 等伪版本。
@@ -95,7 +95,7 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 ## 6. 交给 video-materials
 
-角色 / 场景设计如何转成基础身份、四视图、服装 / 光照状态等长期参考，按 [`references/DESIGN-OUTPUTS.md`](references/DESIGN-OUTPUTS.md)；这些都是按真实镜头需求选择，不要求每个对象生成完整套装。
+角色 / 场景设计如何转成基础身份、四视图、服装 / 光照状态等长期参考，按 [`references/foundation/DESIGN-OUTPUTS.md`](references/foundation/DESIGN-OUTPUTS.md)；这些都是按真实镜头需求选择，不要求每个对象生成完整套装。
 
 
 设计确认后：
