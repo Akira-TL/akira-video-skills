@@ -286,6 +286,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("如果两份参考对同一个职责给出不同答案", roles)
         self.assertIn("参考越多越稳", roles)
 
+    def test_authority_chain_blocks_generated_errors_from_becoming_facts(self) -> None:
+        authority = read(STABLE / "akira-video" / "references" / "workflow" / "AUTHORITY.md")
+        self.assertIn("提示词不是新的事实源", authority)
+        self.assertIn("一次性生成包只复制 / 编译当前任务所需内容", authority)
+        self.assertIn("实际可见出口", authority)
+        self.assertIn("不能自动升级为正式事实", authority)
+        self.assertIn("在第一个真正错误的归属层修复", authority)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
