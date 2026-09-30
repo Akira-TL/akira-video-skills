@@ -364,6 +364,10 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不应仅靠 finishing 掩盖", finishing)
         self.assertIn("原始 `takeNN.mp4` 不覆盖", finishing)
         self.assertIn("放大不是恢复真实不存在的结构细节", finishing)
+        self.assertIn("首帧 / 尾帧 / 关键帧不是新的创意来源", previs)
+        self.assertIn("尾帧只是计划出口", previs)
+        self.assertIn("关键帧数量越多不一定越稳定", previs)
+        self.assertIn("关键帧图没有通过身份 / 结构 / 空间检查前", previs)
 
     def test_script_and_design_templates_preserve_layer_boundaries(self) -> None:
         script_templates = read(STABLE / "video-script" / "references" / "SCRIPT-TEMPLATES.md")
