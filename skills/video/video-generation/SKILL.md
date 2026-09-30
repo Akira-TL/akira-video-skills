@@ -7,7 +7,7 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 本 Skill 负责把正式项目内容转换成可执行的 AI 生成输入。长期来源仍然是 `video/script/`、`video/materials/` 和 `video/shots/`；一次性生成包只是方便用户外部生成的派生物。
 
-正式决定一次生成覆盖多少内容、采用哪种生成方式前，读取 [`references/GENERATION-STRATEGY.md`](references/GENERATION-STRATEGY.md)。需要批量生成大量素材 / 镜头时，再读取 [`references/BATCHING.md`](references/BATCHING.md)：先用高风险代表样本验证基准，稳定后才扩大当前可并行批次，不规定固定批量大小。
+正式决定一次生成覆盖多少内容、采用哪种生成方式前，读取 [`references/GENERATION-STRATEGY.md`](references/GENERATION-STRATEGY.md)。需要批量生成大量素材 / 镜头时，再读取 [`references/BATCHING.md`](references/BATCHING.md)：先用高风险代表样本验证基准，稳定后才扩大当前可并行批次，不规定固定批量大小。已有视频基本正确、需要连续延长或生成式局部修改时，再读取 [`references/EDIT-EXTEND.md`](references/EDIT-EXTEND.md)，先判断是否其实更适合确定性后期或新建镜头。
 
 ## 1. 识别生成对象
 

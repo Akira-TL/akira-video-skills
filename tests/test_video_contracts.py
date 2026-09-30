@@ -501,6 +501,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("自动转写可以作为初稿", subtitles)
         self.assertIn("目标语言句长变化时重新检查", subtitles)
 
+    def test_generated_edit_and_extension_preserve_original_shot_media(self) -> None:
+        edit_extend = read(STABLE / "video-generation" / "references" / "EDIT-EXTEND.md")
+        self.assertIn("先判断为什么不直接后期", edit_extend)
+        self.assertIn("什么时候不是延长，而是新 Shot", edit_extend)
+        self.assertIn("原始生成结果永远保留", edit_extend)
+        self.assertIn("不要把一个只包含后半段的文件误命名为完整 `take04.mp4`", edit_extend)
+        self.assertIn("必须重新看**完整视频**", edit_extend)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
