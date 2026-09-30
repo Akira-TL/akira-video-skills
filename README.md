@@ -30,7 +30,8 @@ PROJECT/
 
 - `akira-video`：完整 AI 视频制作 Primary Router。
 - `video-script`：把上游内容转换成当前视频脚本层。
-- `video-materials`：管理跨镜头复用的 Prompt、图片与参考素材。
+- `video-design`：把人物 / 场景功能需求设计成可辨认、可复用的视觉方案。
+- `video-materials`：管理跨镜头复用的 Prompt、严格四视图、图片与参考素材。
 - `video-shot`：维护单镜头 `SHOT.md`、连续性与生产定义。
 - `video-generation`：编写生成 Prompt、整理一次性生成包并导回结果。
 - `video-review`：审核复用素材和 Take，决定采用、后期修复或重生成。
