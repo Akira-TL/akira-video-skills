@@ -21,7 +21,7 @@ description: 审核 AI 生成的人物/场景等复用素材或 Shot Take，判�
 
 - 复用素材：对应长期 Prompt、人物/场景/产品定义和必要上游事实；
 - Shot Take：`SHOT.md`、当前 Prompt、引用的复用素材和相邻镜头连续性；
-- 广告产品：同时加载 `video-advertising` 的产品事实与品牌约束。
+- 广告产品：同时加载 `video-advertising` 的产品事实与品牌约束；该能力缺失时不能宣称 Product Gate 已完成，先交回 `akira-video` 补齐可选 Package。
 
 一次性生成包只用于定位本轮输入，不是更高优先级的事实源。
 

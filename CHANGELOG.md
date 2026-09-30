@@ -17,3 +17,4 @@
 - 增加小说 / 长文本到视频的改编协议、脚本层四类文件职责，以及按 Shot 拆分、生成模式选择和持续失败时拆镜头的生成策略。
 - 收紧 Generation Pack 往返：目标项目 `.gitignore` 必须忽略 `.tmp/`，zip、返回暂存与候选图片均留在当前 ForgeRelay 项目内；多图片候选以 `*_takeNN.png` 暂存，只有选中结果进入长期稳定素材名。
 - 恢复复杂镜头的 `SHOT.md` 可直接套用模板，以及陌生机械的固定 / 活动结构、允许与禁止运动、操作链和使用姿势 Prompt 模板。
+- 补齐可选 `video-advertising` 的安装回路：广告分支命中但当前 Target 缺失时，由 `akira-video` 交给 `akira` / Skiloom 对明确 Package coordinate 执行 Candidate plan，而不是复制广告规则回核心。
