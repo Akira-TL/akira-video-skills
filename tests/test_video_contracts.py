@@ -596,6 +596,36 @@ class VideoRepositoryContractTests(unittest.TestCase):
             data = (fixture / "source" / "returned" / name).read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
 
+    def test_video_review_blackbox_fixture_requires_temporal_review_and_actual_exit(self) -> None:
+        prompt = read(REPO / "tests" / "blackbox" / "video-review-independent-prompt.md")
+        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-review-001"
+        project = fixture / "source" / "project"
+        video_home = read(project / "VIDEO.md")
+        shot = read(project / "video" / "shots" / "SC01_SH010" / "SHOT.md")
+        expected_hashes = {
+            "SC01_SH010_candidate-a.mp4": "64bddfdeb34a90832b8b2a1fa09ef2421dae0d940ab41cc02fd5b3f7a049a28e",
+            "SC01_SH010_candidate-b.mp4": "af7eea451a9a83339933ea82bfea48b3d9c6ab0a88a54e4f26f65f73dfc91758",
+        }
+        self.assertIn("必须基于实际 MP4 内容检查", prompt)
+        self.assertIn("帧间稳定性", prompt)
+        self.assertIn("实际出口必须来自被采用视频的真实结束画面", prompt)
+        self.assertIn("不得把原计划出口直接复制成实际出口而不看视频", prompt)
+        self.assertIn("SH020 依赖 SH010 实际出口", video_home)
+        self.assertIn("当前采用", shot)
+        self.assertIn("尚无", shot)
+        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
+        for name, expected in expected_hashes.items():
+            data = (fixture / "source" / "returned" / name).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
+        self.assertEqual(
+            hashlib.sha256((project / "video" / "materials" / "characters" / "CHR01_four-view.png").read_bytes()).hexdigest(),
+            "60a2cace19dd196bc363997471b22fd9ce724d07415d2e572f8de5c71945be44",
+        )
+        self.assertEqual(
+            hashlib.sha256((project / "video" / "materials" / "scenes" / "LOC01_four-view.png").read_bytes()).hexdigest(),
+            "247765fe27d9befba066fa160fdbb2333fda3796f573bf170959b87d1e5f2e8d",
+        )
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
