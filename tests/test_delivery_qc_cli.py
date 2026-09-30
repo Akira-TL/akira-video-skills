@@ -65,6 +65,10 @@ class DeliveryQcCliTests(unittest.TestCase):
             "360",
             "--aspect",
             "16:9",
+            "--container",
+            "mp4",
+            "--video-codec",
+            "h264",
             "--duration-min",
             "3.9",
             "--duration-max",
@@ -83,6 +87,8 @@ class DeliveryQcCliTests(unittest.TestCase):
         self.assertAlmostEqual(float(result["actual"]["duration"]), 4.0, places=3)
         self.assertAlmostEqual(float(result["actual"]["avg_fps"]), 12.0, places=3)
         self.assertEqual(result["actual"]["audio_stream_count"], 0)
+        self.assertIn("mp4", result["actual"]["format_names"])
+        self.assertEqual(result["actual"]["video_codec"], "h264")
         self.assertIn("不能替代从头到尾观看成片", str(result["review_note"]))
 
     def test_decimal_aspect_is_supported(self) -> None:
@@ -95,6 +101,52 @@ class DeliveryQcCliTests(unittest.TestCase):
         )
         self.assertTrue(result["ok"])
 
+    def test_audio_codec_channels_and_sample_rate_can_be_checked_when_required(self) -> None:
+        with_audio = self.project / "video" / "edit" / "master-audio.mp4"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-i",
+                str(self.media),
+                "-f",
+                "lavfi",
+                "-i",
+                "sine=frequency=440:sample_rate=48000:duration=4",
+                "-shortest",
+                "-c:v",
+                "copy",
+                "-c:a",
+                "aac",
+                "-ac",
+                "2",
+                "-ar",
+                "48000",
+                str(with_audio),
+            ],
+            check=True,
+        )
+        result = self.run_cli(
+            "verify",
+            str(self.project),
+            "video/edit/master-audio.mp4",
+            "--audio",
+            "required",
+            "--audio-codec",
+            "aac",
+            "--channels",
+            "2",
+            "--sample-rate",
+            "48000",
+        )
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["actual"]["audio_codec"], "aac")
+        self.assertEqual(result["actual"]["audio_channels"], 2)
+        self.assertEqual(result["actual"]["audio_sample_rate"], 48000)
+
     def test_requirement_mismatch_returns_verification_failure(self) -> None:
         result = self.run_cli(
             "verify",
@@ -104,12 +156,15 @@ class DeliveryQcCliTests(unittest.TestCase):
             "1920",
             "--audio",
             "required",
+            "--video-codec",
+            "hevc",
             expected=1,
         )
         self.assertFalse(result["ok"])
         failures = "\n".join(str(item) for item in result["failures"])
         self.assertIn("width mismatch", failures)
         self.assertIn("audio stream required", failures)
+        self.assertIn("video codec mismatch", failures)
         self.assertTrue(result["decode_ok"])
 
     def test_external_media_and_external_symlink_are_rejected(self) -> None:

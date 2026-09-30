@@ -205,13 +205,46 @@ def cmd_verify(args: argparse.Namespace) -> dict[str, Any]:
 
     width = main_video.get("width")
     height = main_video.get("height")
+    video_codec = main_video.get("codec_name")
     fps = _fraction_float(main_video.get("avg_frame_rate"))
     sample_aspect_raw = main_video.get("sample_aspect_ratio")
     sample_aspect = _fraction_float(sample_aspect_raw)
     display_aspect_raw = main_video.get("display_aspect_ratio")
+    format_name_raw = probed["format"].get("format_name") or ""
+    format_names = [item.strip() for item in str(format_name_raw).split(",") if item.strip()]
+    main_audio = audio_streams[0] if audio_streams else {}
+    audio_codec = main_audio.get("codec_name")
+    audio_channels = main_audio.get("channels")
+    audio_sample_rate = main_audio.get("sample_rate")
+    try:
+        audio_sample_rate = int(audio_sample_rate) if audio_sample_rate not in (None, "", "N/A") else None
+    except (TypeError, ValueError):
+        audio_sample_rate = None
+
     duration = _float_or_none(probed["format"].get("duration"))
     if duration is None:
         duration = _float_or_none(main_video.get("duration"))
+
+    if args.width is not None and args.width <= 0:
+        raise DeliveryQcError("expected width must be positive")
+    if args.height is not None and args.height <= 0:
+        raise DeliveryQcError("expected height must be positive")
+    if args.duration_min is not None and args.duration_min < 0:
+        raise DeliveryQcError("duration minimum must be >= 0")
+    if args.duration_max is not None and args.duration_max < 0:
+        raise DeliveryQcError("duration maximum must be >= 0")
+    if (
+        args.duration_min is not None
+        and args.duration_max is not None
+        and args.duration_min > args.duration_max
+    ):
+        raise DeliveryQcError("duration minimum must not exceed duration maximum")
+    if args.fps is not None and args.fps <= 0:
+        raise DeliveryQcError("expected fps must be positive")
+    if args.channels is not None and args.channels <= 0:
+        raise DeliveryQcError("expected channel count must be positive")
+    if args.sample_rate is not None and args.sample_rate <= 0:
+        raise DeliveryQcError("expected sample rate must be positive")
 
     if args.width is not None and width != args.width:
         failures.append(f"width mismatch: expected {args.width}, got {width}")
@@ -258,10 +291,35 @@ def cmd_verify(args: argparse.Namespace) -> dict[str, Any]:
         ):
             failures.append(f"fps mismatch: expected {args.fps}, got {fps}")
 
+    if args.container is not None:
+        expected_container = args.container.lower()
+        if expected_container not in {item.lower() for item in format_names}:
+            failures.append(
+                f"container mismatch: expected {args.container}, got {format_name_raw or None}"
+            )
+
+    if args.video_codec is not None and video_codec != args.video_codec:
+        failures.append(
+            f"video codec mismatch: expected {args.video_codec}, got {video_codec}"
+        )
+
     if args.audio == "required" and not audio_streams:
         failures.append("audio stream required but none found")
     elif args.audio == "forbidden" and audio_streams:
         failures.append(f"audio stream forbidden but found {len(audio_streams)}")
+
+    if args.audio_codec is not None and audio_codec != args.audio_codec:
+        failures.append(
+            f"audio codec mismatch: expected {args.audio_codec}, got {audio_codec}"
+        )
+    if args.channels is not None and audio_channels != args.channels:
+        failures.append(
+            f"audio channel mismatch: expected {args.channels}, got {audio_channels}"
+        )
+    if args.sample_rate is not None and audio_sample_rate != args.sample_rate:
+        failures.append(
+            f"audio sample rate mismatch: expected {args.sample_rate}, got {audio_sample_rate}"
+        )
 
     if args.require_square_pixels:
         if sample_aspect_raw not in (None, "1:1", "1/1"):
@@ -279,24 +337,34 @@ def cmd_verify(args: argparse.Namespace) -> dict[str, Any]:
         "media": str(probed["media_path"]),
         "relative_media": str(probed["relative_media"]),
         "actual": {
-            "format": probed["format"].get("format_name"),
+            "format": format_name_raw or None,
+            "format_names": format_names,
             "duration": duration,
             "width": width,
             "height": height,
+            "video_codec": video_codec,
             "avg_fps": fps,
             "sample_aspect_ratio": sample_aspect_raw,
             "display_aspect_ratio": display_aspect_raw,
             "video_stream_count": len(video_streams),
             "audio_stream_count": len(audio_streams),
+            "audio_codec": audio_codec,
+            "audio_channels": audio_channels,
+            "audio_sample_rate": audio_sample_rate,
         },
         "expected": {
             "width": args.width,
             "height": args.height,
             "aspect": args.aspect,
+            "container": args.container,
+            "video_codec": args.video_codec,
             "duration_min": args.duration_min,
             "duration_max": args.duration_max,
             "fps": args.fps,
             "audio": args.audio,
+            "audio_codec": args.audio_codec,
+            "channels": args.channels,
+            "sample_rate": args.sample_rate,
             "require_square_pixels": args.require_square_pixels,
         },
         "decode_ok": decode_ok,
@@ -326,6 +394,8 @@ def build_parser() -> argparse.ArgumentParser:
     verify.add_argument("--width", type=int)
     verify.add_argument("--height", type=int)
     verify.add_argument("--aspect")
+    verify.add_argument("--container")
+    verify.add_argument("--video-codec")
     verify.add_argument("--aspect-tolerance", type=float, default=0.01)
     verify.add_argument("--duration-min", type=float)
     verify.add_argument("--duration-max", type=float)
@@ -336,6 +406,9 @@ def build_parser() -> argparse.ArgumentParser:
         choices=("any", "required", "forbidden"),
         default="any",
     )
+    verify.add_argument("--audio-codec")
+    verify.add_argument("--channels", type=int)
+    verify.add_argument("--sample-rate", type=int)
     verify.add_argument("--require-square-pixels", action="store_true")
     verify.set_defaults(func=cmd_verify)
 

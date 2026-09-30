@@ -34,7 +34,7 @@ description: 组织整片级剪辑、合成、全片声音和最终成片；当�
 
 不要因为生成模型可以尝试，就让它重做本可稳定后期解决的问题。
 
-准备最终导出或整片验收时，先按 [`references/FINAL-QC.md`](references/FINAL-QC.md) 检查整片内容，再按 [`references/TECHNICAL-QC.md`](references/TECHNICAL-QC.md) 检查每个正式交付文件能否正常解码以及时长、画幅、分辨率、音轨等明确交付要求。当前环境有 `ffprobe` / FFmpeg 时，优先复用本 Skill 自带 [`scripts/delivery_qc.py`](scripts/delivery_qc.py) 对正式文件执行完整解码和显式参数校验；期望值必须来自 `VIDEO.md` / 客户 / 比赛 / 平台要求，脚本不提供通用交付默认值，也不替代整片内容审查。
+准备最终导出或整片验收时，先按 [`references/FINAL-QC.md`](references/FINAL-QC.md) 检查整片内容，再按 [`references/TECHNICAL-QC.md`](references/TECHNICAL-QC.md) 检查每个正式交付文件能否正常解码以及时长、画幅、分辨率、音轨等明确交付要求。当前环境有 `ffprobe` / FFmpeg 时，优先复用本 Skill 自带 [`scripts/delivery_qc.py`](scripts/delivery_qc.py) 对正式文件执行完整解码和显式参数校验；可按需检查宽高、画幅、时长、FPS、容器、视频 / 音频编码、音轨、声道、采样率与方形像素。期望值必须来自 `VIDEO.md` / 客户 / 比赛 / 平台要求，脚本不提供通用交付默认值，也不替代整片内容审查。
 
 ## 4. 整片检查
 

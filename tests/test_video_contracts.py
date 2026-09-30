@@ -660,6 +660,9 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("期望值必须来自 `VIDEO.md` / 客户 / 比赛 / 平台要求", editing_skill)
         self.assertIn("脚本没有通用“标准成片”默认值", technical)
         self.assertIn("技术 QC 只确认媒体文件与显式交付参数", helper)
+        self.assertIn("--video-codec", helper)
+        self.assertIn("--audio-codec", helper)
+        self.assertIn("--sample-rate", helper)
         self.assertIn("不能替代从头到尾观看成片", helper)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
