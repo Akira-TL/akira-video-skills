@@ -23,7 +23,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实 blocker。
 
-进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/SCALING-VERSIONS.md`](references/SCALING-VERSIONS.md)，不要预设长片目录。
+进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/SCALING-VERSIONS.md`](references/SCALING-VERSIONS.md)，不要预设长片目录。需要清理失败结果、一次性包、缓存或旧媒体时，按 [`references/MEDIA-LIFECYCLE.md`](references/MEDIA-LIFECYCLE.md) 先确认文件不是唯一输入、当前采用结果或后期工程唯一依赖。
 
 ## 2. 维护 VIDEO.md
 

@@ -247,6 +247,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("一次改一个主要变量", repair)
         self.assertIn("连续失败升级", repair)
 
+    def test_shot_derivatives_and_media_cleanup_preserve_originals(self) -> None:
+        derivatives = read(STABLE / "video-shot" / "references" / "SHOT-DERIVATIVES.md")
+        lifecycle = read(STABLE / "akira-video" / "references" / "MEDIA-LIFECYCLE.md")
+        self.assertIn("这些属于后期派生，不新建 Shot ID", derivatives)
+        self.assertIn("后期修复后的片段不要覆盖原 `takeNN.mp4`", derivatives)
+        self.assertIn("文件不是当前采用结果", lifecycle)
+        self.assertIn("文件不是用户唯一原始输入", lifecycle)
+        self.assertIn("不要让 `.tmp/.../returns/` 里的文件成为项目唯一正式副本", lifecycle)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (

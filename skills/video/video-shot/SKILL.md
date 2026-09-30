@@ -46,6 +46,8 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 一个镜头可以有复杂内部动作，但必须能清楚说明它在剪辑中为什么是一个镜头。模型一次生成包含多个剪切时，项目仍按最终镜头语义组织，不因为模型能力把多个镜头永久揉成一个对象。
 
+同一镜头的裁切、调色、替换声音、多画幅派生和真正新镜头的边界按 [`references/SHOT-DERIVATIVES.md`](references/SHOT-DERIVATIVES.md)；后期派生不能覆盖镜头目录里的原始 `takeNN.mp4`。
+
 ## 5. 进入生成前检查
 
 准备把一个镜头交给 `video-generation` 前确认：
