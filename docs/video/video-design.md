@@ -12,4 +12,4 @@
 
 `video/materials/scenes/LOC01_design.md`
 
-设计确认后再由 `video-materials` 编写长期图片提示词，并在需要稳定身份或结构时使用严格四视图模板生成参考图。主角色外形、整片视觉语言、主要场景等未由上游来源决定的高影响分叉按 `references/DESIGN-APPROVAL.md` 先取得用户选择或明确授权；低影响实现细节不反复打断用户。
+设计确认后再由 `video-materials` 编写长期图片提示词。`references/DESIGN-OUTPUTS.md` 明确基础身份、四视图、服装 / 表情 / 场景光照状态哪些按需生成：换衣服不创建新角色，白天 / 夜晚也不创建新地点；只有真实需要稳定身份或结构时才增加对应参考图。主角色外形、整片视觉语言、主要场景等未由上游来源决定的高影响分叉按 `references/DESIGN-APPROVAL.md` 先取得用户选择或明确授权；低影响实现细节不反复打断用户。

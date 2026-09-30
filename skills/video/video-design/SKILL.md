@@ -92,6 +92,9 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 ## 6. 交给 video-materials
 
+角色 / 场景设计如何转成基础身份、四视图、服装 / 光照状态等长期参考，按 [`references/DESIGN-OUTPUTS.md`](references/DESIGN-OUTPUTS.md)；这些都是按真实镜头需求选择，不要求每个对象生成完整套装。
+
+
 设计确认后：
 
 1. `video-materials` 根据设计建立长期图片提示词；

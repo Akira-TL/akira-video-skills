@@ -223,6 +223,13 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("每一个真正要交付的文件至少分别核对", technical)
         self.assertIn("不能检查就明确保留", technical)
 
+    def test_design_outputs_keep_identity_separate_from_state(self) -> None:
+        outputs = read(STABLE / "video-design" / "references" / "DESIGN-OUTPUTS.md")
+        self.assertIn("服装不是新角色", outputs)
+        self.assertIn("白天 / 夜晚不是新地点", outputs)
+        self.assertIn("状态变化不改变角色 ID", outputs)
+        self.assertIn("只属于一个镜头的姿势、动作路径或手势放在当前镜头 / 预演中", outputs)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
