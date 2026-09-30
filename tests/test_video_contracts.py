@@ -359,6 +359,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertNotIn("video-script/references/", audio)
         self.assertNotIn("video-shot/references/", editing)
 
+    def test_temporal_review_checks_frame_to_frame_ai_drift(self) -> None:
+        failures = read(STABLE / "video-review" / "references" / "FAILURE-MODES.md")
+        qa = read(STABLE / "video-review" / "references" / "TAKE-QA.md")
+        self.assertIn("时间稳定性 / 纹理漂移", failures)
+        self.assertIn("背景墙体、家具出现呼吸 / 融化", failures)
+        self.assertIn("经过遮挡后重新出现时换形", failures)
+        self.assertIn("帧间稳定性", qa)
+        self.assertIn("最终判断必须基于完整播放", qa)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
