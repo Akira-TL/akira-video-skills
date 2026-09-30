@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import re
 import tomllib
 import unittest
@@ -571,6 +572,29 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要提前打视频生成包", brief)
         self.assertIn("不创建一级 `audio/`、`delivery/`、`assets/`", brief)
         self.assertIn("本轮不要求真正生成任何图片或视频", brief)
+
+    def test_resume_blackbox_fixture_is_fixed_and_enforces_serial_handoff(self) -> None:
+        prompt = read(REPO / "tests" / "blackbox" / "video-resume-independent-prompt.md")
+        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-resume-001"
+        project = fixture / "source" / "project"
+        video_home = read(project / "VIDEO.md")
+        shots = read(project / "video" / "script" / "SHOTS.md")
+        expected_hashes = {
+            "character-candidate-a.png": "60a2cace19dd196bc363997471b22fd9ce724d07415d2e572f8de5c71945be44",
+            "character-candidate-b.png": "8d4474a424c581edca12148977ab97e4ba9b09224f7fcd6f03fb04073dd32799",
+            "scene-candidate-a.png": "247765fe27d9befba066fa160fdbb2333fda3796f573bf170959b87d1e5f2e8d",
+            "scene-candidate-b.png": "30ff1d04518f208b6b00fdf5497544190217dede877811efa07088801974ef7a",
+        }
+        self.assertIn("恢复而不是重建", prompt)
+        self.assertIn("必须实际检查候选内容", prompt)
+        self.assertIn("不得**因为参考图已经齐全就提前把 SH020 当成可执行任务", prompt)
+        self.assertIn("当前工作", video_home)
+        self.assertIn("等待用户返回 CHR01 / LOC01 四视图候选", video_home)
+        self.assertIn("SC01_SH010 当前采用结果", shots)
+        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
+        for name, expected in expected_hashes.items():
+            data = (fixture / "source" / "returned" / name).read_bytes()
+            self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
