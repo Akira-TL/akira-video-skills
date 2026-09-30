@@ -103,7 +103,7 @@ README 写清：
 - 硬性约束；
 - 返回文件名。
 
-生成界面设置只写当前任务真正需要用户确认的部分；seed、request ID、默认 UI 值等是否长期保留按 [`EXECUTION-PARAMETERS.md`](EXECUTION-PARAMETERS.md) 判断，不为完整记录复制整张参数表。
+生成界面设置只写当前任务真正需要用户确认的部分；seed、request ID、默认 UI 值等是否长期保留按 [`EXECUTION-PARAMETERS.md`](../prompting/EXECUTION-PARAMETERS.md) 判断，不为完整记录复制整张参数表。
 
 返回文件名在对应镜头目录内使用 `takeNN.mp4`。打包前先查看该镜头已有生成结果，预留下一组未使用编号；不得因为新提示词 / 新模型重新从 `take01` 开始覆盖旧结果。
 

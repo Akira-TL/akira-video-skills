@@ -156,7 +156,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, text)
 
     def test_generation_pack_stays_inside_project_tmp(self) -> None:
-        pack = read(STABLE / "video-generation" / "references" / "GENERATION-PACK.md")
+        pack = read(STABLE / "video-generation" / "references" / "planning" / "GENERATION-PACK.md")
         self.assertIn("当前项目 ForgeRelay 工作区内的 `.tmp/`", pack)
         self.assertIn("returns/", pack)
         self.assertIn("_take01.png", pack)
@@ -200,7 +200,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, product_shots)
 
     def test_generation_pack_is_self_contained_and_reproducible(self) -> None:
-        templates = read(STABLE / "video-generation" / "references" / "PACK-TEMPLATES.md")
+        templates = read(STABLE / "video-generation" / "references" / "planning" / "PACK-TEMPLATES.md")
         for marker in (
             "包内所有上传素材都复制到当前包的 `materials/`",
             "任务文件只引用包内相对路径",
@@ -342,7 +342,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("在第一个真正错误的归属层修复", authority)
 
     def test_model_comparison_keeps_one_shot_identity(self) -> None:
-        comparison = read(STABLE / "video-generation" / "references" / "MODEL-COMPARISON.md")
+        comparison = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-COMPARISON.md")
         self.assertIn("模型不是镜头版本", comparison)
         self.assertIn("不自动创建新的 Shot ID", comparison)
         self.assertIn("生成结果编号不按模型重置", comparison)
@@ -379,7 +379,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("真实品牌产品不使用这个模板自由重设计结构", design_templates)
 
     def test_batching_validates_high_risk_samples_before_scaling(self) -> None:
-        batching = read(STABLE / "video-generation" / "references" / "BATCHING.md")
+        batching = read(STABLE / "video-generation" / "references" / "planning" / "BATCHING.md")
         self.assertIn("先做代表样本", batching)
         self.assertIn("没有固定批量大小", batching)
         self.assertIn("停止放量的信号", batching)
@@ -432,7 +432,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("遮挡前后需要特别检查", interaction)
 
     def test_execution_parameters_stay_out_of_long_term_shot_intent_by_default(self) -> None:
-        params = read(STABLE / "video-generation" / "references" / "EXECUTION-PARAMETERS.md")
+        params = read(STABLE / "video-generation" / "references" / "prompting" / "EXECUTION-PARAMETERS.md")
         self.assertIn("SHOT.md 不拥有模型参数", params)
         self.assertIn("seed 不是身份系统", params)
         self.assertIn("不为了“完整记录”把全部默认值写进包", params)
@@ -502,7 +502,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("目标语言句长变化时重新检查", subtitles)
 
     def test_generated_edit_and_extension_preserve_original_shot_media(self) -> None:
-        edit_extend = read(STABLE / "video-generation" / "references" / "EDIT-EXTEND.md")
+        edit_extend = read(STABLE / "video-generation" / "references" / "transform" / "EDIT-EXTEND.md")
         self.assertIn("先判断为什么不直接后期", edit_extend)
         self.assertIn("什么时候不是延长，而是新 Shot", edit_extend)
         self.assertIn("原始生成结果永远保留", edit_extend)

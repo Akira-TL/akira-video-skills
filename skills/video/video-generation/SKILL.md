@@ -7,7 +7,7 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 本 Skill 负责把正式项目内容转换成可执行的 AI 生成输入。长期来源仍然是 `video/script/`、`video/materials/` 和 `video/shots/`；一次性生成包只是方便用户外部生成的派生物。
 
-正式决定一次生成覆盖多少内容、采用哪种生成方式前，读取 [`references/GENERATION-STRATEGY.md`](references/GENERATION-STRATEGY.md)。需要批量生成大量素材 / 镜头时，再读取 [`references/BATCHING.md`](references/BATCHING.md)：先用高风险代表样本验证基准，稳定后才扩大当前可并行批次，不规定固定批量大小。已有视频基本正确、需要连续延长或生成式局部修改时，再读取 [`references/EDIT-EXTEND.md`](references/EDIT-EXTEND.md)，先判断是否其实更适合确定性后期或新建镜头。
+正式决定一次生成覆盖多少内容、采用哪种生成方式前，读取 [`references/planning/GENERATION-STRATEGY.md`](references/planning/GENERATION-STRATEGY.md)。需要批量生成大量素材 / 镜头时，再读取 [`references/planning/BATCHING.md`](references/planning/BATCHING.md)：先用高风险代表样本验证基准，稳定后才扩大当前可并行批次，不规定固定批量大小。已有视频基本正确、需要连续延长或生成式局部修改时，再读取 [`references/transform/EDIT-EXTEND.md`](references/transform/EDIT-EXTEND.md)，先判断是否其实更适合确定性后期或新建镜头。
 
 ## 1. 识别生成对象
 
@@ -22,12 +22,12 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 ## 2. 编写长期提示词
 
-为镜头编写通用视频提示词前读取 [`references/VIDEO-PROMPT.md`](references/VIDEO-PROMPT.md)；如果当前项目已安装对应模型适配器，再由适配器把通用镜头意图编译成该模型的最终执行提示词。同一个镜头需要并列测试多个模型时，再读取 [`references/MODEL-COMPARISON.md`](references/MODEL-COMPARISON.md)，保持同一 `SHOT.md` 和连续生成结果编号，不按模型复制镜头目录。
+为镜头编写通用视频提示词前读取 [`references/prompting/VIDEO-PROMPT.md`](references/prompting/VIDEO-PROMPT.md)；如果当前项目已安装对应模型适配器，再由适配器把通用镜头意图编译成该模型的最终执行提示词。同一个镜头需要并列测试多个模型时，再读取 [`references/prompting/MODEL-COMPARISON.md`](references/prompting/MODEL-COMPARISON.md)，保持同一 `SHOT.md` 和连续生成结果编号，不按模型复制镜头目录。
 
 
 可复用素材的提示词保存在对应 `video/materials/` 目录；镜头提示词保存在对应镜头目录，使用 `prompt_v01.md`、`prompt_v02.md` 等少量明确版本。
 
-提示词只编译当前生成模型真正需要的信息。内部镜头 / 素材定义可以比最终模型提示词更完整；模型能力、字段、时长和参考输入上限由当前实际加载的模型适配 Skill 或官方资料决定，不在本 Skill 写死。模型 / 使用入口、时长、比例、声音开关等执行设置与长期项目记录的边界按 [`references/EXECUTION-PARAMETERS.md`](references/EXECUTION-PARAMETERS.md)。
+提示词只编译当前生成模型真正需要的信息。内部镜头 / 素材定义可以比最终模型提示词更完整；模型能力、字段、时长和参考输入上限由当前实际加载的模型适配 Skill 或官方资料决定，不在本 Skill 写死。模型 / 使用入口、时长、比例、声音开关等执行设置与长期项目记录的边界按 [`references/prompting/EXECUTION-PARAMETERS.md`](references/prompting/EXECUTION-PARAMETERS.md)。
 
 若没有可靠模型专用规则，保持通用、明确、可验证的画面与动作描述，并向用户说明当前使用通用提示词，不伪造具体模型能力。
 
@@ -39,7 +39,7 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 ## 4. 整理一次性生成包
 
-正式打包前读取 [`references/GENERATION-PACK.md`](references/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、返回命名、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/PACK-TEMPLATES.md`](references/PACK-TEMPLATES.md) 生成自包含任务文件。
+正式打包前读取 [`references/planning/GENERATION-PACK.md`](references/planning/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、返回命名、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/planning/PACK-TEMPLATES.md`](references/planning/PACK-TEMPLATES.md) 生成自包含任务文件。
 
 
 在项目 `.tmp/` 下创建描述性目录。包默认保持简单：

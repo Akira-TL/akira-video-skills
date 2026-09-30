@@ -30,7 +30,7 @@
 - 补齐声音层次与确定性图文后期：对白、环境声、音效、音乐分别明确镜头 / 后期职责；字幕、Logo、标题、产品文字和片尾主卡统一由可编辑后期控制，不依赖模型准确生成文字。
 - 增加生成失败分类与修复决策：身份 / 状态 / 空间 / 产品结构 / 动作 / 摄影 / 物理 / 时间 / 声音 / 口型 / 文字 / 风格等失败先定位来源，再选择接受偏差、后期修复、重新生成或重写上游；连续失败不无限抽样。
 - 细化 AI 视频时间一致性 QA：完整播放检查人脸 / 服装漂移、背景呼吸、产品结构与 Logo 帧间变形、遮挡后换形、纹理闪烁及动作 / 摄影速度异常，不能用单张漂亮截图替代时间维度验收。
-- 整理内部 Skill reference 结构：`video-design` 按 foundation / character / environment 分组，`video-shot` 按 planning / continuity / direction 分组，避免后续继续平铺触发架构阈值；新增本地 Markdown 断链与 reference 可达性回归测试。
+- 整理内部 Skill reference 结构：`video-design` 按 foundation / character / environment 分组，`video-shot` 按 planning / continuity / direction 分组，`video-generation` 按 planning / prompting / transform 分组，避免后续继续平铺触发架构阈值；新增本地 Markdown 断链与 reference 可达性回归测试。
 - 增加摄影语言规范：区分景别与焦段 / 透视、推近与变焦、机位高度、景深 / 焦点和产品摄影畸变风险；AI 模型对术语不稳定时优先描述摄影机运动与可见结果，不为“电影感”堆术语。
 - 增加灯光 / 曝光连续性：基础灯光归地点 / 世界设计，镜头临时光效归 `SHOT.md`；同一地点 / 时间保持世界空间中的主光方向，真实产品反光和人物曝光优先可读，后期调色不替代错误灯光结构。
 - 增加音乐 / 配乐设计：临时音乐与最终可交付音乐分开，音乐 cue 服务故事与剪辑结构，不为了卡点压缩对白 / 表演 / 产品操作；AI 生成音乐通过一次性生成包往返，只有后期真实需要时才要求 stems / 分轨。
