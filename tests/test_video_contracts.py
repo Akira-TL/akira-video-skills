@@ -263,6 +263,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要把它误命名成 `take01.mp4`", importing)
         self.assertIn("不强制补不存在的中间件", importing)
 
+    def test_continuity_handoff_distinguishes_parallel_and_dependent_shots(self) -> None:
+        handoff = read(STABLE / "video-shot" / "references" / "CONTINUITY-HANDOFF.md")
+        self.assertIn("无（可独立生成）", handoff)
+        self.assertIn("必须等前一镜结果的镜头", handoff)
+        self.assertIn("计划出口不是已发生事实", handoff)
+        self.assertIn("优先继承实际出口", handoff)
+        self.assertIn("不机械全部推倒重来", handoff)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
