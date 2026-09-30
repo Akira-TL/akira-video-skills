@@ -302,6 +302,13 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("项目不会按模型复制一套镜头结构", comparison)
         self.assertIn("不让模型差异反写镜头", comparison)
 
+    def test_coverage_is_need_driven_not_a_fixed_shot_package(self) -> None:
+        coverage = read(STABLE / "video-shot" / "references" / "COVERAGE.md")
+        self.assertIn("不要求按传统覆盖套路机械生成", coverage)
+        self.assertIn("不要每个动作后机械加一个“惊讶脸”", coverage)
+        self.assertIn("同一动作不要重复展示", coverage)
+        self.assertIn("备用镜头必须有明确可能用途", coverage)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

@@ -7,6 +7,8 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 每个镜头是视频生成与剪辑的核心工作单元。本 Skill 拥有 `video/shots/<shot-id>/SHOT.md`，不拥有模型专用提示词编译或生成结果审片结论。
 
+从 `SHOTS.md` 展开一组镜头前，场次需要几个观察点、建立镜头 / 反应 / 插入 / 产品特写是否真实有用，按 [`references/COVERAGE.md`](references/COVERAGE.md) 判断；不机械套固定 coverage 套餐。
+
 ## 1. 建立镜头 ID 与目录
 
 默认使用留空式编号，例如 `SC01_SH010`、`SC01_SH020`；没有场次的简单项目可使用 `SH010`。需要中间插镜头时使用可读的中间编号，不重排整片已有身份。
