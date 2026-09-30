@@ -14,6 +14,8 @@ description: 设计并维护 AI 视频中跨镜头复用的角色声音、音色
 
 某个镜头独有的对白、呼吸、音效或临时声音继续放在对应 `video/shots/<shot-id>/`；全片音乐、旁白、混音和最终声音工程进入 `video/edit/`。
 
+完整声音层次、原生生成声音与后期声音的职责边界见 [`references/SOUND-LAYERS.md`](references/SOUND-LAYERS.md)。
+
 ## 1. 先区分三类声音
 
 ### 角色长期声音

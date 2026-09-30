@@ -230,6 +230,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("状态变化不改变角色 ID", outputs)
         self.assertIn("只属于一个镜头的姿势、动作路径或手势放在当前镜头 / 预演中", outputs)
 
+    def test_sound_layers_and_graphics_keep_precision_in_post(self) -> None:
+        sound = read(STABLE / "video-audio" / "references" / "SOUND-LAYERS.md")
+        graphics = read(STABLE / "video-editing" / "references" / "GRAPHICS-TITLES.md")
+        self.assertIn("不要因为模型“能生成声音”就把所有后期声音任务都塞进镜头提示词", sound)
+        self.assertIn("精确文字默认后期完成", graphics)
+        self.assertIn("使用官方文件", graphics)
+        self.assertIn("不写死一个通用像素安全区", graphics)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
