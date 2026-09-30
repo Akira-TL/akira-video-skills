@@ -179,6 +179,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         ):
             self.assertIn(marker, scaling)
 
+    def test_previs_and_editing_rhythm_remain_need_driven(self) -> None:
+        previs = read(STABLE / "video-shot" / "references" / "PREVIS.md")
+        editing = read(STABLE / "video-editing" / "references" / "EDITING-RHYTHM.md")
+        self.assertIn("按需工具", previs)
+        self.assertIn("不需要额外创建 storyboard 目录", previs)
+        self.assertIn("不要用复杂转场掩盖", editing)
+        self.assertIn("镜头不因为“看起来漂亮”就必须保留完整生成时长", editing)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
