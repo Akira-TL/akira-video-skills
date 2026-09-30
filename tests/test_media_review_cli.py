@@ -21,6 +21,16 @@ FIXTURE_VIDEO = (
     / "returned"
     / "SC01_SH010_candidate-a.mp4"
 )
+FIXTURE_IMAGE = (
+    REPO
+    / "tests"
+    / "blackbox"
+    / "fixtures"
+    / "video-resume-001"
+    / "source"
+    / "returned"
+    / "character-candidate-a.png"
+)
 
 
 @unittest.skipUnless(
@@ -35,6 +45,9 @@ class MediaReviewCliTests(unittest.TestCase):
         self.media = self.project / "video" / "shots" / "SC01_SH010" / "take01.mp4"
         self.media.parent.mkdir(parents=True)
         shutil.copy2(FIXTURE_VIDEO, self.media)
+        self.image = self.project / "video" / "materials" / "characters" / "CHR01_four-view.png"
+        self.image.parent.mkdir(parents=True)
+        shutil.copy2(FIXTURE_IMAGE, self.image)
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
@@ -123,6 +136,62 @@ class MediaReviewCliTests(unittest.TestCase):
             "--replace",
         )
         self.assertEqual(len(replaced["frames"]), 3)
+
+    def test_split_2x2_writes_equal_review_quadrants_without_claiming_content_pass(self) -> None:
+        result = self.run_cli(
+            "split-2x2",
+            str(self.project),
+            "video/materials/characters/CHR01_four-view.png",
+            "chr01-grid",
+        )
+        review = self.project / ".tmp" / "review" / "chr01-grid"
+        self.assertEqual(result["relative_review"], ".tmp/review/chr01-grid")
+        self.assertEqual(len(result["quadrants"]), 4)
+        self.assertIn("仍必须实际看图判断", str(result["review_note"]))
+        expected_names = {
+            "top-left.png",
+            "top-right.png",
+            "bottom-left.png",
+            "bottom-right.png",
+        }
+        actual_names = {Path(str(item["file"])).name for item in result["quadrants"]}
+        self.assertEqual(actual_names, expected_names)
+        for item in result["quadrants"]:
+            self.assertEqual(item["width"], 384)
+            self.assertEqual(item["height"], 384)
+            self.assertTrue(Path(str(item["file"])).is_file())
+
+        manifest = json.loads((review / "manifest.json").read_text(encoding="utf-8"))
+        self.assertEqual(manifest["width"], 768)
+        self.assertEqual(manifest["height"], 768)
+        self.assertEqual(len(manifest["quadrants"]), 4)
+        self.assertIn(".tmp/", (self.project / ".gitignore").read_text(encoding="utf-8"))
+
+    def test_split_2x2_rejects_non_square_image(self) -> None:
+        wide = self.project / "video" / "materials" / "wide.png"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-i",
+                str(self.media),
+                "-frames:v",
+                "1",
+                str(wide),
+            ],
+            check=True,
+        )
+        error = self.run_cli(
+            "split-2x2",
+            str(self.project),
+            "video/materials/wide.png",
+            "wide-grid",
+            expected=2,
+        )
+        self.assertIn("expects a 1:1 image", str(error["error"]))
 
     def test_cleanup_requires_confirmation(self) -> None:
         self.run_cli(

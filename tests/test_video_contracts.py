@@ -630,8 +630,10 @@ class VideoRepositoryContractTests(unittest.TestCase):
         review_skill = read(STABLE / "video-review" / "SKILL.md")
         helper = read(STABLE / "video-review" / "scripts" / "media_review.py")
         self.assertIn("scripts/media_review.py", review_skill)
-        self.assertIn("不能替代完整播放、听音或口型验收", review_skill)
+        self.assertIn("不能替代完整播放、听音、口型或人物 / 场景内容验收", review_skill)
+        self.assertIn("机械 2×2 成功也不代表严格四视图语义通过", review_skill)
         self.assertIn("不能替代完整播放", helper)
+        self.assertIn("split-2x2", helper)
         self.assertIn(".tmp/review/", review_skill)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:

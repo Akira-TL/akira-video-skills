@@ -239,9 +239,25 @@ def cmd_probe(args: argparse.Namespace) -> dict[str, Any]:
     return probe_media(project, args.media)
 
 
+def _prepare_review_output(project: Path, name: str, *, replace: bool) -> Path:
+    _ensure_tmp_ignored(project)
+    review_root = _review_root(project)
+    output = review_root / _review_name(name)
+    _inside(output, review_root, label="review output")
+    if output.exists():
+        if not replace:
+            raise MediaReviewError(
+                f"review directory already exists; use --replace only when intentional: {output}"
+            )
+        if output.is_symlink():
+            raise MediaReviewError(f"refusing to replace symlink review directory: {output}")
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+    return output
+
+
 def cmd_sample(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    _ensure_tmp_ignored(project)
     ffmpeg = _require_tool("ffmpeg")
     probed = probe_media(project, args.media)
     if not probed["video_streams"]:
@@ -257,19 +273,7 @@ def cmd_sample(args: argparse.Namespace) -> dict[str, Any]:
     if duration is None:
         raise MediaReviewError("could not determine media duration for sampling")
 
-    name = _review_name(args.name)
-    review_root = _review_root(project)
-    output = review_root / name
-    _inside(output, review_root, label="review output")
-    if output.exists():
-        if not args.replace:
-            raise MediaReviewError(
-                f"review sample directory already exists; use --replace only when intentional: {output}"
-            )
-        if output.is_symlink():
-            raise MediaReviewError(f"refusing to replace symlink review directory: {output}")
-        shutil.rmtree(output)
-    output.mkdir(parents=True)
+    output = _prepare_review_output(project, args.name, replace=args.replace)
 
     timestamps = _sample_timestamps(float(duration), args.count)
     frames: list[dict[str, Any]] = []
@@ -333,6 +337,96 @@ def cmd_sample(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def cmd_split_2x2(args: argparse.Namespace) -> dict[str, Any]:
+    project = _project_root(args.project)
+    ffmpeg = _require_tool("ffmpeg")
+    probed = probe_media(project, args.media)
+    if len(probed["video_streams"]) != 1:
+        raise MediaReviewError("image review expects exactly one visual stream")
+    stream = probed["video_streams"][0]
+    width = stream.get("width")
+    height = stream.get("height")
+    if not isinstance(width, int) or not isinstance(height, int):
+        raise MediaReviewError("could not determine image dimensions")
+    if width != height:
+        raise MediaReviewError(
+            f"strict 2x2 four-view review expects a 1:1 image, got {width}x{height}"
+        )
+    if width % 2 or height % 2:
+        raise MediaReviewError(
+            f"strict 2x2 split requires even dimensions, got {width}x{height}"
+        )
+
+    output = _prepare_review_output(project, args.name, replace=args.replace)
+    half_w = width // 2
+    half_h = height // 2
+    quadrants = [
+        ("top-left.png", 0, 0),
+        ("top-right.png", half_w, 0),
+        ("bottom-left.png", 0, half_h),
+        ("bottom-right.png", half_w, half_h),
+    ]
+    files: list[dict[str, Any]] = []
+    for filename, x, y in quadrants:
+        target = output / filename
+        completed = subprocess.run(
+            [
+                ffmpeg,
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-y",
+                "-i",
+                str(probed["media"]),
+                "-vf",
+                f"crop={half_w}:{half_h}:{x}:{y}",
+                "-frames:v",
+                "1",
+                str(target),
+            ],
+            text=True,
+            capture_output=True,
+        )
+        if completed.returncode != 0 or not target.is_file():
+            raise MediaReviewError(
+                f"failed to split quadrant {filename}: {completed.stderr.strip()}"
+            )
+        files.append(
+            {
+                "file": str(target),
+                "relative_file": str(target.relative_to(project)),
+                "sha256": _sha256(target),
+                "width": half_w,
+                "height": half_h,
+            }
+        )
+
+    manifest = {
+        "image": probed["relative_media"],
+        "image_sha256": probed["sha256"],
+        "width": width,
+        "height": height,
+        "quadrants": files,
+        "review_note": (
+            "1:1 尺寸和机械 2×2 分格通过只说明文件结构可审查；人物身份、后脑、五官、服装、空间关系、镜像和光线仍必须实际看图判断。"
+        ),
+    }
+    manifest_path = output / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    return {
+        "ok": True,
+        "action": "split-2x2",
+        "review": str(output),
+        "relative_review": str(output.relative_to(project)),
+        "manifest": str(manifest_path),
+        "quadrants": files,
+        "review_note": manifest["review_note"],
+    }
+
+
 def cmd_cleanup(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
     name = _review_name(args.name)
@@ -375,6 +469,16 @@ def build_parser() -> argparse.ArgumentParser:
     sample.add_argument("--count", type=int, default=7)
     sample.add_argument("--replace", action="store_true")
     sample.set_defaults(func=cmd_sample)
+
+    split = sub.add_parser(
+        "split-2x2",
+        help="mechanically split one square four-view image into four project-local review quadrants",
+    )
+    split.add_argument("project")
+    split.add_argument("media")
+    split.add_argument("name")
+    split.add_argument("--replace", action="store_true")
+    split.set_defaults(func=cmd_split_2x2)
 
     cleanup = sub.add_parser("cleanup", help="remove one project-local review sample directory")
     cleanup.add_argument("project")
