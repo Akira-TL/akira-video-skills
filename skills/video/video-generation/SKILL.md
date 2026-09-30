@@ -15,7 +15,7 @@ description: 为 AI 图片或视频生成准备可直接使用的 Prompt 与一�
 
 - 跨镜头复用的人物、场景、道具、产品等图片素材；
 - 某个 Shot 的视频；
-- 某个 Shot 专属的补充图片或声音。
+- 某个 Shot 专属的首帧、尾帧、Storyboard / Keyframe、补充图片或声音。
 
 先加载 owning 内容：复用素材使用 `video-materials` 的定义，镜头视频使用 `video-shot` 的 `SHOT.md`。不要从一次性包或旧聊天记录重建长期事实。
 

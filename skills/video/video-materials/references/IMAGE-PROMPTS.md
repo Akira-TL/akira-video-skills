@@ -66,7 +66,11 @@
 
 正式 Logo、型号、参数和长文本优先由官方文件或后期确定性合成。
 
-## 8. Prompt 版本
+## 8. Shot 专属生图
+
+首帧、尾帧、Storyboard / Keyframe 如果只服务一个 Shot，Prompt 与返回图都跟随对应 Shot，不进入公共 `video/materials/`。这类 Prompt 仍从当前 `SHOT.md`、角色 / 场景设计和复用素材编译，不临时重新设计人物或空间。
+
+## 9. Prompt 版本
 
 长期 Prompt 与对象素材共置，例如 `CHR01_prompt.md`。
 

@@ -139,6 +139,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("目标项目自己的 `.gitignore`", layout)
         self.assertIn(".tmp/", layout)
 
+    def test_naming_preserves_scene_location_and_take_semantics(self) -> None:
+        naming = read(STABLE / "akira-video" / "references" / "NAMING.md")
+        self.assertIn("Scene 与 Location 不同", naming)
+        self.assertIn("Prop 与 Product 不同", naming)
+        self.assertIn("Take 编号在同一个 Shot 内单调递增", naming)
+        self.assertIn("start-frame.png", naming)
+        self.assertIn("这些图片只有在多个镜头确实复用时才升级到 `video/materials/`", naming)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
