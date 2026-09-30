@@ -1,0 +1,5 @@
+SYNTHETIC FIXTURE REFERENCE
+
+CHR01 identity placeholder.
+Role: character identity only.
+Do not infer motion, scene, product structure, or dialogue from this file.

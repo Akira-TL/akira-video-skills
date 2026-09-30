@@ -540,6 +540,23 @@ class VideoRepositoryContractTests(unittest.TestCase):
         ):
             self.assertIn(marker, acceptance)
 
+    def test_model_adapter_blackbox_fixture_is_fixed_and_output_isolated(self) -> None:
+        prompt = read(REPO / "tests" / "blackbox" / "model-adapter-independent-prompt.md")
+        fixture = REPO / "tests" / "blackbox" / "fixtures" / "model-adapter-001"
+        sh010 = read(fixture / "video" / "shots" / "SC01_SH010" / "SHOT.md")
+        sh020 = read(fixture / "video" / "shots" / "SC01_SH020" / "SHOT.md")
+        product = read(fixture / "video" / "materials" / "products" / "PROD01_official.txt")
+        action = read(fixture / "video" / "materials" / "references" / "action-reference.txt")
+        self.assertIn("fixed point mismatch", prompt)
+        self.assertIn("accepted / rejected / inconclusive", prompt)
+        self.assertIn("<FIXTURE_ROOT>/output/", prompt)
+        self.assertNotIn("/tmp/", prompt)
+        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
+        self.assertIn("摄影机保持固定", sh010)
+        self.assertIn("对白必须保持“好了，就这样。”", sh020)
+        self.assertIn("exactly one circular button", product)
+        self.assertIn("Forbidden transfer", action)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
