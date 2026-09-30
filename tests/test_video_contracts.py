@@ -309,6 +309,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("同一动作不要重复展示", coverage)
         self.assertIn("备用镜头必须有明确可能用途", coverage)
 
+    def test_animatic_and_finishing_reduce_cost_without_hiding_hard_errors(self) -> None:
+        previs = read(STABLE / "video-shot" / "references" / "PREVIS.md")
+        finishing = read(STABLE / "video-editing" / "references" / "FINISHING.md")
+        self.assertIn("动态分镜（Animatic）", previs)
+        self.assertIn("如果只是一次性节奏验证，可以放 `.tmp/`", previs)
+        self.assertIn("不应仅靠 finishing 掩盖", finishing)
+        self.assertIn("原始 `takeNN.mp4` 不覆盖", finishing)
+        self.assertIn("放大不是恢复真实不存在的结构细节", finishing)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
