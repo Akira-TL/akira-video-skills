@@ -6,10 +6,10 @@
 
 整片需要统一视觉语言时先形成整体视觉方向，再设计角色和场景；多世界、复杂空间和陌生机械均按真实需要展开，不增加默认项目目录。
 
-正式视觉设计文件按 `references/DESIGN-TEMPLATES.md` 写，只记录角色 / 地点 / 视觉方向真正需要稳定的内容，不复制脚本或镜头细节。设计文件建议与对应复用素材共置，例如：
+正式视觉设计文件按 `references/foundation/DESIGN-TEMPLATES.md` 写，只记录角色 / 地点 / 视觉方向真正需要稳定的内容，不复制脚本或镜头细节。设计文件建议与对应复用素材共置，例如：
 
 `video/materials/characters/CHR01_design.md`
 
 `video/materials/scenes/LOC01_design.md`
 
-设计确认后再由 `video-materials` 编写长期图片提示词。`references/DESIGN-OUTPUTS.md` 明确基础身份、四视图、服装 / 表情 / 场景光照状态哪些按需生成：换衣服不创建新角色，白天 / 夜晚也不创建新地点；只有真实需要稳定身份或结构时才增加对应参考图。主角色外形、整片视觉语言、主要场景等未由上游来源决定的高影响分叉按 `references/DESIGN-APPROVAL.md` 先取得用户选择或明确授权；低影响实现细节不反复打断用户。
+设计确认后再由 `video-materials` 编写长期图片提示词。`references/foundation/DESIGN-OUTPUTS.md` 明确基础身份、四视图、服装 / 表情 / 场景光照状态哪些按需生成：换衣服不创建新角色，白天 / 夜晚也不创建新地点；只有真实需要稳定身份或结构时才增加对应参考图。主角色外形、整片视觉语言、主要场景等未由上游来源决定的高影响分叉按 `references/foundation/DESIGN-APPROVAL.md` 先取得用户选择或明确授权；低影响实现细节不反复打断用户。
