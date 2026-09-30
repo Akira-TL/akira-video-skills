@@ -318,6 +318,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("原始 `takeNN.mp4` 不覆盖", finishing)
         self.assertIn("放大不是恢复真实不存在的结构细节", finishing)
 
+    def test_script_and_design_templates_preserve_layer_boundaries(self) -> None:
+        script_templates = read(STABLE / "video-script" / "references" / "SCRIPT-TEMPLATES.md")
+        design_templates = read(STABLE / "video-design" / "references" / "DESIGN-TEMPLATES.md")
+        self.assertIn("不写详细摄影机和模型参数", script_templates)
+        self.assertIn("模板是内容边界，不是文件清单", script_templates)
+        self.assertIn("不写：", design_templates)
+        self.assertIn("某一个镜头动作", design_templates)
+        self.assertIn("真实品牌产品不使用这个模板自由重设计结构", design_templates)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

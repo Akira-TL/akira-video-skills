@@ -15,8 +15,7 @@ description: 把小说、章节、故事梗概、品牌 brief 或其他上游内
 
 ## 2. 建立最小视频脚本层
 
-四个常用脚本文件的职责按 [`references/SCRIPT-FILES.md`](references/SCRIPT-FILES.md) 保持分离，避免把视觉设计、摄影和生成参数复制回脚本层。
-
+四个常用脚本文件的职责按 [`references/SCRIPT-FILES.md`](references/SCRIPT-FILES.md) 保持分离，避免把视觉设计、摄影和生成参数复制回脚本层；真正落文件时可按 [`references/SCRIPT-TEMPLATES.md`](references/SCRIPT-TEMPLATES.md) 的最小模板写，只创建当前项目需要的文件。
 
 只创建当前项目需要的文件：
 

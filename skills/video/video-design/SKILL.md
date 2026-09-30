@@ -86,6 +86,9 @@ description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说
 
 ## 5. 设计文件
 
+正式写 `VISUAL_DIRECTION.md`、`CHRxx_design.md`、`LOCxx_design.md` 或按需的虚构道具设计时，使用 [`references/DESIGN-TEMPLATES.md`](references/DESIGN-TEMPLATES.md) 保持职责边界；模板不要求项目创建所有文件。
+
+
 角色 `*_design.md` 只保存视觉设计当前有效版本，场景同理。Git 保存历史，不创建 `design_final2.md` 等伪版本。
 
 设计文件可以引用上游来源和视觉参考，但不复制整段小说、人物百科或场景历史。
