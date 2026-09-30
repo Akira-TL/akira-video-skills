@@ -271,6 +271,13 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("优先继承实际出口", handoff)
         self.assertIn("不机械全部推倒重来", handoff)
 
+    def test_direction_rules_preserve_screen_space_without_forbidding_intentional_axis_crossing(self) -> None:
+        direction = read(STABLE / "video-shot" / "references" / "DIRECTION.md")
+        self.assertIn("180° 轴线规则", direction)
+        self.assertIn("这不是不可违反的硬规则", direction)
+        self.assertIn("反打要从空间另一观察方向重新构图，不能简单把上一镜水平翻转", direction)
+        self.assertIn("动作匹配", direction)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
