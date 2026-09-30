@@ -17,6 +17,8 @@ description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头
 
 ## 2. 写 SHOT.md
 
+复杂或需要交给外部生成的镜头可以直接按 [`references/SHOT-TEMPLATE.md`](references/SHOT-TEMPLATE.md) 编写；简单镜头只保留真正需要的字段。
+
 `SHOT.md` 只保存当前有效镜头设计，通常包括：
 
 - 镜头目的；
