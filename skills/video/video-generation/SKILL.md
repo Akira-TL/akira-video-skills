@@ -7,6 +7,8 @@ description: 为 AI 图片或视频生成准备可直接使用的 Prompt 与一�
 
 本 Skill 负责把正式项目内容转换成可执行的 AI 生成输入。长期来源仍然是 `video/script/`、`video/materials/` 和 `video/shots/`；一次性生成包只是方便用户外部生成的派生物。
 
+正式决定一次生成覆盖多少内容、采用哪种生成方式前，读取 [`references/GENERATION-STRATEGY.md`](references/GENERATION-STRATEGY.md)。
+
 ## 1. 识别生成对象
 
 生成对象可以是：

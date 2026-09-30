@@ -1,6 +1,6 @@
 # video-generation
 
-`video-generation` 从正式视频脚本、复用素材和 `SHOT.md` 编译长期 Prompt 与一次性生成包。
+`video-generation` 从正式视频脚本、复用素材和 `SHOT.md` 编译长期 Prompt 与一次性生成包。默认按单镜头或少量强连续镜头生成，不因为模型允许更长时长就把完整长片塞进一次请求；持续失败时会回查设计、参考、Shot 负载和生成模式。
 
 一次性生成包只放在当前 ForgeRelay 项目工作区的 `.tmp/`，按 `references/GENERATION-PACK.md` 只复制本次生成需要的 Prompt 和参考素材，并明确返回文件名。用户在外部模型完成生成后，结果归档回 `video/materials/` 或对应 Shot，确认没有唯一信息后删除临时包。
 
