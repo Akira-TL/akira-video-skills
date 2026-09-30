@@ -626,6 +626,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
             "247765fe27d9befba066fa160fdbb2333fda3796f573bf170959b87d1e5f2e8d",
         )
 
+    def test_media_review_helper_is_only_an_aid_not_full_video_acceptance(self) -> None:
+        review_skill = read(STABLE / "video-review" / "SKILL.md")
+        helper = read(STABLE / "video-review" / "scripts" / "media_review.py")
+        self.assertIn("scripts/media_review.py", review_skill)
+        self.assertIn("不能替代完整播放、听音或口型验收", review_skill)
+        self.assertIn("不能替代完整播放", helper)
+        self.assertIn(".tmp/review/", review_skill)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
