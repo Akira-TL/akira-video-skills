@@ -25,7 +25,7 @@ description: 审核 AI 生成的人物/场景等复用素材或镜头生成结�
 
 一次性生成包只用于定位本轮输入，不是更高优先级的事实源。
 
-需要进行详细生成结果 / 素材质量审查时，读取 [`references/TAKE-QA.md`](references/TAKE-QA.md)。一次返回多个图片、声音或视频候选时，再读取 [`references/CANDIDATE-SELECTION.md`](references/CANDIDATE-SELECTION.md)，先淘汰身份 / 产品 / 空间 / 剧情等硬错误，再比较制作适配度和美感。
+需要进行详细生成结果 / 素材质量审查时，读取 [`references/TAKE-QA.md`](references/TAKE-QA.md)。一次返回多个图片、声音或视频候选时，再读取 [`references/CANDIDATE-SELECTION.md`](references/CANDIDATE-SELECTION.md)，先淘汰身份 / 产品 / 空间 / 剧情等硬错误，再比较制作适配度和美感。结果明显失败时先按 [`references/FAILURE-MODES.md`](references/FAILURE-MODES.md) 定位失败类型，再按 [`references/REPAIR-DECISIONS.md`](references/REPAIR-DECISIONS.md) 选择采用、后期修复、重新生成或重写上游；重新生成前明确本轮主要改变的一个变量。
 
 ## 3. 审查维度
 

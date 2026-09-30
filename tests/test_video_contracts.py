@@ -238,6 +238,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("使用官方文件", graphics)
         self.assertIn("不写死一个通用像素安全区", graphics)
 
+    def test_review_failure_modes_drive_targeted_repairs(self) -> None:
+        failures = read(STABLE / "video-review" / "references" / "FAILURE-MODES.md")
+        repair = read(STABLE / "video-review" / "references" / "REPAIR-DECISIONS.md")
+        self.assertIn("身份漂移", failures)
+        self.assertIn("产品 / 道具结构错误", failures)
+        self.assertIn("不要用后期掩盖硬错误", repair)
+        self.assertIn("一次改一个主要变量", repair)
+        self.assertIn("连续失败升级", repair)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")
         for heading in (
