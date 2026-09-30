@@ -2,7 +2,7 @@
 
 一次性生成包是给用户拿到外部 AI 平台执行的一次性派生包。它只从正式项目内容复制 / 编译，不成为长期事实源。
 
-具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件层操作优先调用本 Skill 自带 `scripts/generation_pack.py`：`init` 创建项目内 `.tmp/<name>` 并确保 `.tmp/` 被项目 `.gitignore` 忽略，`copy` 只复制项目内正式文件，`returns` 创建返回目录，`status` 检查包内容，`zip` 生成同一项目 `.tmp/<name>.zip`，`cleanup` 只有在显式确认无唯一信息、且返回结果已正式归档后才删除。脚本不生成 README / Prompt，也不替代人工选择素材。
+具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件层操作优先调用本 Skill 自带 `scripts/generation_pack.py`：`init` 创建项目内 `.tmp/<name>` 并确保 `.tmp/` 被项目 `.gitignore` 忽略；`copy` 只复制项目内正式文件；`returns` 创建返回目录；`status` 检查包内容；`next-take` 从正式镜头目录计算下一个单调递增 `takeNN`；`archive --confirm-reviewed` 只把已经过 `video-review` 的选中返回文件复制到 `.tmp/` 之外的正式项目路径，并保留原返回文件与输出 SHA-256；`zip` 生成同一项目 `.tmp/<name>.zip`；`cleanup` 只有在显式确认无唯一信息、且返回结果已正式归档后才删除。脚本不生成 README / Prompt，也不替代人工选择素材或审片结论。
 
 ## 先按依赖分批
 
@@ -105,7 +105,7 @@ README 写清：
 
 生成界面设置只写当前任务真正需要用户确认的部分；seed、request ID、默认 UI 值等是否长期保留按 [`EXECUTION-PARAMETERS.md`](../prompting/EXECUTION-PARAMETERS.md) 判断，不为完整记录复制整张参数表。
 
-返回文件名在对应镜头目录内使用 `takeNN.mp4`。打包前先查看该镜头已有生成结果，预留下一组未使用编号；不得因为新提示词 / 新模型重新从 `take01` 开始覆盖旧结果。
+返回文件名在对应镜头目录内使用 `takeNN.mp4`。打包前优先用 `generation_pack.py next-take` 查看该镜头已有生成结果并预留下一个未使用编号；命名按当前最大已用编号继续递增，不填补历史空号，也不得因为新提示词 / 新模型重新从 `take01` 开始覆盖旧结果。
 
 如果用户需要从包外单独传回文件，为避免丢失归属，可以使用 `SC01_SH010_take01.mp4`；导回镜头后再按项目现有简洁命名整理。
 
@@ -149,10 +149,11 @@ zip 仍保存在同一个项目 `.tmp/` 中，例如：
 1. 根据返回文件名确定归属；文件名不规范但有明确一一对应关系时可以整理，多个返回文件无法可靠对应对象 / 镜头时停止并向用户确认，不按上传顺序猜；
 2. 保留原始返回文件，先进入 `video-review`；
 3. 图片有多个候选时先完成选择，只有选中的结果归档为对应长期稳定名；未选候选默认留在临时 pack 等待清理；
-4. 图片长期素材归入对应 `video/materials/<category>/`；
-5. 镜头视频、镜头专属图片 / 音频归入对应镜头；
-6. 如果文件名不符合约定但归属明确，正式归档时整理为项目命名；
-7. 更新必要的 `VIDEO.md` 当前工作。
+4. `video-review` 明确接受后，优先使用 `generation_pack.py archive --confirm-reviewed` 把选中返回文件**复制**到正式归属位置；脚本禁止目的地仍位于 `.tmp/`，默认拒绝覆盖既有正式文件，并返回 SHA-256 / 文件大小供核对；
+5. 图片长期素材归入对应 `video/materials/<category>/`；
+6. 镜头视频、镜头专属图片 / 音频归入对应镜头；
+7. 如果文件名不符合约定但归属明确，正式归档时整理为项目命名；
+8. 更新必要的 `VIDEO.md` 当前工作。
 
 返回文件也不能因为“暂存在 pack”就成为长期唯一副本。
 

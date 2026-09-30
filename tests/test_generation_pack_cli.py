@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -112,6 +113,78 @@ class GenerationPackCliTests(unittest.TestCase):
         error = self.run_cli("zip", str(self.project), "video-pack", expected=2)
         self.assertFalse(error["ok"])
         self.assertIn("contains returned files", str(error["error"]))
+
+    def test_archive_requires_review_preserves_source_and_refuses_tmp_destination(self) -> None:
+        self.run_cli("init", str(self.project), "review-pack")
+        self.run_cli("returns", str(self.project), "review-pack")
+        returned = self.project / ".tmp" / "review-pack" / "returns" / "candidate.png"
+        returned.write_bytes(b"reviewed-candidate")
+
+        error = self.run_cli(
+            "archive",
+            str(self.project),
+            "review-pack",
+            "candidate.png",
+            "--dest",
+            "video/materials/characters/CHR01_identity.png",
+            expected=2,
+        )
+        self.assertIn("--confirm-reviewed", str(error["error"]))
+
+        error = self.run_cli(
+            "archive",
+            str(self.project),
+            "review-pack",
+            "candidate.png",
+            "--dest",
+            ".tmp/not-formal.png",
+            "--confirm-reviewed",
+            expected=2,
+        )
+        self.assertIn("must not remain under .tmp", str(error["error"]))
+
+        result = self.run_cli(
+            "archive",
+            str(self.project),
+            "review-pack",
+            "candidate.png",
+            "--dest",
+            "video/materials/characters/CHR01_identity.png",
+            "--confirm-reviewed",
+        )
+        archived = self.project / "video" / "materials" / "characters" / "CHR01_identity.png"
+        self.assertTrue(archived.is_file())
+        self.assertTrue(returned.is_file())
+        self.assertTrue(result["source_preserved"])
+        self.assertEqual(result["sha256"], hashlib.sha256(b"reviewed-candidate").hexdigest())
+
+        error = self.run_cli(
+            "archive",
+            str(self.project),
+            "review-pack",
+            "candidate.png",
+            "--dest",
+            "video/materials/characters/CHR01_identity.png",
+            "--confirm-reviewed",
+            expected=2,
+        )
+        self.assertIn("refusing to overwrite", str(error["error"]))
+
+    def test_next_take_is_monotonic_and_does_not_fill_gaps(self) -> None:
+        shot = self.project / "video" / "shots" / "SC01_SH010"
+        shot.mkdir(parents=True)
+        (shot / "take01.mp4").write_bytes(b"one")
+        (shot / "take03.mp4").write_bytes(b"three")
+        (shot / "prompt_v01.md").write_text("prompt\n", encoding="utf-8")
+
+        result = self.run_cli(
+            "next-take",
+            str(self.project),
+            "video/shots/SC01_SH010",
+        )
+        self.assertEqual(result["number"], 4)
+        self.assertEqual(result["filename"], "take04.mp4")
+        self.assertEqual(result["relative_path"], "video/shots/SC01_SH010/take04.mp4")
 
     def test_cleanup_requires_explicit_confirmations(self) -> None:
         self.run_cli("init", str(self.project), "cleanup-pack")

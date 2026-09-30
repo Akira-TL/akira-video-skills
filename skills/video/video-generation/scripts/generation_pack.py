@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import shutil
@@ -94,11 +95,15 @@ def _returns_files(pack: Path) -> list[str]:
     returns = pack / "returns"
     if not returns.exists():
         return []
-    return [
-        str(path.relative_to(pack))
-        for path in _walk_files(returns)
-        if path.is_file() and not path.is_symlink()
-    ]
+    return [str(path.relative_to(pack)) for path in _walk_files(returns)]
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def cmd_init(args: argparse.Namespace) -> dict[str, Any]:
@@ -230,6 +235,81 @@ def cmd_zip(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def cmd_archive(args: argparse.Namespace) -> dict[str, Any]:
+    project = _project_root(args.project)
+    name = _pack_name(args.name)
+    pack = _pack_path(project, name)
+    if not pack.is_dir():
+        raise PackError(f"pack does not exist: {pack}")
+    if not args.confirm_reviewed:
+        raise PackError(
+            "archive requires --confirm-reviewed after video-review has accepted this returned file"
+        )
+
+    returns = pack / "returns"
+    if not returns.is_dir():
+        raise PackError(f"returns directory does not exist: {returns}")
+    rel_source = _safe_relative(args.source, label="returned source")
+    source_input = returns / rel_source
+    if source_input.is_symlink():
+        raise PackError(f"returned source must be a regular file, not a symlink: {source_input}")
+    source = _ensure_within(source_input, returns, label="returned source")
+    if not source.is_file():
+        raise PackError(f"returned source is not a regular file: {source}")
+
+    rel_dest = _safe_relative(args.dest, label="formal destination")
+    if rel_dest.parts[0] == ".tmp":
+        raise PackError("formal destination must not remain under .tmp/")
+    dest = project / rel_dest
+    _ensure_within(dest.parent, project, label="formal destination")
+    if dest.exists() or dest.is_symlink():
+        raise PackError(f"formal destination already exists; refusing to overwrite: {dest}")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, dest)
+
+    return {
+        "ok": True,
+        "action": "archive",
+        "source": str(source),
+        "destination": str(dest),
+        "relative_destination": str(rel_dest),
+        "sha256": _sha256(dest),
+        "size": dest.stat().st_size,
+        "source_preserved": source.exists(),
+    }
+
+
+def cmd_next_take(args: argparse.Namespace) -> dict[str, Any]:
+    project = _project_root(args.project)
+    rel_shot = _safe_relative(args.shot_dir, label="shot directory")
+    shot_input = project / rel_shot
+    shot = _ensure_within(shot_input, project, label="shot directory")
+    if not shot.is_dir():
+        raise PackError(f"shot directory does not exist: {shot}")
+
+    ext = args.ext.lstrip(".")
+    if not re.fullmatch(r"[A-Za-z0-9]+", ext):
+        raise PackError(f"invalid file extension: {args.ext}")
+    pattern = re.compile(rf"^take(\d+)\.{re.escape(ext)}$")
+    numbers: list[int] = []
+    for path in shot.iterdir():
+        if not path.is_file():
+            continue
+        match = pattern.fullmatch(path.name)
+        if match:
+            numbers.append(int(match.group(1)))
+    number = max(numbers, default=0) + 1
+    filename = f"take{number:02d}.{ext}"
+    return {
+        "ok": True,
+        "action": "next-take",
+        "shot": str(shot),
+        "number": number,
+        "filename": filename,
+        "relative_path": str(rel_shot / filename),
+    }
+
+
 def cmd_cleanup(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
     name = _pack_name(args.name)
@@ -292,6 +372,20 @@ def build_parser() -> argparse.ArgumentParser:
     status.add_argument("project")
     status.add_argument("name")
     status.set_defaults(func=cmd_status)
+
+    archive = sub.add_parser("archive", help="copy one reviewed returned file into its formal project destination")
+    archive.add_argument("project")
+    archive.add_argument("name")
+    archive.add_argument("source", help="path relative to pack returns/")
+    archive.add_argument("--dest", required=True, help="formal project-relative destination outside .tmp/")
+    archive.add_argument("--confirm-reviewed", action="store_true")
+    archive.set_defaults(func=cmd_archive)
+
+    next_take = sub.add_parser("next-take", help="return the next monotonic takeNN filename for a formal shot directory")
+    next_take.add_argument("project")
+    next_take.add_argument("shot_dir", help="project-relative shot directory")
+    next_take.add_argument("--ext", default="mp4")
+    next_take.set_defaults(func=cmd_next_take)
 
     zip_cmd = sub.add_parser("zip", help="create .tmp/<name>.zip from a self-contained pack")
     zip_cmd.add_argument("project")
