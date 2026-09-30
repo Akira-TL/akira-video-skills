@@ -557,6 +557,21 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("exactly one circular button", product)
         self.assertIn("Forbidden transfer", action)
 
+    def test_core_blackbox_fixture_enforces_first_external_generation_boundary(self) -> None:
+        prompt = read(REPO / "tests" / "blackbox" / "video-core-independent-prompt.md")
+        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-core-001"
+        brief = read(fixture / "source" / "brief.md")
+        self.assertIn("第一批图片包交付后", prompt)
+        self.assertIn("本阶段**不得**同时打依赖 CHR01 / LOC01 生成结果的视频镜头包", prompt)
+        self.assertIn("严格四视图", prompt)
+        self.assertIn("不允许为了“规范完整”增加", prompt)
+        self.assertIn("output/project/", prompt)
+        self.assertNotIn("/tmp/", prompt)
+        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
+        self.assertIn("不要提前打视频生成包", brief)
+        self.assertIn("不创建一级 `audio/`、`delivery/`、`assets/`", brief)
+        self.assertIn("本轮不要求真正生成任何图片或视频", brief)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
