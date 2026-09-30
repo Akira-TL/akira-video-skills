@@ -27,4 +27,4 @@ Router 按当前真实制作任务加载：`video-script`、`video-design`、`vi
 
 ## VIDEO.md
 
-`VIDEO.md` 是当前制作首页和导航。它同时保存整片级项目定义、交付要求、来源 / 授权限制、当前进度、当前工作、阻塞项和仍有效的关键决定，不保存全部生成结果、提示词历史或生成日志。对象和文件命名统一由 `akira-video/references/NAMING.md` 维护；进入昂贵下一阶段前按 `references/PRODUCTION-GATES.md` 运行当前项目适用的轻量门禁。
+`VIDEO.md` 是当前制作首页和导航。它同时保存整片级项目定义、交付要求、来源 / 授权限制、当前进度、当前工作、阻塞项和仍有效的关键决定，不保存全部生成结果、提示词历史或生成日志。对象和文件命名统一由 `akira-video/references/NAMING.md` 维护；进入昂贵下一阶段前按 `references/PRODUCTION-GATES.md` 运行当前项目适用的轻量门禁。默认保持短片浅结构，只有真实复杂度出现时才按 `references/SCALING-VERSIONS.md` 增加章节或临时创意变体。

@@ -23,7 +23,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实 blocker。
 
-进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。
+进入下一项昂贵制作前，按 [`references/PRODUCTION-GATES.md`](references/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/SCALING-VERSIONS.md`](references/SCALING-VERSIONS.md)，不要预设长片目录。
 
 ## 2. 维护 VIDEO.md
 
@@ -55,11 +55,11 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 - 编写当前生成提示词、选择最小参考集、整理一次性生成包、导回用户生成结果 → `video-generation`；
 - 用户带回图片或生成结果后判断采用、调整后续、后期修复、重生成或重写 → `video-review`；
 - 多个采用镜头进入 Premiere Pro、After Effects、DaVinci Resolve 等整片后期 → `video-editing`；
-- 品牌、产品植入或广告需要核验产品功能、结构、官方素材与广告表达边界 → 按需加载可选 `video-advertising`；当前 Target 未安装时使用明确 coordinate `akira-tl/akira-video-skills/video-advertising`，交给 `akira` Router / Skiloom 做 Candidate plan 与授权安装。
+- 品牌、产品植入或广告需要核验产品功能、结构、官方素材与广告表达边界 → 按需加载可选 `video-advertising`；当前 Target 未安装时使用明确 coordinate `akira-tl/akira-video-skills/video-advertising`，交给 `akira` Router / Skiloom 生成候选计划（Candidate plan）并在授权后安装。
 
-Router 只保存上述职责摘要；进入任一分支后，以实际加载的 canonical Skill 为该专业方法的 source of truth。
+Router 只保存上述职责摘要；进入任一分支后，以实际加载的权威 Skill 为该专业方法的唯一权威来源。
 
-若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常 Candidate plan 与安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
+若目标需要视频模型专用适配，先读取 [`references/MODEL-ADAPTERS.md`](references/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常生成候选计划（Candidate plan）并安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
 ## 4. 外部生成的人机边界
 

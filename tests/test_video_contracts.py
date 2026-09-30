@@ -163,10 +163,21 @@ class VideoRepositoryContractTests(unittest.TestCase):
             "包内所有上传素材都复制到当前包的 `materials/`",
             "任务文件只引用包内相对路径",
             "不使用软链接作为交付素材",
-            "先修改正式 owning 文件",
+            "先修改正式归属文件",
             "不只在旧 `.tmp/` 包里临时改字",
         ):
             self.assertIn(marker, templates)
+
+    def test_project_scaling_is_opt_in_and_git_remains_version_authority(self) -> None:
+        scaling = read(STABLE / "akira-video" / "references" / "SCALING-VERSIONS.md")
+        for marker in (
+            "默认不创建章节层级",
+            "只有出现以下情况之一时才增加组织层",
+            "上游小说章节不等于视频章节",
+            "普通修改使用 Git",
+            "只有确实需要并行比较两套创意内容时",
+        ):
+            self.assertIn(marker, scaling)
 
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "VIDEO-HOME.md")

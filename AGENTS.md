@@ -41,5 +41,5 @@
 
 - 修改稳定 Skill 时同步更新 `docs/video/<name>.md`。
 - 改变用户可达 Skill、路由关系或项目目录契约时同步检查 `README.md`、`CONTEXT.md` 与 `akira-video`。
-- 同一规则只保留一个 source of truth。
+- 同一规则只保留一个唯一权威来源。
 - 正式提交前运行 `skiloom validate . --json`、`./scripts/check.sh` 与适用 targeted tests。

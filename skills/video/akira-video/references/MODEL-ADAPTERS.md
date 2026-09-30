@@ -26,7 +26,7 @@ Package：`akira-tl/akira-video-skills/video-model-seedance`
 
 1. 当前会话已经加载对应适配器时直接使用；
 2. 缺失时，`akira-video` 只确定最小 Package coordinate；
-3. 安装 / Candidate plan 仍交给 `akira` Router 与 Skiloom；
+3. 安装 / 候选计划（Candidate plan）仍交给 `akira` Router 与 Skiloom；
 4. 精确 duration、分辨率、输入上限和 endpoint 由适配器在实际使用时核验当前官方资料。
 
 ## 图片模型
