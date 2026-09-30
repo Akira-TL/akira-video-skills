@@ -351,6 +351,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不按上传顺序或“看起来像”猜归属", waiting)
         self.assertIn("不要说“后台继续处理”", waiting)
 
+    def test_optional_cross_skill_collaboration_has_no_hidden_reference_dependencies(self) -> None:
+        audio = read(STABLE / "video-audio" / "SKILL.md")
+        editing = read(STABLE / "video-editing" / "SKILL.md") + read(STABLE / "video-editing" / "references" / "EDITING-RHYTHM.md")
+        self.assertEqual(dependencies(STABLE / "video-audio"), set())
+        self.assertEqual(dependencies(STABLE / "video-editing"), set())
+        self.assertNotIn("video-script/references/", audio)
+        self.assertNotIn("video-shot/references/", editing)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
