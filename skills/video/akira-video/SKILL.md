@@ -27,6 +27,8 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 
 进入下一项昂贵制作前，按 [`references/workflow/PRODUCTION-GATES.md`](references/workflow/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/project/SCALING-VERSIONS.md`](references/project/SCALING-VERSIONS.md)，不要预设长片目录。需要清理失败结果、一次性包、缓存或旧媒体时，按 [`references/project/MEDIA-LIFECYCLE.md`](references/project/MEDIA-LIFECYCLE.md) 先确认文件不是唯一输入、当前采用结果或后期工程唯一依赖。
 
+重要制作决定如何落盘、`VIDEO.md` 什么时候更新、镜头采用结果为什么只写 `SHOT.md`，按 [`references/project/RECORDING.md`](references/project/RECORDING.md)；聊天历史和一次性生成包都不是长期项目记录。
+
 ## 2. 维护 VIDEO.md
 
 `VIDEO.md` 是给人和下一位 Agent 直接阅读的视频制作首页，只保存当前仍有用的信息。固定关注：

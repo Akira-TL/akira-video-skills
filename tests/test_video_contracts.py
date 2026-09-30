@@ -335,6 +335,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("更换模型 / 参考基准后重新小样", batching)
         self.assertIn("不要把一个数字写成通用规则", batching)
 
+    def test_project_recording_keeps_video_home_current_not_log_like(self) -> None:
+        recording = read(STABLE / "akira-video" / "references" / "project" / "RECORDING.md")
+        self.assertIn("聊天不是长期项目记录", recording)
+        self.assertIn("VIDEO.md 只保存整片级当前摘要", recording)
+        self.assertIn("当前采用与实际出口只写镜头", recording)
+        self.assertIn("Current Work 不是历史日志", recording)
+        self.assertIn("不记录无意义机器细节", recording)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
