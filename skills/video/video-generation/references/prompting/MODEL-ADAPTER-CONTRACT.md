@@ -275,6 +275,8 @@ stable / preview：
 - 把第三方经验写成官方限制；
 - 把能力上限写成推荐目标。
 
+统一黑盒 / 回归场景见 [`MODEL-ADAPTER-ACCEPTANCE.md`](MODEL-ADAPTER-ACCEPTANCE.md)。
+
 ## 17. 适配器晋升稳定前
 
 in-progress 适配器准备进入稳定目录前，至少确认：

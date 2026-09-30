@@ -525,6 +525,21 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要把一个只包含后半段的文件误命名为完整 `take04.mp4`", edit_extend)
         self.assertIn("必须重新看**完整视频**", edit_extend)
 
+    def test_model_adapter_acceptance_covers_core_failure_and_scope_boundaries(self) -> None:
+        acceptance = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-ADAPTER-ACCEPTANCE.md")
+        for marker in (
+            "## A. 精确入口与模型",
+            "## B. 当前能力核验",
+            "## G. 同步声音",
+            "## H. Edit / Extend",
+            "## K. 第三方入口",
+            "## M. 不越权",
+            "## N. 过期快照",
+            "## O. Package 边界",
+            "inconclusive",
+        ):
+            self.assertIn(marker, acceptance)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

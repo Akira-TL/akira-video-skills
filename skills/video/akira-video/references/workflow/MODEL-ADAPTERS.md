@@ -31,6 +31,8 @@ Package：`akira-tl/akira-video-skills/video-model-seedance`
 3. 安装 / 候选计划（Candidate plan）仍交给 `akira` Router 与 Skiloom；
 4. 精确 duration、分辨率、输入上限和 endpoint 由适配器在实际使用时核验当前官方资料。
 
+适配器开发、回归和从 in-progress 晋升稳定时，统一使用 `video-generation` 的模型适配器验收场景；不为每个供应商重新发明一套验收标准。
+
 ## 图片模型
 
 目前不建立图片模型专用适配器。长期生图提示词、角色 / 场景设计和严格四视图由 `video-design` + `video-materials` 负责；只有未来真实生产反复证明某图片模型存在稳定且不可由通用提示词覆盖的差异时再拆。
