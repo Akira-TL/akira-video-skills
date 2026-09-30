@@ -205,7 +205,7 @@
 
 ## 13. 来源与授权
 
-第三方 / 素材库音乐按 `video-materials/references/SOURCE-RIGHTS.md` 记录必要来源与使用边界。
+第三方 / 素材库音乐的来源与使用边界属于 `video-materials`；当前任务需要核验时按需加载该 Skill，缺失则交回 `akira-video` 补齐，而不是在 `video-audio` 复制第二套授权规则。
 
 网上能播放不等于允许进入最终对外交付。
 

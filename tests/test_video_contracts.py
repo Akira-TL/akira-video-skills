@@ -419,6 +419,22 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不按上传顺序或“看起来像”猜归属", waiting)
         self.assertIn("不要说“后台继续处理”", waiting)
 
+    def test_cross_package_reference_paths_require_declared_dependencies(self) -> None:
+        pattern = re.compile(r"(video-[a-z0-9-]+)/references/")
+        failures: list[str] = []
+        for package in sorted(path for path in STABLE.iterdir() if (path / "SKILL.md").is_file()):
+            declared = dependencies(package)
+            for source in package.rglob("*.md"):
+                for target in pattern.findall(read(source)):
+                    if target == package.name:
+                        continue
+                    coordinate = f"akira-tl/akira-video-skills/{target}"
+                    if coordinate not in declared:
+                        failures.append(
+                            f"{source.relative_to(REPO)} -> {target} without required dependency"
+                        )
+        self.assertEqual(failures, [])
+
     def test_optional_cross_skill_collaboration_has_no_hidden_reference_dependencies(self) -> None:
         audio = read(STABLE / "video-audio" / "SKILL.md")
         editing = read(STABLE / "video-editing" / "SKILL.md") + read(STABLE / "video-editing" / "references" / "EDITING-RHYTHM.md")

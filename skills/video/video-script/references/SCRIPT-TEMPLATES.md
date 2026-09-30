@@ -177,7 +177,7 @@ CHR02：……
 - `SHOTS.md` 只做总览；
 - 具体摄影、动作时间、参考素材、Continuity In / Out、硬性约束进入对应 `SHOT.md`；
 - 不把每个生成结果 / 当前采用写回总表；
-- 镜头数量由 `video-shot/references/planning/COVERAGE.md` 决定，不为表格完整凑镜头。
+- 镜头数量与 coverage 属于 `video-shot`；真正需要展开 / 审核镜头覆盖时按需加载该 Skill，不在脚本模板复制第二套镜头方法，也不为表格完整凑镜头。
 
 ## 5. 文件可以很短
 

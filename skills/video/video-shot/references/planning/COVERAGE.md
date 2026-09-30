@@ -56,7 +56,7 @@
 - 屏幕 / 按钮 / 结果；
 - 需要隐藏时间压缩或剪辑接点。
 
-真实产品特写还要遵守 `video-advertising/references/PRODUCT-SHOTS.md`，不为了特写生成未知结构。
+真实产品特写还要按需加载可选 `video-advertising` 核验产品镜头边界；当前 Target 缺失时交回 `akira-video` 请求最小 Package，不为了特写生成未知结构，也不在 `video-shot` 复制广告规则。
 
 ## 5. 反应镜头
 
