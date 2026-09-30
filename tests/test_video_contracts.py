@@ -430,6 +430,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要让同一角色同时", interaction)
         self.assertIn("遮挡前后需要特别检查", interaction)
 
+    def test_execution_parameters_stay_out_of_long_term_shot_intent_by_default(self) -> None:
+        params = read(STABLE / "video-generation" / "references" / "EXECUTION-PARAMETERS.md")
+        self.assertIn("SHOT.md 不拥有模型参数", params)
+        self.assertIn("seed 不是身份系统", params)
+        self.assertIn("不为了“完整记录”把全部默认值写进包", params)
+        self.assertIn("严格可复现项目", params)
+        self.assertIn("项目特定要求，不默认强加给所有视频制作", params)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
