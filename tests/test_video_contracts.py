@@ -327,6 +327,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("某一个镜头动作", design_templates)
         self.assertIn("真实品牌产品不使用这个模板自由重设计结构", design_templates)
 
+    def test_batching_validates_high_risk_samples_before_scaling(self) -> None:
+        batching = read(STABLE / "video-generation" / "references" / "BATCHING.md")
+        self.assertIn("先做代表样本", batching)
+        self.assertIn("没有固定批量大小", batching)
+        self.assertIn("停止放量的信号", batching)
+        self.assertIn("更换模型 / 参考基准后重新小样", batching)
+        self.assertIn("不要把一个数字写成通用规则", batching)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
