@@ -438,6 +438,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("严格可复现项目", params)
         self.assertIn("项目特定要求，不默认强加给所有视频制作", params)
 
+    def test_finishing_distinguishes_source_resolution_from_delivery_resolution(self) -> None:
+        finishing = read(STABLE / "video-editing" / "references" / "FINISHING.md")
+        technical = read(STABLE / "video-editing" / "references" / "TECHNICAL-QC.md")
+        self.assertIn("源素材规格", finishing)
+        self.assertIn("不等于原生 4K 细节", finishing)
+        self.assertIn("不通过非等比拉伸", finishing)
+        self.assertIn("裁切后的有效分辨率是否足够", finishing)
+        self.assertIn("没有非等比拉伸", technical)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
