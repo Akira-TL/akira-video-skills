@@ -2,9 +2,9 @@
 
 最后人工核验：2026-09-30。
 
-## 重要：surface 不等价
+## 重要：不同使用入口的能力不等价
 
-Google 的 Veo 能力会随 surface、stable / preview endpoint 和产品入口变化。不要把一篇创作指南中展示的能力自动视为所有 Vertex AI stable endpoint 都支持。
+Google 的 Veo 能力会随使用入口、stable / preview endpoint 和产品形态变化。不要把一篇创作指南中展示的能力自动视为所有 Vertex AI stable endpoint 都支持。
 
 2026-03 的 Vertex AI release notes 已要求把 Veo 3.1 preview endpoint 迁移到 stable `veo-3.1-generate-001` / fast 对应 endpoint，因此旧 preview 文档不能直接作为当前 API 契约。
 
@@ -20,7 +20,7 @@ Google 的 Veo 能力会随 surface、stable / preview endpoint 和产品入口�
 - 720p / 1080p；
 - 24 FPS。
 
-参考图 / ingredients、extension 等能力在不同 Google 页面 / surface 上存在差异，因此使用前必须核验所选入口的当前文档。
+参考图 / ingredients、extension 等能力在不同 Google 页面 / 使用入口上存在差异，因此使用前必须核验所选入口的当前文档。
 
 ## Prompt 方法
 
@@ -37,4 +37,4 @@ Google Cloud 的 Veo 3.1 创作指南建议从以下五类信息组织 Prompt：
 - https://docs.cloud.google.com/vertex-ai/generative-ai/docs/models/veo/3-1-generate
 - https://docs.cloud.google.com/vertex-ai/generative-ai/docs/release-notes
 
-如果用户使用的不是 Vertex AI stable endpoint，再查对应 Google surface 的官方资料，不从本文件猜。
+如果用户使用的不是 Vertex AI stable endpoint，再查对应 Google 使用入口的官方资料，不从本文件猜。

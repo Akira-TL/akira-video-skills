@@ -7,11 +7,11 @@ description: 为 ByteDance / BytePlus Seedance 当前视频模型编译和检查
 
 本 Skill 是 Seedance 模型适配层。它从既有 `SHOT.md`、复用素材和声音要求编译 Seedance 当前模型 Prompt，不重新决定镜头创意或长期项目事实。
 
-## 1. 固定具体模型 / surface / operation
+## 1. 固定具体模型 / 使用入口 / 任务模式
 
-先确认用户实际使用的 Seedance 版本、入口和任务类型。当前重点适配 Seedance 2.5；若用户使用 2.0、1.5 或第三方 Router，不把 2.5 的参数直接套用。
+先确认用户实际使用的 Seedance 版本、使用入口和任务类型。当前重点适配 Seedance 2.5；若用户使用 2.0、1.5 或第三方 Router，不把 2.5 的参数直接套用。
 
-常见 operation：
+常见任务模式：
 
 - reference-based generation；
 - 普通视频生成；
@@ -60,14 +60,14 @@ Seedance 适合在较长生成中使用清楚时间线。时间段描述当前�
 
 Video editing 模式下明确使用编辑动作词，并只修改用户指定内容；未要求变化的内容尽量保持。
 
-Extension 任务优先保持输入 / 输出格式和视听连续性；精确格式要求按当前官方 surface 复核。
+Extension 任务优先保持输入 / 输出格式和视听连续性；精确格式要求按当前官方使用入口复核。
 
 ## 7. 返回 video-generation
 
-输出 Seedance model / surface / operation、按上传顺序写清的 reference mapping、当前 Prompt、duration / ratio / output format 等用户需要确认的设置，以及每份参考的明确用途。
+输出 Seedance model / 使用入口 / 任务模式、按上传顺序写清的 reference mapping、当前 Prompt、duration / ratio / output format 等用户需要确认的设置，以及每份参考的明确用途。
 
 Generation Pack 和结果导回仍由 `video-generation` 负责。
 
 ## 完成标准
 
-每份 Seedance 参考都有明确职责；Prompt 结构与 operation 匹配；时间线没有超过实际 duration；精确能力来自当前官方资料而不是模型记忆。
+每份 Seedance 参考都有明确职责；Prompt 结构与任务模式匹配；时间线没有超过实际 duration；精确能力来自当前官方资料而不是模型记忆。

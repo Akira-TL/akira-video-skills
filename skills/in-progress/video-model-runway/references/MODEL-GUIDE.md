@@ -10,7 +10,7 @@ Runway 官方当前把 Gen-4.5 作为最新视频生成模型，并提供 Text t
 
 截至核验日，官方 Gen-4.5 创建指南记录：
 
-- duration：2–10 秒；
+- 时长（duration）：2–10 秒；
 - Text to Video：文本输入；
 - Image to Video：文本 + 图片输入；
 - 输出 720p；

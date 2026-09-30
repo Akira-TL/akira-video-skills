@@ -8,12 +8,12 @@ BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与 Prompt
 
 截至核验日，官方教程记录：
 
-- 普通生成 duration：4–30 秒，或使用智能 duration；
+- 普通生成时长（duration）：4–30 秒，或使用智能 duration；
 - 图片最多 30；
 - 视频最多 10，合计参考时长不超过 30 秒；
 - 音频最多 10，合计参考时长不超过 30 秒；
 - 官方仍建议参考数量保持克制，较少主体和较短参考通常更稳定；
-- video editing、extension、storyboard 等 operation 有各自输入和参数规则。
+- video editing、extension、storyboard 等任务模式有各自输入和参数规则。
 
 这些是上限，不是推荐目标。
 
@@ -30,7 +30,7 @@ BytePlus / ModelArk 当前公开 Dreamina Seedance 2.5 的视频生成与 Prompt
 
 ## Video editing
 
-官方文档要求编辑任务包含明确编辑意图，例如 add / remove / replace / modify 等，并有与输入视频时长、ratio、output format 相关的专门规则；使用时必须按所选 surface 当前文档复核。
+官方文档要求编辑任务包含明确编辑意图，例如 add / remove / replace / modify 等，并有与输入视频时长、ratio、output format 相关的专门规则；使用时必须按所选使用入口当前文档复核。
 
 ## 官方来源
 

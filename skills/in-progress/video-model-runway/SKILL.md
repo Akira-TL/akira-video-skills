@@ -13,7 +13,7 @@ description: 为 Runway 当前视频模型编译和检查生成 Prompt；当 vid
 
 如果用户使用旧 Gen-4 / Gen-4 Turbo、Apps、Agent、Workflows 或其他 Runway 工具，不把 Gen-4.5 的参数直接套用；按 [`references/MODEL-GUIDE.md`](references/MODEL-GUIDE.md) 核验当前官方资料。
 
-涉及精确 duration、aspect ratio、FPS、分辨率或输入类型时，必须以当前官方页面为准。
+涉及精确时长、画幅比例、帧率（Frames Per Second, FPS）、分辨率或输入类型时，必须以当前官方页面为准。
 
 ## 2. Image to Video
 
