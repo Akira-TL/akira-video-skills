@@ -111,7 +111,7 @@ Owner：`video-editing`。
 
 ## 门禁失败
 
-失败回到真正 owning source 修复。
+失败回到真正的归属来源修复。
 
 不要：
 

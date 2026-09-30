@@ -34,7 +34,7 @@
 
 ## Ownership
 
-- 上游小说、章节、世界观或其他内容的事实归其 owning Skill / 项目文件。
+- 上游小说、章节、世界观或其他内容的事实归其对应归属 Skill / 项目文件。
 - `video/script/` 只保存视频改编和制作所需的信息。
 - 跨镜头复用内容归 `video/materials/`。
 - 镜头专属内容归对应 `video/shots/<shot-id>/`。

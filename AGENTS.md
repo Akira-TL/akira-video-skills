@@ -8,7 +8,7 @@
 - 视频 Skill 只拥有项目根目录 `VIDEO.md` 与 `video/` 下的视频制作内容。小说、漫画、游戏、品牌资料库或其他上游内容仍由各自 Skill / 项目结构拥有；视频 Skill 只读取并转换当前制作真正需要的信息。
 - 稳定 Skill 位于 `skills/video/<name>/`；尚未稳定的模型适配或实验能力位于 `skills/in-progress/`；弃用能力位于 `skills/deprecated/`。
 - 稳定 Skill 的人类说明位于 `docs/video/<name>.md`。
-- 长流程、低频分支和详细契约放在 owning Skill 的 sibling `references/`；Skill 之间通过名称和能力契约协作，不复制彼此正文。
+- 长流程、低频分支和详细契约放在对应归属 Skill 的 sibling `references/`；Skill 之间通过名称和能力契约协作，不复制彼此正文。
 
 ## 视频项目存储原则
 

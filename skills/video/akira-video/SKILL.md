@@ -23,7 +23,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 - 已进入整片后期时：`video/edit/`；
 - 上游小说、章节、品牌资料或其他来源：沿当前项目真实 pointer 读取，不复制成第二份上游事实源。
 
-完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实 blocker。
+完成标准：能够说明当前视频目标、交付要求、正在推进的制作内容、已有可复用素材、当前镜头/后期状态和真实阻塞项。
 
 进入下一项昂贵制作前，按 [`references/workflow/PRODUCTION-GATES.md`](references/workflow/PRODUCTION-GATES.md) 只运行当前项目适用的轻量门禁；门禁不产生额外项目状态文件。当前项目已经大到平铺影响阅读，或确实需要同时比较创意版本时，再读取 [`references/project/SCALING-VERSIONS.md`](references/project/SCALING-VERSIONS.md)，不要预设长片目录。需要清理失败结果、一次性包、缓存或旧媒体时，按 [`references/project/MEDIA-LIFECYCLE.md`](references/project/MEDIA-LIFECYCLE.md) 先确认文件不是唯一输入、当前采用结果或后期工程唯一依赖。
 
@@ -37,7 +37,7 @@ description: 进入并持续推进一个 AI 视频制作项目；读取或建立
 - 交付要求；
 - 当前制作进度；
 - 当前正在推进的工作；
-- blocker；
+- 阻塞项；
 - 仍然影响后续的关键决定；
 - 到视频脚本、复用素材、镜头和整片后期的导航。
 
@@ -65,7 +65,7 @@ Router 只保存上述职责摘要；进入任一分支后，以实际加载的�
 
 若目标需要视频模型专用适配，先读取 [`references/workflow/MODEL-ADAPTERS.md`](references/workflow/MODEL-ADAPTERS.md) 选择当前仓已有的最小适配 Package；尚未安装时把明确 coordinate 交给 `akira` Router / Skiloom 正常生成候选计划（Candidate plan）并安装。不要把模型参数或供应商细节硬编码进 `akira-video`。图片生图目前使用 `video-design` + `video-materials` 的通用规则，不单独维护图片模型适配器。
 
-外部生成已经交给用户、需要跨会话等待时，按 [`references/workflow/WAITING-RESUME.md`](references/workflow/WAITING-RESUME.md) 在 `VIDEO.md` 只记录生成包路径、预期返回、下一步和真实 blocker；下一轮优先恢复现有包 / 返回结果，不因为换会话重复打包。
+外部生成已经交给用户、需要跨会话等待时，按 [`references/workflow/WAITING-RESUME.md`](references/workflow/WAITING-RESUME.md) 在 `VIDEO.md` 只记录生成包路径、预期返回、下一步和真实阻塞项；下一轮优先恢复现有包 / 返回结果，不因为换会话重复打包。
 
 ## 4. 外部生成的人机边界
 
@@ -73,14 +73,14 @@ Router 只保存上述职责摘要；进入任一分支后，以实际加载的�
 
 正式项目内容 → `.tmp/` 一次性生成包 → 用户外部生成 → 结果返回 → 归档正式目录 → 删除临时包。
 
-一次性生成包是派生物，不成为长期项目事实源；长期提示词留在 owning 素材或镜头目录，临时包只复制当前生成真正需要的内容。
+一次性生成包是派生物，不成为长期项目事实源；长期提示词留在对应归属素材或镜头目录，临时包只复制当前生成真正需要的内容。
 
 ## 5. 重新路由与停止边界
 
 每次专业 Skill 完成一个有边界动作后：
 
-1. 把返回的正式素材、生成结果、镜头决定或整片工程归档到 owning 目录；
+1. 把返回的正式素材、生成结果、镜头决定或整片工程归档到对应归属目录；
 2. 更新仍影响当前制作的 `VIDEO.md`；
 3. 根据用户目标与当前产物决定下一项制作工作。
 
-只有用户限定范围完成、下一步必须等待用户外部生成或提供素材、存在真实 blocker，或当前交付已经完成时停止。等待用户外部生成时明确给出一次性生成包和返回命名要求，不继续假装已产生素材。
+只有用户限定范围完成、下一步必须等待用户外部生成或提供素材、存在真实阻塞项，或当前交付已经完成时停止。等待用户外部生成时明确给出一次性生成包和返回命名要求，不继续假装已产生素材。
