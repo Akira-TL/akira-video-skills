@@ -104,6 +104,32 @@ class GenerationPackCliTests(unittest.TestCase):
         self.assertFalse(error["ok"])
         self.assertIn("escapes project root", str(error["error"]))
 
+    def test_copy_rejects_repository_and_temporary_internal_sources(self) -> None:
+        self.run_cli("init", str(self.project), "internal-pack")
+        (self.project / ".git").mkdir()
+        (self.project / ".git" / "config").write_text("secret\n", encoding="utf-8")
+        (self.project / ".tmp" / "derived.txt").write_text("derived\n", encoding="utf-8")
+
+        for source in (".git/config", ".tmp/derived.txt"):
+            error = self.run_cli(
+                "copy",
+                str(self.project),
+                "internal-pack",
+                source,
+                expected=2,
+            )
+            self.assertIn("formal project file", str(error["error"]))
+
+        absolute_tmp = self.project / ".tmp" / "derived.txt"
+        error = self.run_cli(
+            "copy",
+            str(self.project),
+            "internal-pack",
+            str(absolute_tmp),
+            expected=2,
+        )
+        self.assertIn("formal project file", str(error["error"]))
+
     def test_zip_refuses_pack_after_returns_arrive(self) -> None:
         self.run_cli("init", str(self.project), "video-pack")
         self.run_cli("returns", str(self.project), "video-pack")
@@ -142,6 +168,18 @@ class GenerationPackCliTests(unittest.TestCase):
             expected=2,
         )
         self.assertIn("must not remain under .tmp", str(error["error"]))
+
+        error = self.run_cli(
+            "archive",
+            str(self.project),
+            "review-pack",
+            "candidate.png",
+            "--dest",
+            "exports/CHR01_identity.png",
+            "--confirm-reviewed",
+            expected=2,
+        )
+        self.assertIn("must archive under video/", str(error["error"]))
 
         result = self.run_cli(
             "archive",
@@ -185,6 +223,15 @@ class GenerationPackCliTests(unittest.TestCase):
         self.assertEqual(result["number"], 4)
         self.assertEqual(result["filename"], "take04.mp4")
         self.assertEqual(result["relative_path"], "video/shots/SC01_SH010/take04.mp4")
+
+    def test_next_take_rejects_non_shot_directories(self) -> None:
+        error = self.run_cli(
+            "next-take",
+            str(self.project),
+            "video/materials/characters",
+            expected=2,
+        )
+        self.assertIn("must be under video/shots/", str(error["error"]))
 
     def test_cleanup_requires_explicit_confirmations(self) -> None:
         self.run_cli("init", str(self.project), "cleanup-pack")

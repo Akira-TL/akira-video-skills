@@ -59,6 +59,20 @@ def _safe_relative(raw: str, *, label: str) -> Path:
     return path
 
 
+def _reject_internal_source(rel_source: Path) -> None:
+    if rel_source.parts[0] in {".git", ".tmp"}:
+        raise PackError(
+            f"source must be a formal project file, not repository or temporary state: {rel_source}"
+        )
+
+
+def _require_video_destination(rel_dest: Path) -> None:
+    if not rel_dest.parts or rel_dest.parts[0] != "video":
+        raise PackError(
+            f"formal returned media must archive under video/: {rel_dest}"
+        )
+
+
 def _ensure_tmp_ignored(project: Path) -> bool:
     gitignore = project / ".gitignore"
     current = gitignore.read_text(encoding="utf-8") if gitignore.exists() else ""
@@ -130,10 +144,21 @@ def cmd_copy(args: argparse.Namespace) -> dict[str, Any]:
     if not pack.is_dir():
         raise PackError(f"pack does not exist; run init first: {pack}")
 
-    source_input = Path(args.source).expanduser()
-    if not source_input.is_absolute():
-        source_input = project / source_input
+    source_arg = Path(args.source).expanduser()
+    if source_arg.is_absolute():
+        source_input = source_arg
+        try:
+            rel_source = source_input.resolve().relative_to(project)
+        except ValueError as exc:
+            raise PackError(f"source escapes project root: {source_input}") from exc
+    else:
+        rel_source = _safe_relative(args.source, label="source")
+        _reject_internal_source(rel_source)
+        source_input = project / rel_source
     source = _ensure_within(source_input, project, label="source")
+    if source_arg.is_absolute():
+        rel_resolved = source.relative_to(project)
+        _reject_internal_source(rel_resolved)
     if not source.is_file():
         raise PackError(f"source is not a regular file: {source}")
     if source_input.is_symlink() and source != source_input.absolute():
@@ -260,6 +285,7 @@ def cmd_archive(args: argparse.Namespace) -> dict[str, Any]:
     rel_dest = _safe_relative(args.dest, label="formal destination")
     if rel_dest.parts[0] == ".tmp":
         raise PackError("formal destination must not remain under .tmp/")
+    _require_video_destination(rel_dest)
     dest = project / rel_dest
     _ensure_within(dest.parent, project, label="formal destination")
     if dest.exists() or dest.is_symlink():
@@ -282,8 +308,10 @@ def cmd_archive(args: argparse.Namespace) -> dict[str, Any]:
 def cmd_next_take(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
     rel_shot = _safe_relative(args.shot_dir, label="shot directory")
+    if len(rel_shot.parts) < 3 or rel_shot.parts[:2] != ("video", "shots"):
+        raise PackError(f"shot directory must be under video/shots/: {rel_shot}")
     shot_input = project / rel_shot
-    shot = _ensure_within(shot_input, project, label="shot directory")
+    shot = _ensure_within(shot_input, project / "video" / "shots", label="shot directory")
     if not shot.is_dir():
         raise PackError(f"shot directory does not exist: {shot}")
 
