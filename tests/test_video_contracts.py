@@ -410,6 +410,17 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("帧间稳定性", qa)
         self.assertIn("最终判断必须基于完整播放", qa)
 
+    def test_performance_and_interaction_rules_make_acting_and_contact_observable(self) -> None:
+        performance = read(STABLE / "video-script" / "references" / "PERFORMANCE.md")
+        interaction = read(STABLE / "video-shot" / "references" / "INTERACTION.md")
+        self.assertIn("不把情绪词当表演指令终点", performance)
+        self.assertIn("情绪要有触发点", performance)
+        self.assertIn("多人场景中，当前叙事重点只有一个时", performance)
+        self.assertIn("先明确交互主体", interaction)
+        self.assertIn("哪只手", interaction)
+        self.assertIn("不要让同一角色同时", interaction)
+        self.assertIn("遮挡前后需要特别检查", interaction)
+
     def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
         home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (

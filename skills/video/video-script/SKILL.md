@@ -28,7 +28,7 @@ description: 把小说、章节、故事梗概、品牌 brief 或其他上游内
 
 ## 3. 剧情与人物
 
-当前视频包含完整剧情、人物弧光、对白或喜剧包袱时，先读取 [`references/NARRATIVE.md`](references/NARRATIVE.md)。下面只保留所有剧情项目都需要的最小规则。
+当前视频包含完整剧情、人物弧光、对白或喜剧包袱时，先读取 [`references/NARRATIVE.md`](references/NARRATIVE.md)。人物情绪变化、重要反应或关系冲突需要真正落到镜头表演时，再读取 [`references/PERFORMANCE.md`](references/PERFORMANCE.md)，把情绪词转换成可观察的身体、视线、动作与行为节拍。下面只保留所有剧情项目都需要的最小规则。
 
 有剧情时优先保证因果链和人物行为成立，再追求视觉奇观：
 
