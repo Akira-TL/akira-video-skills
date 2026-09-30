@@ -1,6 +1,6 @@
 # video-materials
 
-`video-materials` 管理 `video/materials/` 中跨镜头复用的 Prompt、参考图、人物、场景、道具、产品和其他素材。人物或场景视觉尚未设计清楚时先进入 `video-design`，再生成长期参考素材。
+`video-materials` 管理 `video/materials/` 中跨镜头复用的 Prompt、参考图、人物、场景、道具、产品和其他素材。人物或场景视觉尚未设计清楚时先进入 `video-design`，再生成长期参考素材。批量生图前先从脚本和 Shot 反推真正需要的复用对象；长期图片 Prompt 使用仓库自己的通用 Prompt 规则，不依赖具体图片模型。
 
 目录按真实需要创建，不预生成空分类。长期 Prompt 可以与对应图片放在同一目录；身份与状态只在确实需要区分时拆开。镜头专属内容留在对应 Shot，不复制进公共素材区。
 

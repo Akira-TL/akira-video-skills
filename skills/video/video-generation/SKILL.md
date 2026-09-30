@@ -19,6 +19,9 @@ description: 为 AI 图片或视频生成准备可直接使用的 Prompt 与一�
 
 ## 2. 编写长期 Prompt
 
+为 Shot 编写通用视频 Prompt 前读取 [`references/VIDEO-PROMPT.md`](references/VIDEO-PROMPT.md)；如果当前项目已安装对应模型适配器，再由适配器把通用镜头意图编译成该模型的最终执行 Prompt。
+
+
 可复用素材的 Prompt 保存在对应 `video/materials/` 目录；镜头 Prompt 保存在对应 Shot 目录，使用 `prompt_v01.md`、`prompt_v02.md` 等少量明确版本。
 
 Prompt 只编译当前生成模型真正需要的信息。内部 Shot / 素材定义可以比最终模型 Prompt 更完整；模型能力、字段、时长和参考输入上限由当前实际加载的模型适配 Skill 或官方资料决定，不在本 Skill 写死。

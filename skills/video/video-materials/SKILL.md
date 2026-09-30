@@ -7,6 +7,8 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 
 本 Skill 只拥有 `video/materials/` 下跨镜头复用的内容。镜头专属图片、声音和生成结果跟随对应 Shot，不为了分类把同一素材复制到多个目录。
 
+批量生成复用素材前先读取 [`references/MATERIAL-PLANNING.md`](references/MATERIAL-PLANNING.md)，从实际脚本 / Shot 反推需要哪些长期素材，避免为了数量预生成。
+
 ## 1. 判断是否值得成为复用素材
 
 只有多个镜头会重复引用，或者稳定身份/结构必须被后续持续保持的内容才进入 `video/materials/`。
@@ -32,6 +34,9 @@ description: 规划、创建、整理和维护多个镜头会重复使用的视�
 具体状态只在当前项目真的需要同时区分时才写进文件名。
 
 ## 3. Prompt 与参考图
+
+编写长期图片 Prompt 时读取 [`references/IMAGE-PROMPTS.md`](references/IMAGE-PROMPTS.md)；需要四视图时继续叠加 [`references/FOUR-VIEW-PROMPTS.md`](references/FOUR-VIEW-PROMPTS.md) 对应严格模板。
+
 
 长期可复用的图片 Prompt 与对应素材共同保存在 owning 目录。Prompt 描述稳定身份、结构、材质、视角或世界规则，不承担某一个镜头独有的动作和摄影。
 
