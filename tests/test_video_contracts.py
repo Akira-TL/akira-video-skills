@@ -312,6 +312,11 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("计划出口不是已发生事实", handoff)
         self.assertIn("优先继承实际出口", handoff)
         self.assertIn("不机械全部推倒重来", handoff)
+        self.assertIn("世界空间", handoff)
+        self.assertIn("角色自身左右", handoff)
+        self.assertIn("角色自身左右不能因为反打 / 镜像变成另一只手", handoff)
+        self.assertIn("最小状态块", handoff)
+        self.assertIn("状态词保持稳定", handoff)
 
     def test_direction_rules_preserve_screen_space_without_forbidding_intentional_axis_crossing(self) -> None:
         direction = read(STABLE / "video-shot" / "references" / "DIRECTION.md")
