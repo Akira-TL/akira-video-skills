@@ -22,7 +22,7 @@ G 在所属 scope 内编号；跨视频引用写 `V001/G003`，共享生成写 `
 
 同一目标下，每组正式模型输入使用 `Ixx`：唯一 Prompt 正文、实际参考文件版本和必要执行设置。正式 Prompt 只维护在 G/I，不在资产或 Shot 目录复制第二份。
 
-Prompt 编译按 [`references/prompting/VIDEO-PROMPT.md`](references/prompting/VIDEO-PROMPT.md)。实际模型的输入类型、时长、参考数量、声音、首尾帧或编辑能力在执行当前 I 时查看当前官方资料；不安装供应商 Adapter Skill，也不把历史模型记忆当当前能力。
+Prompt 编译按 [`references/prompting/VIDEO-PROMPT.md`](references/prompting/VIDEO-PROMPT.md)。需要判断哪些模型设置应进入正式 I、哪些只属于一次执行时，按 [`references/prompting/EXECUTION-PARAMETERS.md`](references/prompting/EXECUTION-PARAMETERS.md) 处理。实际模型的输入类型、时长、参考数量、声音、首尾帧或编辑能力在执行当前 I 时查看当前官方资料；不安装供应商 Adapter Skill，也不把历史模型记忆当当前能力。
 
 Prompt、参考版本或关键设置改变但生成目标不变 → 新 I；生成目标本身改变 → 新 G。跨模型比较按 [`references/prompting/MODEL-COMPARISON.md`](references/prompting/MODEL-COMPARISON.md)。
 

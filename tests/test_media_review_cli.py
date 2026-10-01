@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import shutil
 import subprocess
@@ -11,28 +12,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 SCRIPT = REPO / "skills" / "video" / "video-review" / "scripts" / "media_review.py"
-FIXTURE_VIDEO = (
-    REPO
-    / "tests"
-    / "blackbox"
-    / "fixtures"
-    / "video-review-001"
-    / "source"
-    / "returned"
-    / "SC01_SH010_candidate-a.mp4"
-)
-FIXTURE_IMAGE = (
-    REPO
-    / "tests"
-    / "blackbox"
-    / "fixtures"
-    / "video-resume-001"
-    / "source"
-    / "returned"
-    / "character-candidate-a.png"
-)
-
-
 @unittest.skipUnless(
     shutil.which("ffmpeg") and shutil.which("ffprobe"),
     "ffmpeg and ffprobe are required for media review CLI tests",
@@ -42,12 +21,63 @@ class MediaReviewCliTests(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory(dir=REPO / "tests")
         self.root = Path(self.tempdir.name)
         self.project = self.root / "project"
-        self.media = self.project / "video" / "shots" / "SC01_SH010" / "take01.mp4"
+        self.media = (
+            self.project
+            / "video"
+            / "videos"
+            / "V001_test"
+            / "generations"
+            / "G001"
+            / "take01.mp4"
+        )
         self.media.parent.mkdir(parents=True)
-        shutil.copy2(FIXTURE_VIDEO, self.media)
-        self.image = self.project / "video" / "materials" / "characters" / "CHR01_four-view.png"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "testsrc2=size=640x360:rate=24:duration=4",
+                "-an",
+                "-c:v",
+                "mpeg4",
+                "-q:v",
+                "5",
+                "-y",
+                str(self.media),
+            ],
+            check=True,
+        )
+        self.image = (
+            self.project
+            / "video"
+            / "shared"
+            / "characters"
+            / "CHR01_four-view.png"
+        )
         self.image.parent.mkdir(parents=True)
-        shutil.copy2(FIXTURE_IMAGE, self.image)
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "color=c=white:s=768x768:d=1",
+                "-frames:v",
+                "1",
+                "-threads",
+                "1",
+                "-y",
+                str(self.image),
+            ],
+            check=True,
+        )
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
@@ -71,13 +101,13 @@ class MediaReviewCliTests(unittest.TestCase):
         result = self.run_cli(
             "probe",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
         )
         self.assertTrue(result["ok"])
-        self.assertEqual(result["relative_media"], "video/shots/SC01_SH010/take01.mp4")
+        self.assertEqual(result["relative_media"], "video/videos/V001_test/generations/G001/take01.mp4")
         self.assertEqual(
             result["sha256"],
-            "64bddfdeb34a90832b8b2a1fa09ef2421dae0d940ab41cc02fd5b3f7a049a28e",
+            hashlib.sha256(self.media.read_bytes()).hexdigest(),
         )
         self.assertAlmostEqual(float(result["duration"]), 4.0, places=3)
         video_streams = result["video_streams"]
@@ -91,7 +121,7 @@ class MediaReviewCliTests(unittest.TestCase):
         result = self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "sh010-review",
             "--count",
             "5",
@@ -112,13 +142,13 @@ class MediaReviewCliTests(unittest.TestCase):
 
         manifest = json.loads((review / "manifest.json").read_text(encoding="utf-8"))
         self.assertEqual(manifest["count"], 5)
-        self.assertEqual(manifest["media"], "video/shots/SC01_SH010/take01.mp4")
+        self.assertEqual(manifest["media"], "video/videos/V001_test/generations/G001/take01.mp4")
         self.assertIn("不能替代完整播放", manifest["review_note"])
 
         error = self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "sh010-review",
             "--count",
             "3",
@@ -129,7 +159,7 @@ class MediaReviewCliTests(unittest.TestCase):
         replaced = self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "sh010-review",
             "--count",
             "3",
@@ -141,7 +171,7 @@ class MediaReviewCliTests(unittest.TestCase):
         result = self.run_cli(
             "split-2x2",
             str(self.project),
-            "video/materials/characters/CHR01_four-view.png",
+            "video/shared/characters/CHR01_four-view.png",
             "chr01-grid",
         )
         review = self.project / ".tmp" / "review" / "chr01-grid"
@@ -168,7 +198,8 @@ class MediaReviewCliTests(unittest.TestCase):
         self.assertIn(".tmp/", (self.project / ".gitignore").read_text(encoding="utf-8"))
 
     def test_split_2x2_rejects_non_square_image(self) -> None:
-        wide = self.project / "video" / "materials" / "wide.png"
+        wide = self.project / "video" / "videos" / "V001_test" / "materials" / "wide.png"
+        wide.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(
             [
                 "ffmpeg",
@@ -187,7 +218,7 @@ class MediaReviewCliTests(unittest.TestCase):
         error = self.run_cli(
             "split-2x2",
             str(self.project),
-            "video/materials/wide.png",
+            "video/videos/V001_test/materials/wide.png",
             "wide-grid",
             expected=2,
         )
@@ -197,7 +228,7 @@ class MediaReviewCliTests(unittest.TestCase):
         self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "cleanup-review",
             "--count",
             "2",
@@ -221,7 +252,7 @@ class MediaReviewCliTests(unittest.TestCase):
 
     def test_probe_rejects_external_and_repository_internal_media(self) -> None:
         outside = self.root / "outside.mp4"
-        shutil.copy2(FIXTURE_VIDEO, outside)
+        shutil.copy2(self.media, outside)
         error = self.run_cli(
             "probe",
             str(self.project),
@@ -232,7 +263,7 @@ class MediaReviewCliTests(unittest.TestCase):
 
         git_media = self.project / ".git" / "secret.mp4"
         git_media.parent.mkdir()
-        shutil.copy2(FIXTURE_VIDEO, git_media)
+        shutil.copy2(self.media, git_media)
         error = self.run_cli(
             "probe",
             str(self.project),
@@ -241,12 +272,12 @@ class MediaReviewCliTests(unittest.TestCase):
         )
         self.assertIn("must not come from .git", str(error["error"]))
 
-        disguised = self.project / "video" / "shots" / "SC01_SH010" / "disguised.mp4"
+        disguised = self.project / "video" / "videos" / "V001_test" / "generations" / "G001" / "disguised.mp4"
         disguised.symlink_to(git_media)
         error = self.run_cli(
             "probe",
             str(self.project),
-            "video/shots/SC01_SH010/disguised.mp4",
+            "video/videos/V001_test/generations/G001/disguised.mp4",
             expected=2,
         )
         self.assertIn("must not come from .git", str(error["error"]))
@@ -261,7 +292,7 @@ class MediaReviewCliTests(unittest.TestCase):
         error = self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "unsafe-review",
             expected=2,
         )
@@ -271,7 +302,7 @@ class MediaReviewCliTests(unittest.TestCase):
         error = self.run_cli(
             "sample",
             str(self.project),
-            "video/shots/SC01_SH010/take01.mp4",
+            "video/videos/V001_test/generations/G001/take01.mp4",
             "../escape",
             expected=2,
         )
@@ -281,7 +312,7 @@ class MediaReviewCliTests(unittest.TestCase):
             error = self.run_cli(
                 "sample",
                 str(self.project),
-                "video/shots/SC01_SH010/take01.mp4",
+                "video/videos/V001_test/generations/G001/take01.mp4",
                 f"bad-count-{count}",
                 "--count",
                 count,

@@ -1,5 +1,9 @@
 # video-editing
 
-`video-editing` 只在项目进入整片后期时工作，并按需创建 `video/edit/`。
+`video-editing` 只在当前 `Vxxx` 真正进入整片后期时工作，并按需创建 `Vxxx/edit/`。
 
-单镜头内容仍留在对应镜头；整片剪辑工程、全片音乐/旁白/混音、字幕、Logo 和最终成片直接放在 `video/edit/`；字幕、Logo、标题、产品文字与片尾主卡按 `references/GRAPHICS-TITLES.md` 使用确定性后期完成；具体字幕断句、显示时长、外挂 / 烧录、无障碍与多语言 QC 按 `references/SUBTITLES.md`，默认不再拆 `audio/` / `delivery/`。工程与成片命名按 `references/EDIT-PROJECT.md`；粗剪与节奏按 `references/EDITING-RHYTHM.md` 先保证故事 / 信息、动作切点、声音和产品可读性；能由 Premiere Pro、After Effects、DaVinci Resolve 或其他确定性工具准确完成的工作优先在后期处理；跨模型 / 批次的色彩、曝光、稳定、降噪、放大和质感统一按 `references/FINISHING.md`，但不允许用 finishing 掩盖身份、产品结构或严重连续性错误；最终整片内容验收按 `references/FINAL-QC.md` 展开；正式导出文件再按 `references/TECHNICAL-QC.md` 分别检查可解码性、时长、画幅 / 分辨率、音轨和当前交付要求。环境具备 FFmpeg 时可直接使用 `scripts/delivery_qc.py verify` 做完整解码，并按当前交付要求检查宽高、画幅、时长、FPS、容器 / 编码、音轨、声道、采样率与像素比例；它只检查技术文件，不替代从头到尾观看成片和核对声音 / 字幕 / Logo / 产品内容。
+正式时间线建立前，唯一 Shot 表可以暂记候选 / 计划采用来源；一旦建立正式时间线，最终使用哪个 `Vxxx/Gxxx takeNN`、哪个时间范围、是否复用以及如何拼接，只由剪辑记录维护。Shot 保留叙事意图并引用对应剪辑项，不同步第二份最终采用结果。
+
+整片剪辑工程、全片音乐 / 旁白 / 混音、字幕、Logo 与正式成片直接放在当前 `Vxxx/edit/`，保持最浅可读结构。字幕、Logo、标题、产品文字和片尾主卡优先由可编辑后期确定性完成；跨模型 / 批次的色彩、曝光、稳定、降噪、放大与质感统一也在后期处理，但不能用后期掩盖人物身份、产品结构或严重连续性错误。
+
+最终交付先做完整内容检查，再按当前明确的交付要求逐文件检查可解码性、时长、画幅 / 分辨率、音轨、编码等技术参数。

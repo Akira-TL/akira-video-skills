@@ -1,7 +1,11 @@
 # video-generation
 
-`video-generation` 从正式视频脚本、复用素材和 `SHOT.md` 编译长期提示词与一次性生成包。生成包按真实依赖分批：需要人物 / 场景 / 产品参考或上一镜头实际出口的任务，必须等上游输入先生成、审片并归档后再打包。默认按单镜头或少量强连续镜头生成，不因为模型允许更长时长就把完整长片塞进一次请求；持续失败时会回查设计、参考、镜头负载和生成模式。大量任务按 `references/planning/BATCHING.md` 先用高风险代表样本验证角色 / 场景 / 产品 / 模型组合，稳定后再逐步放量，不固定“每批几个”。
+`video-generation` 为 AI 图片、视频、声音或音乐建立正式 Generation（G）与 Input Version（I），维护唯一执行 Prompt、实际参考版本与必要设置，并通过一次性交付包接收外部生成结果为 Take。
 
-一次性生成包只放在当前 ForgeRelay 项目工作区的 `.tmp/`，按 `references/planning/GENERATION-PACK.md` 只复制本次生成需要的提示词和参考素材，并用 `references/planning/PACK-TEMPLATES.md` 整理成用户无需打开项目目录即可执行的自包含任务文件。新 Generation 流程使用 `.tmp/V001/G003_I02/` 或 `.tmp/shared/G003_I02/` 这类作用域路径；`scripts/generation_pack.py` 支持 `seal` 冻结交付输入与幂等 `receive`：返回候选先全部进入正式 G 并建立 Take → I 映射，再审片；接收成功后自动清理该版本临时包，重复执行不会重新分配 Take。若用户在外部生成时改变 Prompt / 参考 / 设置，Receive 会阻止静默归入旧 I，直到真实输入被正式保存并显式映射。CLI 不决定 Prompt 内容、Review 结论或最终采用关系；旧 `next-take`、`archive` 和手动 cleanup 仅保留兼容已有流程。
+Generation 与 Shot 解耦：当前视频任务放 `Vxxx/generations/Gxxx/`，跨视频共享资产生成放 `video/shared/generations/Gxxx/`。同一 G 内 Prompt、参考或关键设置发生变化时建立新 I；生成目标本身改变时建立新 G。正式 Prompt 只存在对应 G/I，不在资产或 Shot 目录复制第二份；只有真正影响执行、复现或排错的设置才进入正式记录。
 
-`SHOT.md` 是内部制作定义，最终视频提示词只是从它编译出的执行文本；通用编译规则位于 `references/prompting/VIDEO-PROMPT.md`。同一镜头确实需要并列比较多个视频模型时，按 `references/prompting/MODEL-COMPARISON.md` 让模型专用提示词并列、生成结果连续编号，不按模型复制镜头结构。已有视频需要生成式延长 / V2V 局部编辑时按 `references/transform/EDIT-EXTEND.md`：同一连续镜头保持 Shot 身份但生成新结果，硬切 / 新视点 / 新叙事功能则建立新 Shot，原始 `takeNN.mp4` 不覆盖。模型能力、时长、参考输入上限和模型专用提示词规则由实际加载的模型适配 Skill 或当前官方资料决定；通用生成 Skill 不写死某个模型版本。`references/prompting/EXECUTION-PARAMETERS.md` 区分长期创作事实与一次执行参数：一次性包写当前真正需要用户确认的设置，seed / request ID 等只有复现或排错需要时才长期保留。
+一次性交付包只放在当前项目 `.tmp/`，使用 `.tmp/V001/G003_I02/` 或 `.tmp/shared/G003_I02/` 这类作用域路径。包只复制当前 I 真正需要的 Prompt、参考文件、职责、必要设置和返回说明；`scripts/generation_pack.py` 提供 `init`、`copy`、`seal`、`returns`、`status`、`zip` 与幂等 `receive`。
+
+返回候选先由 `receive` 全部保存到正式 G，并建立 Take → I 映射；Take 在 G 内连续编号，切换 I 不重置。若用户在外部平台改变 Prompt、参考或关键设置，必须先把真实输入正式保存为正确 I，再接收结果。正式接收成功并确认临时包没有唯一信息后自动精确清理；清理失败时重跑同一 `receive`，不重新分配 Take。
+
+Generation 不维护 selected / current take。图片 Take 的正式资产采用由资产记录固定来源；视频最终采用在正式时间线建立前可暂记唯一 Shot 表，建立正式剪辑后只由剪辑记录维护。具体模型能力在执行当前 I 时核验当前官方资料，不长期维护供应商适配 Package。

@@ -11,18 +11,6 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 SCRIPT = REPO / "skills" / "video" / "video-editing" / "scripts" / "delivery_qc.py"
-FIXTURE_VIDEO = (
-    REPO
-    / "tests"
-    / "blackbox"
-    / "fixtures"
-    / "video-review-001"
-    / "source"
-    / "returned"
-    / "SC01_SH010_candidate-a.mp4"
-)
-
-
 @unittest.skipUnless(
     shutil.which("ffmpeg") and shutil.which("ffprobe"),
     "ffmpeg and ffprobe are required for delivery QC CLI tests",
@@ -32,9 +20,35 @@ class DeliveryQcCliTests(unittest.TestCase):
         self.tempdir = tempfile.TemporaryDirectory(dir=REPO / "tests")
         self.root = Path(self.tempdir.name)
         self.project = self.root / "project"
-        self.media = self.project / "video" / "edit" / "master.mp4"
+        self.media = (
+            self.project
+            / "video"
+            / "videos"
+            / "V001_test"
+            / "edit"
+            / "master.mp4"
+        )
         self.media.parent.mkdir(parents=True)
-        shutil.copy2(FIXTURE_VIDEO, self.media)
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-hide_banner",
+                "-loglevel",
+                "error",
+                "-f",
+                "lavfi",
+                "-i",
+                "testsrc2=size=640x360:rate=12:duration=4",
+                "-an",
+                "-c:v",
+                "libx264",
+                "-pix_fmt",
+                "yuv420p",
+                "-y",
+                str(self.media),
+            ],
+            check=True,
+        )
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
@@ -58,7 +72,7 @@ class DeliveryQcCliTests(unittest.TestCase):
         result = self.run_cli(
             "verify",
             str(self.project),
-            "video/edit/master.mp4",
+            "video/videos/V001_test/edit/master.mp4",
             "--width",
             "640",
             "--height",
@@ -95,14 +109,14 @@ class DeliveryQcCliTests(unittest.TestCase):
         result = self.run_cli(
             "verify",
             str(self.project),
-            "video/edit/master.mp4",
+            "video/videos/V001_test/edit/master.mp4",
             "--aspect",
             "1.7777778",
         )
         self.assertTrue(result["ok"])
 
     def test_audio_codec_channels_and_sample_rate_can_be_checked_when_required(self) -> None:
-        with_audio = self.project / "video" / "edit" / "master-audio.mp4"
+        with_audio = self.project / "video" / "videos" / "V001_test" / "edit" / "master-audio.mp4"
         subprocess.run(
             [
                 "ffmpeg",
@@ -132,7 +146,7 @@ class DeliveryQcCliTests(unittest.TestCase):
         result = self.run_cli(
             "verify",
             str(self.project),
-            "video/edit/master-audio.mp4",
+            "video/videos/V001_test/edit/master-audio.mp4",
             "--audio",
             "required",
             "--audio-codec",
@@ -151,7 +165,7 @@ class DeliveryQcCliTests(unittest.TestCase):
         result = self.run_cli(
             "verify",
             str(self.project),
-            "video/edit/master.mp4",
+            "video/videos/V001_test/edit/master.mp4",
             "--width",
             "1920",
             "--audio",
@@ -169,7 +183,7 @@ class DeliveryQcCliTests(unittest.TestCase):
 
     def test_external_media_and_external_symlink_are_rejected(self) -> None:
         outside = self.root / "outside.mp4"
-        shutil.copy2(FIXTURE_VIDEO, outside)
+        shutil.copy2(self.media, outside)
 
         error = self.run_cli(
             "verify",
@@ -179,12 +193,12 @@ class DeliveryQcCliTests(unittest.TestCase):
         )
         self.assertIn("escapes project root", str(error["error"]))
 
-        disguised = self.project / "video" / "edit" / "external.mp4"
+        disguised = self.project / "video" / "videos" / "V001_test" / "edit" / "external.mp4"
         disguised.symlink_to(outside)
         error = self.run_cli(
             "verify",
             str(self.project),
-            "video/edit/external.mp4",
+            "video/videos/V001_test/edit/external.mp4",
             expected=2,
         )
         self.assertIn("escapes project root", str(error["error"]))
@@ -192,7 +206,7 @@ class DeliveryQcCliTests(unittest.TestCase):
     def test_repository_internal_media_is_rejected(self) -> None:
         git_media = self.project / ".git" / "secret.mp4"
         git_media.parent.mkdir()
-        shutil.copy2(FIXTURE_VIDEO, git_media)
+        shutil.copy2(self.media, git_media)
 
         error = self.run_cli(
             "verify",

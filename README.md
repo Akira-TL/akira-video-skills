@@ -57,4 +57,4 @@ skiloom validate . --json
 ./scripts/check.sh
 ```
 
-独立黑盒与固定 synthetic fixtures 位于 `tests/blackbox/`，只保留当前核心制作 / 返回 / Review 边界，不维护已删除的模型 Adapter 黑盒。
+当前新拓扑的确定性制作案例位于 `tests/test_production_workflow_cases.py`，覆盖一次性短片、跨视频共享资产版本升级、真实输入变化、分批返回与中断恢复；其余契约与 CLI 回归分别由对应 `tests/test_*` 文件维护。

@@ -522,11 +522,20 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("新增尾段本身仍是一个可独立 Review 的 Take", edit_extend)
         self.assertIn("完整 Review", edit_extend)
 
-    def test_blackbox_is_explicitly_deferred_until_new_topology_stabilizes(self) -> None:
-        note = read(REPO / "tests" / "blackbox" / "README.md")
-        self.assertIn("上一代黑盒 fixtures", note)
-        self.assertIn("test_production_workflow_cases.py", note)
-        self.assertIn("稳定 Skill 拓扑完成后", note)
+    def test_readme_points_to_current_production_workflow_validation(self) -> None:
+        readme = read(REPO / "README.md")
+        self.assertIn("tests/test_production_workflow_cases.py", readme)
+        self.assertNotIn("tests/blackbox/", readme)
+
+    def test_stable_docs_do_not_publish_obsolete_top_level_video_paths(self) -> None:
+        pattern = re.compile(r"video/(?:script|materials|shots|edit|generations|scenes)/")
+        offenders: list[str] = []
+        for root in (STABLE, DOCS):
+            for path in root.rglob("*.md"):
+                for line_number, line in enumerate(read(path).splitlines(), start=1):
+                    if pattern.search(line):
+                        offenders.append(f"{path.relative_to(REPO)}:{line_number}: {line.strip()}")
+        self.assertEqual(offenders, [])
 
     def test_media_review_helper_is_only_an_aid_not_full_video_acceptance(self) -> None:
         review_skill = read(STABLE / "video-review" / "SKILL.md")
