@@ -1,5 +1,0 @@
-SYNTHETIC FIXTURE REFERENCE
-
-LOC01 scene placeholder.
-Role: scene/layout only.
-Do not infer character identity, product structure, or motion from this file.

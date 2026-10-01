@@ -1,0 +1,12 @@
+schema = 1
+
+[dependencies]
+"akira-tl/akira-video-skills/video-director" = "*"
+"akira-tl/akira-video-skills/video-script" = "*"
+"akira-tl/akira-video-skills/video-visual-design" = "*"
+"akira-tl/akira-video-skills/video-storyboard" = "*"
+"akira-tl/akira-video-skills/video-cinematography" = "*"
+"akira-tl/akira-video-skills/video-audio" = "*"
+"akira-tl/akira-video-skills/video-generation" = "*"
+"akira-tl/akira-video-skills/video-review" = "*"
+"akira-tl/akira-video-skills/video-editing" = "*"

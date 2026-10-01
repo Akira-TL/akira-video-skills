@@ -1,7 +1,0 @@
-SYNTHETIC OFFICIAL PRODUCT FACT
-
-PROD01 is a matte white rectangular device.
-Its front face has exactly one circular button.
-It has no display, no logo, no second button, and no visible external connector in this fixture.
-
-This file owns product structure for the blackbox fixture.

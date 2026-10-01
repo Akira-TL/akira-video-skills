@@ -1,0 +1,3 @@
+interface:
+  display_name: "Video Init"
+  short_description: "Initialize the minimal Akira Video project structure"
