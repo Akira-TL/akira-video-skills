@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 归档下一阶段 Akira Video 生产模型：采用单 Agent / `video-production` 唯一流程负责人、共享资产 + 单支视频记录、Generation 与 Shot 解耦的 G / I / take 追溯、幂等返回接收与自动临时包清理；详细决策见 `docs/adr/0001`–`0003`，当前仅记录已接受设计，Skill 重构另行实施。
 - 初始化 Akira Video Skills 独立产品仓。
 - 同步仓库级 README / CONTEXT 到当前完整能力面：明确视觉 / 灯光、声音、外部生成交接、三个窄用途 CLI、统一模型适配器契约与 `tests/blackbox/` 独立验收入口，并修正 `Scene / Location` 术语映射。
 - 建立面向人的浅层视频项目目录、`VIDEO.md`、一次性生成包与镜头归档边界。
