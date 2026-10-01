@@ -1,5 +1,5 @@
-# video-shot
+# video-storyboard
 
-`video-shot` 把镜头总览展开成单镜头 `SHOT.md`。镜头数量与景别覆盖按 `references/planning/COVERAGE.md` 从故事、动作、表演、产品可读性和剪辑需要决定，不固定生成大全景 / 中景 / 近景套餐。每个镜头目录集中保存自己的镜头定义、提示词版本、生成结果、镜头专属图片和声音。
+`video-storyboard` 维护 Shot List 的叙事结构：为什么切这一镜、展示什么、动作如何衔接、预计持续多久和计划连续性。简单视频可以直接在 `VIDEO.md` 维护唯一 Shot 表；长视频按需拆到场景或独立 Shot 记录。
 
-默认使用 `SC01_SH010` 这类留空式编号；简单项目也可以直接使用 `SH010`。复杂镜头可以按 `references/planning/SHOT-TEMPLATE.md` 直接建立完整 `SHOT.md`；连续性只记录相邻镜头真正需要继承的内容，不建立全局复杂状态机。复杂摄影、动作和跨世界转场按 `references/direction/DIRECTION.md` 展开；景别、焦段 / 透视、机位、推拉 / 变焦、景深和产品摄影按 `references/direction/CAMERA-LANGUAGE.md` 写成真正可见的摄影决定；多人、递物、手物、产品操作和复杂遮挡按 `references/direction/INTERACTION.md` 优先降低几何 / 身份歧义；多角色走位、产品 / 机械交互、复杂机位或首尾帧控制确实需要时，再按 `references/planning/PREVIS.md` 做最小预演；多镜头 / 严格时长项目还可以用轻量 Animatic 提前验证节奏，不默认创建额外分镜目录；存在多个交付画幅时按 `references/planning/MULTI-FORMAT.md` 判断是否可安全裁切，只有构图语义确实变化时才建立画幅专属生成版本。
+`video-cinematography` 与它共同完善同一 Shot，不另建摄影镜头表。建立正式剪辑时间线后，最终 Take / 时间范围 / 拼接关系以剪辑记录为准，Shot 只保留叙事意图并引用剪辑项。

@@ -1,68 +1,33 @@
 ---
 name: video-audio
-description: 设计并维护 AI 视频中跨镜头复用的角色声音、音色参考、对白声音要求与整片声音关系；当同一角色需要跨镜头保持声音一致，或需要规划语音参考、环境声、音效、音乐与画面的职责边界时使用。
+description: 设计并维护 AI 视频中的角色声音身份、声音参考、对白声音要求、环境声、音效、音乐与整片声音关系；当声音需要跨视频/镜头复用或进入 Generation 与剪辑时使用。
 ---
 
 # Video Audio
 
-本 Skill 负责视频制作中的**声音设计与跨镜头声音一致性**，但不建立独立的项目级 `audio/` 目录。
+本 Skill 负责声音设计与声音一致性，不建立项目级独立 `audio/` 根目录。
 
-长期复用声音资料放在 `video/materials/` 下，例如：
+## 1. 声音归属
 
-- `video/materials/voices/CHR01_voice.md`
-- `video/materials/voices/CHR01_reference.wav`
+- 跨视频复用的角色声音定义 / 参考 → `video/shared/voices/`；
+- 只属于当前 V 但跨多个 Shot 复用 → `Vxxx/materials/voices/`；
+- 单个 Shot / Generation 的临时对白、呼吸、音效等写入对应正式 Shot / G 输入；
+- 最终全片音乐、旁白、混音与实际采用关系进入 `Vxxx/edit/`。
 
-某个镜头独有的对白、呼吸、音效或临时声音继续放在对应 `video/shots/<shot-id>/`；全片音乐、旁白、混音和最终声音工程进入 `video/edit/`。
+完整层次按 [`references/SOUND-LAYERS.md`](references/SOUND-LAYERS.md)，音乐按 [`references/MUSIC.md`](references/MUSIC.md)，旁白按 [`references/VOICEOVER.md`](references/VOICEOVER.md)。
 
-完整声音层次、原生生成声音与后期声音的职责边界见 [`references/SOUND-LAYERS.md`](references/SOUND-LAYERS.md)。视频需要背景音乐、品牌 / 角色动机、Animatic 临时音乐或 AI 生成配乐时，再读取 [`references/MUSIC.md`](references/MUSIC.md)：临时与正式音乐明确分开，音乐服务故事 / 对白 / 产品，不为了卡点破坏人物节奏。存在叙述者、角色内心画外音、品牌旁白或说明性 Voice-over 时，再读取 [`references/VOICEOVER.md`](references/VOICEOVER.md)：旁白文本归 `video-script`，声音身份 / 生成归本 Skill，最终整片旁白进入 `video/edit/`。
+## 2. 角色声音身份
 
-## 1. 先区分三类声音
+跨镜头角色声音需要稳定时，定义年龄感、基础音域、音色、共鸣、默认语速 / 音量、节奏、发音与允许情绪变化。详细模板见 [`references/VOICE-DESIGN.md`](references/VOICE-DESIGN.md)。工具提供 speaker ID / voice reference 等机制时按当前官方能力使用，不写死供应商字段。
 
-### 角色长期声音
+## 3. 文本与声音分工
 
-跨镜头需要稳定的年龄感、性别表现、音域、音色、共鸣位置、默认语速、音量感、节奏以及发音和停顿习惯。
+对白 / 旁白正式文本属于当前视频剧情正文，由 `video-script` 方法维护；本 Skill 负责声音身份与声音表演。需要同步声音的视频模型时把必要文本和声音事件编译进对应 G/I，但不为了模型能力增加原本不存在的台词。
 
-### 镜头专属声音
+## 4. 外部生成与 Review
 
-只属于某个镜头的对白、呼吸、叹气、叫喊、脚步、物体碰撞和环境变化跟随镜头，不复制到公共声音定义。
-
-### 整片声音
-
-背景音乐、全片旁白、总体声音设计与最终混音只在进入后期时由 `video-editing` 管理。
-
-## 2. 角色声音设计
-
-角色有多镜头对白时，先建立声音定义，再生成或录制具体台词。角色声音定义至少写清当前项目需要的：年龄感、基础音域、音色、共鸣、默认语速、默认音量、说话节奏、发音特点、不同情绪下的变化以及禁止出现的声音漂移。
-
-详细模板见 [`references/VOICE-DESIGN.md`](references/VOICE-DESIGN.md)。
-
-## 3. 声音身份与情绪分开
-
-同一角色跨场景和跨世界时可以改变混响、环境空间感、轻微均衡、当前情绪和当前说话强度，但基础年龄感、基础音色、音域、发音习惯和核心节奏不应随机改变。
-
-如果生成工具提供 speaker ID、voice reference、voice seed、speaker embedding 或等价稳定机制，优先复用同一身份机制；具体字段由当前工具 / 模型官方规则决定，本 Skill 不写死。
-
-## 4. 对白与画面
-
-对白时长、可见口型、多角色说话和声音跨镜头的规划属于 `video-script`；当前任务确实需要这部分时按需加载该 Skill，缺失则交回 `akira-video` 补齐，而不是在本 Skill 复制脚本规则。本 Skill 只负责声音身份与当前声音表演。
-
-
-对白文本继续由 `video-script` 拥有；本 Skill 只负责声音表现。需要同步语音的视频模型时，把对白、语气、停顿和声音事件编译进生成提示词，但不为了模型支持原生声音就增加原本不存在的台词。
-
-## 5. 有意无声
-
-较长无对白段落如果由悬念、危险、音乐、视觉高潮或动作本身承担叙事，应在 `SHOT.md` 中写清无声的导演目的。如果人物长时间主动操作却没有对白、反应声、环境声或音乐承担叙事，交回 `video-shot` 检查是否形成死段。
-
-## 6. 需要外部声音生成时
-
-把角色声音定义、当前台词、参考音频和返回命名交给 `video-generation`，由它按一次性生成包契约整理；本 Skill 不自行建立另一套打包目录或临时文件规则。
-
-## 7. 返回审片与后期
-
-- 声音身份漂移、口型、语气、音域和时序由 `video-review` 审核；
-- 镜头独有音频留在镜头；
-- 全片音乐、混音、字幕和最终声音电平由 `video-editing` 处理。
+需要 AI 生成声音 / 音乐时交给 `video-generation` 建立 G/I 和自包含包；返回 Take 由 `video-review` 检查。被最终时间线采用的音频由 Editing / 音频正式记录固定，不在 Generation 重复维护 selected 状态。
 
 ## 完成标准
 
-角色声音已经能够跨镜头稳定识别；镜头声音与整片声音职责清楚；没有为了目录分类而复制音频，也没有把工具专用 speaker 参数误写成通用规则。
+需要复用的声音身份稳定、声音层职责清楚，生成与最终剪辑采用关系各归其位。

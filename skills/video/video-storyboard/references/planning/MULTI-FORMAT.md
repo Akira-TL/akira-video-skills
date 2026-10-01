@@ -40,7 +40,7 @@
 
 镜头源文件和提示词的画幅后缀统一按 `akira-video/references/project/NAMING.md`；只有多个独立画幅源确实同时存在时才加后缀。
 
-最终成片命名属于 `video-editing`；真正进入后期命名时按需加载该 Skill，不在 `video-shot` 维护第二套规则。
+最终成片命名属于 `video-editing`；真正进入后期命名时按需加载该 Skill，不在 `video-storyboard` 维护第二套规则。
 
 ## 5. 角色 / 产品一致性
 

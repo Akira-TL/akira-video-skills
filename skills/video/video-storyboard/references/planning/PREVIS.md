@@ -39,7 +39,7 @@
 `end-frame.png`
 `keyframe-01.png`
 
-整片 / 一个场次的总览分镜确实有用时，可以在 `video/script/` 放一张人类可读总览图，例如 `storyboard.png`；不需要额外创建 storyboard 目录。
+整片 / 一个场次的总览分镜确实有长期价值时，可以直接在当前 `Vxxx/` 或对应 `scenes/` 旁保存人类可读 `storyboard.png`；一次性节奏验证继续放 `.tmp/`，不需要额外创建 storyboard 目录。
 
 ## 4. 分镜不等于身份参考
 
@@ -174,14 +174,14 @@ Animatic 不是最终成片，也不需要把每张图做成高质量概念画�
 
 如果只是一次性节奏验证，可以放 `.tmp/` 并在确认后删除。
 
-如果它是当前项目长期有用的制作基准，可以直接放 `video/script/animatic.mp4`；不要为此新建一级 preproduction / storyboard 目录。
+如果它是当前 V 长期有用的制作基准，可以直接放 `Vxxx/animatic.mp4` 或与对应场景共置；不要为此新建一级 preproduction / storyboard 目录。
 
 ### 发现问题时
 
 优先修改正式来源：
 
 - 故事 / 对白问题 → `video-script`；
-- 镜头数量 / 作用问题 → `SHOTS.md` / `video-shot`；
+- 镜头数量 / 作用问题 → 当前唯一 Shot 表 / `video-storyboard`；
 - 总时长问题 → `DURATION-BUDGET.md` 对应规划；
 - 产品可读性问题 → 广告 / 镜头设计。
 

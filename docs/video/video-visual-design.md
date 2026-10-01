@@ -1,15 +1,5 @@
-# video-design
+# video-visual-design
 
-`video-design` 负责真正的角色与场景视觉设计，而不是直接把“一个人”“一个厨房”写成生图提示词。
+`video-visual-design` 统一处理人物、地点、道具 / 虚构机械、整体视觉以及参考资产准备。设计约束、Generation Prompt 和已确认参考图分别表达“应该是什么”“这次生成什么”“实际采用了什么”，不能互相自动覆盖。
 
-角色设计从剧情功能推导轮廓、比例、脸、发型、服装、材质、颜色、状态与跨镜头识别特征；场景设计从叙事功能推导空间骨架、材质、色彩、照明、视觉锚点和镜头可用性。主光方向、人物曝光、真实产品反光、day / night 与动态光连续性按 `references/environment/LIGHTING.md` 处理。存在多个视觉世界、复杂空间或陌生机械时，再按需展开对应 reference，不让简单项目背负额外结构。
-
-整片需要统一视觉语言时先形成整体视觉方向，再设计角色和场景；多世界、复杂空间和陌生机械均按真实需要展开，不增加默认项目目录。
-
-正式视觉设计文件按 `references/foundation/DESIGN-TEMPLATES.md` 写，只记录角色 / 地点 / 视觉方向真正需要稳定的内容，不复制脚本或镜头细节。设计文件建议与对应复用素材共置，例如：
-
-`video/materials/characters/CHR01_design.md`
-
-`video/materials/scenes/LOC01_design.md`
-
-设计确认后再由 `video-materials` 编写长期图片提示词。`references/foundation/DESIGN-OUTPUTS.md` 明确基础身份、四视图、服装 / 表情 / 场景光照状态哪些按需生成：换衣服不创建新角色，白天 / 夜晚也不创建新地点；只有真实需要稳定身份或结构时才增加对应参考图。主角色外形、整片视觉语言、主要场景等未由上游来源决定的高影响分叉按 `references/foundation/DESIGN-APPROVAL.md` 先取得用户选择或明确授权；低影响实现细节不反复打断用户。
+跨视频参考默认进入 `video/shared/`；本视频专属复用资产进入 `Vxxx/materials/`。正式生图 Prompt 只保存在对应 G / I 中，资产记录维护版本来源、当前默认和适用用途；严格四视图仍用于稳定已经确认的设计。

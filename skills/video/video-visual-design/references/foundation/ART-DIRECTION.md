@@ -38,7 +38,7 @@
 
 ## 5. 长期保存
 
-如果项目确实需要长期统一视觉方向，可以在 `video/materials/` 下建立简短 `VISUAL_DIRECTION.md`。简单项目不必为了格式创建该文件。
+如果整个系列确实需要长期统一视觉方向，可以在 `video/shared/` 建立简短 `VISUAL_DIRECTION.md`；只属于当前 V 时可写入 `Vxxx/VIDEO.md` 或 `Vxxx/materials/`。简单项目不必为了格式创建文件。
 
 ## 完成标准
 

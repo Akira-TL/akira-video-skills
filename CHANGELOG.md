@@ -12,7 +12,7 @@
 - 增加品牌与产品项目的可选 `video-advertising` Skill。
 - 将剧情因果与对白、多视角/机械参考、镜头导演与连续性、生成结果质量检查、最终成片 QC、产品事实等详细规范下沉为按需 references，避免稳定 Skill 主入口膨胀。
 - 增加 `video-model-runway`、`video-model-veo`、`video-model-seedance` 三个 in-progress 模型适配 Package；模型专用提示词方法与动态 capability 核验从稳定核心隔离。
-- 增加稳定 `video-design` Skill，专门负责角色与场景视觉设计；恢复人物、衣物角色、普通衣物、道具、场景五套严格 1:1、2×2 四视图生图模板，并由 `video-materials` 按需使用。
+- 增加稳定 `video-visual-design` Skill，专门负责角色与场景视觉设计；恢复人物、衣物角色、普通衣物、道具、场景五套严格 1:1、2×2 四视图生图模板，并由 `video-visual-design` 按需使用。
 - 增加稳定 `video-audio` Skill，管理角色跨镜头声音身份与声音参考，不新增独立 `audio/` 项目目录；补齐多世界、空间 / 机械设计与一次性生成包的详细契约，并要求临时包只存在于当前 ForgeRelay 项目 `.tmp/`。
 - 补齐整体视觉方向、复用素材规划、通用生图提示词与通用视频提示词编译契约：四视图从已确认设计生成，`SHOT.md` 与最终模型提示词明确分层，不为素材数量或提示词长度制造复杂度。
 - 扩展 `VIDEO.md` 为整片级项目定义 / 来源限制 / 当前制作首页，新增统一对象与文件命名契约，并补齐剧情 / 镜头生成前准备检查与广告落版约束。
@@ -33,7 +33,7 @@
 - 补齐声音层次与确定性图文后期：对白、环境声、音效、音乐分别明确镜头 / 后期职责；字幕、Logo、标题、产品文字和片尾主卡统一由可编辑后期控制，不依赖模型准确生成文字。
 - 增加生成失败分类与修复决策：身份 / 状态 / 空间 / 产品结构 / 动作 / 摄影 / 物理 / 时间 / 声音 / 口型 / 文字 / 风格等失败先定位来源，再选择接受偏差、后期修复、重新生成或重写上游；连续失败不无限抽样。
 - 细化 AI 视频时间一致性 QA：完整播放检查人脸 / 服装漂移、背景呼吸、产品结构与 Logo 帧间变形、遮挡后换形、纹理闪烁及动作 / 摄影速度异常，不能用单张漂亮截图替代时间维度验收。
-- 整理内部 Skill reference 结构：`video-design` 按 foundation / character / environment 分组，`video-shot` 按 planning / continuity / direction 分组，`video-generation` 按 planning / prompting / transform 分组，避免后续继续平铺触发架构阈值；新增本地 Markdown 断链与 reference 可达性回归测试。
+- 整理内部 Skill reference 结构：`video-visual-design` 按 foundation / character / environment 分组，`video-storyboard` 按 planning / continuity / direction 分组，`video-generation` 按 planning / prompting / transform 分组，避免后续继续平铺触发架构阈值；新增本地 Markdown 断链与 reference 可达性回归测试。
 - 增加摄影语言规范：区分景别与焦段 / 透视、推近与变焦、机位高度、景深 / 焦点和产品摄影畸变风险；AI 模型对术语不稳定时优先描述摄影机运动与可见结果，不为“电影感”堆术语。
 - 增加灯光 / 曝光连续性：基础灯光归地点 / 世界设计，镜头临时光效归 `SHOT.md`；同一地点 / 时间保持世界空间中的主光方向，真实产品反光和人物曝光优先可读，后期调色不替代错误灯光结构。
 - 增加音乐 / 配乐设计：临时音乐与最终可交付音乐分开，音乐 cue 服务故事与剪辑结构，不为了卡点压缩对白 / 表演 / 产品操作；AI 生成音乐通过一次性生成包往返，只有后期真实需要时才要求 stems / 分轨。
@@ -62,7 +62,7 @@
 - 增加制作权威来源层级：用户 / 上游事实、视频脚本、视觉 / 声音设计、长期素材、镜头定义、提示词、一次性生成包、生成结果、后期工程职责分离；只有正式采用结果的实际可见出口可进入后续连续性，模型错误不能反向改写事实。
 - 增加制作记录边界：重要决定写入真正归属文件，`VIDEO.md` 只保存整片级当前摘要；镜头采用 / 实际出口留在 `SHOT.md`，临时包与聊天不是长期事实源，避免项目变成生成日志。
 - 增加外部生成等待 / 恢复断点：`VIDEO.md` 只记生成包路径、预期返回、下一步和真实阻塞项；跨会话先检查现有包 / `returns/`，结果未返回不假装推进，包仍有效时不重复创建新版本。
-- 收紧专业 Skill 依赖边界：`video-audio`、`video-editing`、`video-script` 与 `video-shot` 的跨专业协作改为按需加载与交回 Router，不再直接依赖未声明的 sibling reference；新增机械测试，任何跨 Package `video-*/references/...` 路径都必须有对应 required dependency，不为了条件分支扩大 Package 闭包。
+- 收紧专业 Skill 依赖边界：`video-audio`、`video-editing`、`video-script` 与 `video-storyboard` 的跨专业协作改为按需加载与交回 Router，不再直接依赖未声明的 sibling reference；新增机械测试，任何跨 Package `video-*/references/...` 路径都必须有对应 required dependency，不为了条件分支扩大 Package 闭包。
 - 增加同一镜头跨模型比较规则：Veo / Runway / Seedance 等仅作为执行器，模型专用提示词可并列但共享同一 `SHOT.md`；生成结果编号跨模型单调递增，不为每个模型复制镜头目录或另建版本树。
 - 增加批量生成节流：高风险人物 / 场景 / 产品 / 交互 / 对白 / 模型组合先用代表样本验收，稳定后才扩大可并行批次；系统性错误出现时停止放量并修上游，不规定固定批量数量。
 - 增加项目总时长与镜头粗预算：`VIDEO.md` 决定交付时长边界，脚本 / `SHOTS.md` 提前检查段落比例和对白容量，最终剪辑可短于模型输出，不恢复固定“每镜几秒”的硬规则。

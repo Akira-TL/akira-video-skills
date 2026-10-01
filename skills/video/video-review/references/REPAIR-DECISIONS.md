@@ -68,9 +68,9 @@
 
 回到真正归属来源：
 
-- `video-design`；
-- `video-materials`；
-- `video-shot`；
+- `video-visual-design`；
+- `video-visual-design`；
+- `video-storyboard`；
 - `video-script`；
 - `video-advertising`；
 - 或选择不同模型 / 生成模式。

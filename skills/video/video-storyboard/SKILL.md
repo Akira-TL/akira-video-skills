@@ -1,80 +1,46 @@
 ---
-name: video-shot
-description: 把 SHOTS.md 中的镜头总览展开成可直接制作的单镜头定义；当需要创建或修改 video/shots/<shot-id>/SHOT.md、镜头连续性、摄影、动作、表演、声音或镜头专属生产约束时使用。
+name: video-storyboard
+description: 把当前剧情和导演意图组织成可制作的 Shot List；当需要决定为什么切这一镜、展示什么、动作如何衔接、预计持续多久、计划连续性、Storyboard 或 Animatic 时使用，并与 Cinematography 共同完善同一 Shot 记录。
 ---
 
-# Video Shot
+# Video Storyboard
 
-每个镜头是视频生成与剪辑的核心工作单元。本 Skill 拥有 `video/shots/<shot-id>/SHOT.md`，不拥有模型专用提示词编译或生成结果审片结论。
+本 Skill 负责**镜头的叙事结构与时间设计**。它不拥有第二套摄影表，也不要求每个 Shot 建独立目录。
 
-从 `SHOTS.md` 展开一组镜头前，场次需要几个观察点、建立镜头 / 反应 / 插入 / 产品特写是否真实有用，按 [`references/planning/COVERAGE.md`](references/planning/COVERAGE.md) 判断；不机械套固定 coverage 套餐。
+## 1. 先判断镜头是否必要
 
-## 1. 建立镜头 ID 与目录
+从当前 `VIDEO.md` / 场景正文和 Director 意图拆镜头。建立镜头、反应、插入、产品特写等是否真实有用按 [`references/planning/COVERAGE.md`](references/planning/COVERAGE.md)；不机械生成 coverage 套餐。
 
-默认使用留空式编号，例如 `SC01_SH010`、`SC01_SH020`；没有场次的简单项目可使用 `SH010`。需要中间插镜头时使用可读的中间编号，不重排整片已有身份。
+一个 Shot 至少回答：为什么存在、展示什么、主要动作 / 信息是什么、从什么状态进入、结束时留下什么、预计持续多久。
 
-复杂项目只有在平铺已影响浏览时，才在 `video/shots/` 内增加章节等组织目录。
+## 2. Shot 记录按规模出现
 
-镜头包含复杂摄影、动作、跨世界转场或连续性时，读取 [`references/direction/DIRECTION.md`](references/direction/DIRECTION.md)。需要明确景别、焦段 / 透视、机位、推拉 / 变焦、景深、焦点或产品摄影时，再读取 [`references/direction/CAMERA-LANGUAGE.md`](references/direction/CAMERA-LANGUAGE.md)，先定义可见摄影效果，再由模型适配器决定具体术语。多人接触、递交物体、手部操作、产品使用、复杂遮挡或机械交互时，再读取 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，明确主动作角色、手、接触点和动作前后状态。多镜头项目需要在昂贵生成前验证顺序、对白、总时长或产品可读性时，`references/planning/PREVIS.md` 允许用分镜 + 临时声音做轻量动态分镜（Animatic），不要求每个项目都做。镜头是否必须等待前一镜实际出口、哪些镜头可以并行，以及计划出口 / 实际出口如何交接，按 [`references/continuity/CONTINUITY-HANDOFF.md`](references/continuity/CONTINUITY-HANDOFF.md)。多角色走位、产品 / 机械交互、复杂摄影路径、首尾帧控制或相邻镜头空间关系在正式生成前仍有较大不确定性时，再读取 [`references/planning/PREVIS.md`](references/planning/PREVIS.md) 做最小必要预演 / 分镜。
+默认使用留空式编号，例如 `SH010`、`SH020`；需要场景前缀时可以使用 `SC01_SH010`。
 
-## 2. 写 SHOT.md
+简单视频可以直接在 `VIDEO.md` 的唯一正式 Shot 表中维护全部镜头；长视频拆到 `SCxx.md` 后就在场景文件维护。只有某个 Shot 真的需要大量独立资料时才创建 `Vxxx/shots/<shot-id>/` 或独立 Shot 文件。
 
-复杂或需要交给外部生成的镜头可以直接按 [`references/planning/SHOT-TEMPLATE.md`](references/planning/SHOT-TEMPLATE.md) 编写；简单镜头只保留真正需要的字段。`VIDEO.md` 明确要求多个画幅版本时，再读取 [`references/planning/MULTI-FORMAT.md`](references/planning/MULTI-FORMAT.md) 判断是否可由主版本裁切，还是需要独立构图 / 生成。
+一旦正文或最终采用关系迁到更具体的正式记录，原位置只留概要与导航，不同步维护第二份。
 
-`SHOT.md` 只保存当前有效镜头设计，通常包括：
+复杂 Shot 的字段边界可参考 [`references/planning/SHOT-TEMPLATE.md`](references/planning/SHOT-TEMPLATE.md)，但模板不是必填表。
 
-- 镜头目的；
-- 目标时长（来自当前脚本 / 总时长预算，但仍服从本镜头真实动作与对白）；
-- 景别、机位、镜头运动与必要焦段信息；
-- 主体站位、动作、表演和表情；
-- 环境与关键道具；
-- 对白、环境声和镜头专属声音；
-- Continuity In / Continuity Out；
-- 当前需要引用的复用素材；
-- 硬性约束；
-- 允许模型适配层调整的生成说明。
+## 3. 与 Cinematography 共同完善
 
-不是每个镜头都需要所有字段。简单镜头保持简洁。
+Storyboard 负责：为什么切、展示什么、动作如何衔接、持续多久。`video-cinematography` 负责：从哪里看、怎样构图 / 运动、透视 / 焦点和镜头级用光。二者共同修改同一 Shot，不是严格前后两个阶段。
 
-## 3. 连续性
+多人接触、递物、手部操作、复杂遮挡或机械交互按 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，先明确主动作角色、手、接触点和动作前后状态。
 
-连续性只记录与相邻镜头真正有关的信息，例如人物位置、服装、手持物、道具状态、光线方向、运动方向和已经发生的动作。
+## 4. 连续性与实际出口
 
-上一镜采用的实际生成结果若出现可接受偏差，下一镜从实际可见状态继续；如果偏差违反人物身份、产品真实结构或其他 Hard Constraint，则该生成结果不应被当成连续性依据。
+计划连续性按 [`references/continuity/CONTINUITY-HANDOFF.md`](references/continuity/CONTINUITY-HANDOFF.md)：区分世界空间、屏幕方向、角色自身左右、物体状态和计划出口。
 
-## 4. 摄影与动作
+生成返回后的实际出口不是 Storyboard 自己维护的另一套事实；Review 负责检查，正式采用来源在尚未建立剪辑时可以写入唯一 Shot 表。建立正式剪辑时间线后，最终用了哪条 Take、哪个时间范围和拼接关系以剪辑记录为准，Shot 保留叙事意图并引用对应剪辑项。
 
-镜头运动必须服务信息、关系、空间或情绪，而不是为了“电影感”机械运动。视频模型的动作设计优先使用秒级时间关系，不把后期才能精确实现的帧级控制写成模型硬约束。
+## 5. Storyboard / Animatic 按需
 
-一个镜头可以有复杂内部动作，但必须能清楚说明它在剪辑中为什么是一个镜头。模型一次生成包含多个剪切时，项目仍按最终镜头语义组织，不因为模型能力把多个镜头永久揉成一个对象。
+需要在昂贵生成前验证镜头顺序、动作、对白、节奏或产品可读性时，按 [`references/planning/PREVIS.md`](references/planning/PREVIS.md) 做最小必要 Storyboard / Animatic。Animatic 需要基本画面和时间设计后才有意义，不能只在“镜头拆分”完成后机械生成。
 
-同一镜头的裁切、调色、替换声音、多画幅派生和真正新镜头的边界按 [`references/continuity/SHOT-DERIVATIVES.md`](references/continuity/SHOT-DERIVATIVES.md)；后期派生不能覆盖镜头目录里的原始 `takeNN.mp4`。
-
-## 5. 进入生成前检查
-
-准备把一个镜头交给 `video-generation` 前确认：
-
-- 镜头目的明确；
-- 目标时长与动作数量相容；
-- 人物 / 场景 / 产品等需要复用的设计已确定；
-- Continuity In / Out 对相邻镜头足够清楚；
-- 参考素材职责明确；
-- 硬性约束 与普通偏好已经区分；
-- 没有把字幕、Logo、精确剪切点等明显后期任务误写成生成硬约束。
-
-不满足时先修 `SHOT.md` 或上游设计，不用“先生成看看”替代镜头设计。
-
-## 6. 提示词与生成结果归属
-
-长期提示词版本和生成结果与镜头共处一个目录：
-
-`prompt_v01.md`
-`prompt_v02.md`
-`take01.mp4`
-`take02.mp4`
-
-提示词的具体模型编译和一次性生成包由 `video-generation` 负责；生成结果的选择、重生成和后期修复判断由 `video-review` 负责。
+多画幅按 [`references/planning/MULTI-FORMAT.md`](references/planning/MULTI-FORMAT.md)；镜头后期派生与新 Shot 的边界按 [`references/continuity/SHOT-DERIVATIVES.md`](references/continuity/SHOT-DERIVATIVES.md)。
 
 ## 完成标准
 
-`SHOT.md` 足以让生成 Skill 在不重新猜测导演意图的情况下编译提示词，并能明确该镜头必须继承什么、结束时留下什么。
+当前视频 / 场景已有一份唯一、可读的 Shot List；每个镜头的叙事目的、动作衔接、预计时长和必要连续性足够清楚，并能与 Cinematography / Generation 继续迭代。

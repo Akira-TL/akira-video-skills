@@ -6,7 +6,7 @@
 
 推荐在对应产品目录建立：
 
-`video/materials/products/<product-id>_truth.md`
+`video/shared/products/<product-id>_truth.md`（跨视频复用）或当前 `Vxxx/materials/` 下对应产品记录
 
 按当前官方资料实际支持的内容整理：
 

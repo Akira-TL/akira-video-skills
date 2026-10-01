@@ -69,13 +69,16 @@ class VideoRepositoryContractTests(unittest.TestCase):
             "akira-video",
             "video-advertising",
             "video-audio",
-            "video-design",
+            "video-cinematography",
+            "video-director",
             "video-editing",
             "video-generation",
-            "video-materials",
+            "video-init",
+            "video-production",
             "video-review",
             "video-script",
-            "video-shot",
+            "video-storyboard",
+            "video-visual-design",
         }
         actual = {p.name for p in STABLE.iterdir() if p.is_dir() and (p / "SKILL.md").is_file()}
         self.assertEqual(actual, expected)
@@ -86,64 +89,40 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertTrue((package / "agents" / "openai.yaml").is_file(), name)
             self.assertTrue((DOCS / f"{name}.md").is_file(), name)
 
-    def test_akira_video_default_closure_is_core_only(self) -> None:
-        deps = dependencies(STABLE / "akira-video")
-        expected = {
-            "akira-tl/akira-video-skills/video-audio",
-            "akira-tl/akira-video-skills/video-design",
-            "akira-tl/akira-video-skills/video-editing",
-            "akira-tl/akira-video-skills/video-generation",
-            "akira-tl/akira-video-skills/video-materials",
-            "akira-tl/akira-video-skills/video-review",
-            "akira-tl/akira-video-skills/video-script",
-            "akira-tl/akira-video-skills/video-shot",
+    def test_router_is_thin_and_production_owns_core_closure(self) -> None:
+        self.assertEqual(
+            dependencies(STABLE / "akira-video"),
+            {
+                "akira-tl/akira-video-skills/video-init",
+                "akira-tl/akira-video-skills/video-production",
+            },
+        )
+        self.assertEqual(
+            dependencies(STABLE / "video-production"),
+            {
+                "akira-tl/akira-video-skills/video-director",
+                "akira-tl/akira-video-skills/video-script",
+                "akira-tl/akira-video-skills/video-visual-design",
+                "akira-tl/akira-video-skills/video-storyboard",
+                "akira-tl/akira-video-skills/video-cinematography",
+                "akira-tl/akira-video-skills/video-audio",
+                "akira-tl/akira-video-skills/video-generation",
+                "akira-tl/akira-video-skills/video-review",
+                "akira-tl/akira-video-skills/video-editing",
+            },
+        )
+        self.assertNotIn(
+            "akira-tl/akira-video-skills/video-advertising",
+            dependencies(STABLE / "video-production"),
+        )
+
+    def test_model_supplier_adapters_are_not_packages(self) -> None:
+        package_names = {
+            p.name for p in IN_PROGRESS.iterdir() if p.is_dir() and (p / "SKILL.md").is_file()
         }
-        self.assertEqual(deps, expected)
-        self.assertNotIn("akira-tl/akira-video-skills/video-advertising", deps)
-        self.assertFalse(any("video-model-" in dep for dep in deps))
-
-    def test_materials_depend_on_design(self) -> None:
-        self.assertEqual(
-            dependencies(STABLE / "video-materials"),
-            {"akira-tl/akira-video-skills/video-design"},
-        )
-
-    def test_model_adapters_are_optional_and_have_required_core_dependencies(self) -> None:
-        runway = dependencies(IN_PROGRESS / "video-model-runway")
-        veo = dependencies(IN_PROGRESS / "video-model-veo")
-        seedance = dependencies(IN_PROGRESS / "video-model-seedance")
-
-        self.assertEqual(runway, {"akira-tl/akira-video-skills/video-generation"})
-        self.assertEqual(
-            veo,
-            {
-                "akira-tl/akira-video-skills/video-audio",
-                "akira-tl/akira-video-skills/video-generation",
-            },
-        )
-        self.assertEqual(
-            seedance,
-            {
-                "akira-tl/akira-video-skills/video-audio",
-                "akira-tl/akira-video-skills/video-generation",
-            },
-        )
-
-    def test_model_adapters_follow_one_contract_and_keep_current_guides(self) -> None:
-        contract = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-ADAPTER-CONTRACT.md")
-        self.assertIn("未知能力 fail closed", contract)
-        self.assertIn("适配器统一输出", contract)
-        self.assertIn("stable / preview", contract)
-        self.assertIn("第三方路由", contract)
-
-        for name in ("video-model-runway", "video-model-veo", "video-model-seedance"):
-            skill = read(IN_PROGRESS / name / "SKILL.md")
-            guide = read(IN_PROGRESS / name / "references" / "MODEL-GUIDE.md")
-            self.assertIn("统一模型适配器契约", skill, name)
-            self.assertIn("只保存", skill, name)
-            self.assertIn("最后人工核验：", guide, name)
-            self.assertNotIn("提示词ing", guide, name)
-            self.assertNotIn("一次性 一次性生成包", guide, name)
+        self.assertFalse(any(name.startswith("video-model-") for name in package_names))
+        generation = read(STABLE / "video-generation" / "SKILL.md")
+        self.assertIn("不安装供应商 Adapter Skill", generation)
 
     def test_only_primary_router_is_user_invoked(self) -> None:
         router_metadata = read(STABLE / "akira-video" / "agents" / "openai.yaml")
@@ -157,7 +136,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
                 self.assertNotIn("allow_implicit_invocation: false", read(metadata), package.name)
 
     def test_strict_four_view_contract_is_preserved(self) -> None:
-        text = read(STABLE / "video-materials" / "references" / "FOUR-VIEW-PROMPTS.md")
+        text = read(STABLE / "video-visual-design" / "references" / "assets" / "FOUR-VIEW-PROMPTS.md")
         required = (
             "严格 2×2 四格等大排列",
             "人物 180° 后脑勺",
@@ -174,9 +153,9 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_generation_pack_stays_inside_project_tmp(self) -> None:
         pack = read(STABLE / "video-generation" / "references" / "planning" / "GENERATION-PACK.md")
-        self.assertIn("当前项目 ForgeRelay 工作区内的 `.tmp/`", pack)
-        self.assertIn("returns/", pack)
-        self.assertIn("_take01.png", pack)
+        self.assertIn(".tmp/V001/G003_I02/", pack)
+        self.assertIn("receive", pack)
+        self.assertIn("Take → I", pack)
 
         roots = (STABLE, IN_PROGRESS, DOCS, REPO / "AGENTS.md", REPO / "CONTEXT.md", REPO / "README.md")
         offenders: list[str] = []
@@ -190,21 +169,22 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertEqual(offenders, [])
 
     def test_project_layout_has_no_top_level_audio_or_delivery_tree(self) -> None:
-        layout = read(STABLE / "akira-video" / "references" / "project" / "PROJECT-LAYOUT.md")
+        layout = read(STABLE / "video-init" / "references" / "project" / "PROJECT-LAYOUT.md")
         self.assertNotIn("video/audio/", layout)
         self.assertNotIn("video/delivery/", layout)
-        self.assertIn("└── edit/", layout)
-        self.assertIn("video/shots/", layout)
-        self.assertIn("目标项目自己的 `.gitignore`", layout)
+        self.assertIn("video/", layout)
+        self.assertIn("shared/", layout)
+        self.assertIn("videos/", layout)
+        self.assertIn("generations/", layout)
         self.assertIn(".tmp/", layout)
 
     def test_naming_preserves_scene_location_and_take_semantics(self) -> None:
-        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
-        self.assertIn("场次与地点不同", naming)
-        self.assertIn("道具与产品不同", naming)
-        self.assertIn("生成结果编号在同一个镜头内单调递增", naming)
-        self.assertIn("start-frame.png", naming)
-        self.assertIn("这些图片只有在多个镜头确实复用时才升级到 `video/materials/`", naming)
+        naming = read(STABLE / "video-init" / "references" / "project" / "NAMING.md")
+        self.assertIn("`V001`", naming)
+        self.assertIn("`G001`", naming)
+        self.assertIn("`I01`", naming)
+        self.assertIn("Take 在一个 G 内单调递增", naming)
+        self.assertIn("`CHR01_ref_v01.png`", naming)
 
     def test_product_shot_contract_preserves_real_product_identity(self) -> None:
         product_shots = read(STABLE / "video-advertising" / "references" / "PRODUCT-SHOTS.md")
@@ -228,7 +208,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, templates)
 
     def test_project_scaling_is_opt_in_and_git_remains_version_authority(self) -> None:
-        scaling = read(STABLE / "akira-video" / "references" / "project" / "SCALING-VERSIONS.md")
+        scaling = read(STABLE / "video-production" / "references" / "project" / "SCALING-VERSIONS.md")
         for marker in (
             "默认不创建章节层级",
             "只有出现以下情况之一时才增加组织层",
@@ -239,7 +219,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
             self.assertIn(marker, scaling)
 
     def test_previs_and_editing_rhythm_remain_need_driven(self) -> None:
-        previs = read(STABLE / "video-shot" / "references" / "planning" / "PREVIS.md")
+        previs = read(STABLE / "video-storyboard" / "references" / "planning" / "PREVIS.md")
         editing = read(STABLE / "video-editing" / "references" / "EDITING-RHYTHM.md")
         self.assertIn("按需工具", previs)
         self.assertIn("不需要额外创建 storyboard 目录", previs)
@@ -247,24 +227,24 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("镜头不因为“看起来漂亮”就必须保留完整生成时长", editing)
 
     def test_production_flow_resumes_existing_work_and_stops_on_external_dependencies(self) -> None:
-        flow = read(STABLE / "akira-video" / "references" / "workflow" / "PRODUCTION-FLOW.md")
-        self.assertIn("已有项目先读取 `VIDEO.md` 和当前实际文件，从当前工作继续", flow)
-        self.assertIn("不能假装已经生成", flow)
-        self.assertIn("长期角色 / 场景参考没有通过审片前，不拿它继续批量生成视频", flow)
-        self.assertIn("完整项目是依赖图，不是固定流水线", flow)
+        flow = read(STABLE / "video-production" / "references" / "workflow" / "PRODUCTION-FLOW.md")
+        self.assertIn("不是固定阶段表", flow)
+        self.assertIn("不同 G 可以同时处于不同进度", flow)
+        self.assertIn("缺参考 → 图片 G", flow)
+        self.assertIn("只暂停依赖该结果的分支", flow)
 
     def test_dialogue_timing_and_multiformat_rules_avoid_late_fixups(self) -> None:
         dialogue = read(STABLE / "video-script" / "references" / "DIALOGUE-TIMING.md")
-        multiformat = read(STABLE / "video-shot" / "references" / "planning" / "MULTI-FORMAT.md")
-        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
+        multiformat = read(STABLE / "video-storyboard" / "references" / "planning" / "MULTI-FORMAT.md")
+        naming = read(STABLE / "video-init" / "references" / "project" / "NAMING.md")
         self.assertIn("不要只用固定“每分钟多少字”替代真实语速", dialogue)
         self.assertIn("字幕不是生成任务", dialogue)
         self.assertIn("优先生成一个主版本", multiformat)
         self.assertIn("不应该强行裁切", multiformat)
-        self.assertIn("prompt_vertical_v01.md", naming)
+        self.assertIn("`prompt_i01.md`", naming)
 
     def test_reference_continuity_and_candidate_selection_prioritize_identity_over_aesthetics(self) -> None:
-        continuity = read(STABLE / "video-materials" / "references" / "REFERENCE-CONTINUITY.md")
+        continuity = read(STABLE / "video-visual-design" / "references" / "assets" / "REFERENCE-CONTINUITY.md")
         selection = read(STABLE / "video-review" / "references" / "CANDIDATE-SELECTION.md")
         self.assertIn("已验收素材是后续基准参考", continuity)
         self.assertIn("不自动替换基准参考", continuity)
@@ -273,7 +253,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("“最好的一条”也可以全部不合格", selection)
 
     def test_design_approval_and_technical_qc_keep_human_and_media_boundaries(self) -> None:
-        approval = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-APPROVAL.md")
+        approval = read(STABLE / "video-visual-design" / "references" / "foundation" / "DESIGN-APPROVAL.md")
         technical = read(STABLE / "video-editing" / "references" / "TECHNICAL-QC.md")
         self.assertIn("应先让用户决定的高影响分叉", approval)
         self.assertIn("用户已经授权 Agent 自主决定", approval)
@@ -283,7 +263,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不能检查就明确保留", technical)
 
     def test_design_outputs_keep_identity_separate_from_state(self) -> None:
-        outputs = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-OUTPUTS.md")
+        outputs = read(STABLE / "video-visual-design" / "references" / "foundation" / "DESIGN-OUTPUTS.md")
         self.assertIn("服装不是新角色", outputs)
         self.assertIn("白天 / 夜晚不是新地点", outputs)
         self.assertIn("状态变化不改变角色 ID", outputs)
@@ -307,8 +287,8 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("连续失败升级", repair)
 
     def test_shot_derivatives_and_media_cleanup_preserve_originals(self) -> None:
-        derivatives = read(STABLE / "video-shot" / "references" / "continuity" / "SHOT-DERIVATIVES.md")
-        lifecycle = read(STABLE / "akira-video" / "references" / "project" / "MEDIA-LIFECYCLE.md")
+        derivatives = read(STABLE / "video-storyboard" / "references" / "continuity" / "SHOT-DERIVATIVES.md")
+        lifecycle = read(STABLE / "video-production" / "references" / "project" / "MEDIA-LIFECYCLE.md")
         self.assertIn("这些属于后期派生，不新建 Shot ID", derivatives)
         self.assertIn("后期修复后的片段不要覆盖原 `takeNN.mp4`", derivatives)
         self.assertIn("文件不是当前采用结果", lifecycle)
@@ -316,14 +296,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("不要让 `.tmp/.../returns/` 里的文件成为项目唯一正式副本", lifecycle)
 
     def test_existing_media_is_reused_without_forcing_regeneration(self) -> None:
-        importing = read(STABLE / "akira-video" / "references" / "project" / "IMPORT-MEDIA.md")
+        importing = read(STABLE / "video-production" / "references" / "project" / "IMPORT-MEDIA.md")
         self.assertIn("不要为了“流程完整”强制重新生成", importing)
         self.assertIn("`source.mp4`", importing)
         self.assertIn("不要把它误命名成 `take01.mp4`", importing)
         self.assertIn("不强制补不存在的中间件", importing)
 
     def test_continuity_handoff_distinguishes_parallel_and_dependent_shots(self) -> None:
-        handoff = read(STABLE / "video-shot" / "references" / "continuity" / "CONTINUITY-HANDOFF.md")
+        handoff = read(STABLE / "video-storyboard" / "references" / "continuity" / "CONTINUITY-HANDOFF.md")
         self.assertIn("无（可独立生成）", handoff)
         self.assertIn("必须等前一镜结果的镜头", handoff)
         self.assertIn("计划出口不是已发生事实", handoff)
@@ -336,14 +316,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("状态词保持稳定", handoff)
 
     def test_direction_rules_preserve_screen_space_without_forbidding_intentional_axis_crossing(self) -> None:
-        direction = read(STABLE / "video-shot" / "references" / "direction" / "DIRECTION.md")
+        direction = read(STABLE / "video-cinematography" / "references" / "DIRECTION.md")
         self.assertIn("180° 轴线规则", direction)
         self.assertIn("这不是不可违反的硬规则", direction)
         self.assertIn("反打要从空间另一观察方向重新构图，不能简单把上一镜水平翻转", direction)
         self.assertIn("动作匹配", direction)
 
     def test_reference_roles_prevent_identity_and_structure_contamination(self) -> None:
-        roles = read(STABLE / "video-materials" / "references" / "REFERENCE-ROLES.md")
+        roles = read(STABLE / "video-visual-design" / "references" / "assets" / "REFERENCE-ROLES.md")
         self.assertIn("动作参考视频", roles)
         self.assertIn("默认不负责：", roles)
         self.assertIn("不参考演员身份 / 服装 / 背景", roles)
@@ -351,30 +331,30 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("参考越多越稳", roles)
 
     def test_authority_chain_blocks_generated_errors_from_becoming_facts(self) -> None:
-        authority = read(STABLE / "akira-video" / "references" / "workflow" / "AUTHORITY.md")
+        authority = read(STABLE / "video-production" / "references" / "workflow" / "AUTHORITY.md")
         self.assertIn("提示词不是新的事实源", authority)
         self.assertIn("一次性生成包只复制 / 编译当前任务所需内容", authority)
         self.assertIn("实际可见出口", authority)
         self.assertIn("不能自动升级为正式事实", authority)
         self.assertIn("在第一个真正错误的归属层修复", authority)
 
-    def test_model_comparison_keeps_one_shot_identity(self) -> None:
+    def test_model_comparison_stays_inside_one_generation_goal(self) -> None:
         comparison = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-COMPARISON.md")
-        self.assertIn("模型不是镜头版本", comparison)
-        self.assertIn("不自动创建新的 Shot ID", comparison)
-        self.assertIn("生成结果编号不按模型重置", comparison)
-        self.assertIn("项目不会按模型复制一套镜头结构", comparison)
-        self.assertIn("不让模型差异反写镜头", comparison)
+        self.assertIn("模型是执行方式，不是 Shot 或 Generation 身份", comparison)
+        self.assertIn("同一个 Generation 目标", comparison)
+        self.assertIn("Take 编号仍在同一 G 内连续递增", comparison)
+        self.assertIn("不按供应商复制一套资产或镜头结构", comparison)
+        self.assertIn("不能偷偷改变人物、产品、场景、剧情或 Shot 核心目的", comparison)
 
     def test_coverage_is_need_driven_not_a_fixed_shot_package(self) -> None:
-        coverage = read(STABLE / "video-shot" / "references" / "planning" / "COVERAGE.md")
+        coverage = read(STABLE / "video-storyboard" / "references" / "planning" / "COVERAGE.md")
         self.assertIn("不要求按传统覆盖套路机械生成", coverage)
         self.assertIn("不要每个动作后机械加一个“惊讶脸”", coverage)
         self.assertIn("同一动作不要重复展示", coverage)
         self.assertIn("备用镜头必须有明确可能用途", coverage)
 
     def test_animatic_and_finishing_reduce_cost_without_hiding_hard_errors(self) -> None:
-        previs = read(STABLE / "video-shot" / "references" / "planning" / "PREVIS.md")
+        previs = read(STABLE / "video-storyboard" / "references" / "planning" / "PREVIS.md")
         finishing = read(STABLE / "video-editing" / "references" / "FINISHING.md")
         self.assertIn("动态分镜（Animatic）", previs)
         self.assertIn("如果只是一次性节奏验证，可以放 `.tmp/`", previs)
@@ -386,14 +366,14 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("关键帧数量越多不一定越稳定", previs)
         self.assertIn("关键帧图没有通过身份 / 结构 / 空间检查前", previs)
 
-    def test_script_and_design_templates_preserve_layer_boundaries(self) -> None:
-        script_templates = read(STABLE / "video-script" / "references" / "SCRIPT-TEMPLATES.md")
-        design_templates = read(STABLE / "video-design" / "references" / "foundation" / "DESIGN-TEMPLATES.md")
-        self.assertIn("不写详细摄影机和模型参数", script_templates)
-        self.assertIn("模板是内容边界，不是文件清单", script_templates)
-        self.assertIn("不写：", design_templates)
-        self.assertIn("某一个镜头动作", design_templates)
-        self.assertIn("真实品牌产品不使用这个模板自由重设计结构", design_templates)
+    def test_script_and_visual_design_keep_single_source_boundaries(self) -> None:
+        script = read(STABLE / "video-script" / "SKILL.md")
+        visual = read(STABLE / "video-visual-design" / "SKILL.md")
+        self.assertIn("正文只维护一处", script)
+        self.assertIn("不建立竞争的 `DIRECTOR.md` / `SCRIPT.md` 副本", script)
+        self.assertIn("正式送去生成的唯一正文必须保存在对应 G / I", visual)
+        self.assertIn("资产记录只引用该 Prompt 来源", visual)
+        self.assertIn("外部导入图片可以直接成为资产", visual)
 
     def test_batching_validates_high_risk_samples_before_scaling(self) -> None:
         batching = read(STABLE / "video-generation" / "references" / "planning" / "BATCHING.md")
@@ -403,21 +383,21 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("更换模型 / 参考基准后重新小样", batching)
         self.assertIn("不要把一个数字写成通用规则", batching)
 
-    def test_project_recording_keeps_video_home_current_not_log_like(self) -> None:
-        recording = read(STABLE / "akira-video" / "references" / "project" / "RECORDING.md")
-        self.assertIn("聊天不是长期项目记录", recording)
-        self.assertIn("VIDEO.md 只保存整片级当前摘要", recording)
-        self.assertIn("当前采用与实际出口只写镜头", recording)
-        self.assertIn("当前工作不是历史日志", recording)
-        self.assertIn("不记录无意义机器细节", recording)
+    def test_project_recording_has_one_source_for_each_fact(self) -> None:
+        recording = read(STABLE / "video-production" / "references" / "project" / "RECORDING.md")
+        self.assertIn("正文和事实只维护一处", recording)
+        self.assertIn("VIDEO.md 当前摘要", recording)
+        self.assertIn("Generation 不维护 selected take", recording)
+        self.assertIn("正式剪辑时间线建立前", recording)
+        self.assertIn("Blocker 必须真实", recording)
 
-    def test_external_generation_waiting_is_resumable_without_fake_progress(self) -> None:
-        waiting = read(STABLE / "akira-video" / "references" / "workflow" / "WAITING-RESUME.md")
-        self.assertIn("还没返回", waiting)
-        self.assertIn("不重复打包", waiting)
-        self.assertIn("部分返回", waiting)
-        self.assertIn("不按上传顺序或“看起来像”猜归属", waiting)
-        self.assertIn("不要说“后台继续处理”", waiting)
+    def test_external_generation_waiting_is_scoped_and_resumable(self) -> None:
+        waiting = read(STABLE / "video-production" / "references" / "workflow" / "WAITING-RESUME.md")
+        self.assertIn("只阻塞依赖它的分支", waiting)
+        self.assertIn("不重复打同一 I", waiting)
+        self.assertIn("部分 / 一批返回", waiting)
+        self.assertIn("不能根据画面内容或上传顺序猜归属", waiting)
+        self.assertIn("正式接收成功但清理失败", waiting)
 
     def test_cross_package_reference_paths_require_declared_dependencies(self) -> None:
         pattern = re.compile(r"(video-[a-z0-9-]+)/references/")
@@ -441,7 +421,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertEqual(dependencies(STABLE / "video-audio"), set())
         self.assertEqual(dependencies(STABLE / "video-editing"), set())
         self.assertNotIn("video-script/references/", audio)
-        self.assertNotIn("video-shot/references/", editing)
+        self.assertNotIn("video-storyboard/references/", editing)
         self.assertNotIn("video-audio/references/", editing)
 
     def test_temporal_review_checks_frame_to_frame_ai_drift(self) -> None:
@@ -455,7 +435,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_performance_and_interaction_rules_make_acting_and_contact_observable(self) -> None:
         performance = read(STABLE / "video-script" / "references" / "PERFORMANCE.md")
-        interaction = read(STABLE / "video-shot" / "references" / "direction" / "INTERACTION.md")
+        interaction = read(STABLE / "video-storyboard" / "references" / "direction" / "INTERACTION.md")
         self.assertIn("不把情绪词当表演指令终点", performance)
         self.assertIn("情绪要有触发点", performance)
         self.assertIn("多人场景中，当前叙事重点只有一个时", performance)
@@ -466,11 +446,11 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_execution_parameters_stay_out_of_long_term_shot_intent_by_default(self) -> None:
         params = read(STABLE / "video-generation" / "references" / "prompting" / "EXECUTION-PARAMETERS.md")
-        self.assertIn("SHOT.md 不拥有模型参数", params)
+        self.assertIn("Shot 不拥有模型参数", params)
         self.assertIn("seed 不是身份系统", params)
-        self.assertIn("不为了“完整记录”把全部默认值写进包", params)
+        self.assertIn("I 保存真正影响执行的设置", params)
         self.assertIn("严格可复现项目", params)
-        self.assertIn("项目特定要求，不默认强加给所有视频制作", params)
+        self.assertIn("这不是所有视频的默认负担", params)
 
     def test_finishing_distinguishes_source_resolution_from_delivery_resolution(self) -> None:
         finishing = read(STABLE / "video-editing" / "references" / "FINISHING.md")
@@ -482,7 +462,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("没有非等比拉伸", technical)
 
     def test_camera_language_distinguishes_framing_lens_and_motion(self) -> None:
-        camera = read(STABLE / "video-shot" / "references" / "direction" / "CAMERA-LANGUAGE.md")
+        camera = read(STABLE / "video-cinematography" / "references" / "CAMERA-LANGUAGE.md")
         self.assertIn("景别与焦段不是一回事", camera)
         self.assertIn("推近 / 拉远（Dolly In / Out）", camera)
         self.assertIn("变焦（Zoom）", camera)
@@ -491,7 +471,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("一个镜头优先只有一个主要摄影运动", camera)
 
     def test_lighting_preserves_world_space_and_product_readability(self) -> None:
-        lighting = read(STABLE / "video-design" / "references" / "environment" / "LIGHTING.md")
+        lighting = read(STABLE / "video-visual-design" / "references" / "environment" / "LIGHTING.md")
         self.assertIn("主光方向是连续性状态", lighting)
         self.assertIn("世界空间中的窗户仍在东侧", lighting)
         self.assertIn("白天 / 夜晚状态", lighting)
@@ -516,8 +496,8 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("产品功能、参数和宣传表达仍受 `video-advertising` 的产品事实约束", voiceover)
 
     def test_localization_reuses_project_assets_without_changing_facts(self) -> None:
-        localization = read(STABLE / "akira-video" / "references" / "workflow" / "LOCALIZATION.md")
-        naming = read(STABLE / "akira-video" / "references" / "project" / "NAMING.md")
+        localization = read(STABLE / "video-production" / "references" / "workflow" / "LOCALIZATION.md")
+        naming = read(STABLE / "video-init" / "references" / "project" / "NAMING.md")
         self.assertIn("不为每种语言复制整套 `video/`", localization)
         self.assertIn("不允许为了“更顺”改变", localization)
         self.assertIn("明显正面口型", localization)
@@ -536,128 +516,33 @@ class VideoRepositoryContractTests(unittest.TestCase):
 
     def test_generated_edit_and_extension_preserve_original_shot_media(self) -> None:
         edit_extend = read(STABLE / "video-generation" / "references" / "transform" / "EDIT-EXTEND.md")
-        self.assertIn("先判断为什么不直接后期", edit_extend)
-        self.assertIn("什么时候不是延长，而是新 Shot", edit_extend)
-        self.assertIn("原始生成结果永远保留", edit_extend)
-        self.assertIn("不要把一个只包含后半段的文件误命名为完整 `take04.mp4`", edit_extend)
-        self.assertIn("必须重新看**完整视频**", edit_extend)
+        self.assertIn("先判断是否应该后期", edit_extend)
+        self.assertIn("Generation 关系", edit_extend)
+        self.assertIn("原始 Take 不覆盖", edit_extend)
+        self.assertIn("新增尾段本身仍是一个可独立 Review 的 Take", edit_extend)
+        self.assertIn("完整 Review", edit_extend)
 
-    def test_model_adapter_acceptance_covers_core_failure_and_scope_boundaries(self) -> None:
-        acceptance = read(STABLE / "video-generation" / "references" / "prompting" / "MODEL-ADAPTER-ACCEPTANCE.md")
-        for marker in (
-            "## A. 精确入口与模型",
-            "## B. 当前能力核验",
-            "## G. 同步声音",
-            "## H. Edit / Extend",
-            "## K. 第三方入口",
-            "## M. 不越权",
-            "## N. 过期快照",
-            "## O. Package 边界",
-            "inconclusive",
-        ):
-            self.assertIn(marker, acceptance)
-
-    def test_model_adapter_blackbox_fixture_is_fixed_and_output_isolated(self) -> None:
-        prompt = read(REPO / "tests" / "blackbox" / "model-adapter-independent-prompt.md")
-        fixture = REPO / "tests" / "blackbox" / "fixtures" / "model-adapter-001"
-        sh010 = read(fixture / "video" / "shots" / "SC01_SH010" / "SHOT.md")
-        sh020 = read(fixture / "video" / "shots" / "SC01_SH020" / "SHOT.md")
-        product = read(fixture / "video" / "materials" / "products" / "PROD01_official.txt")
-        action = read(fixture / "video" / "materials" / "references" / "action-reference.txt")
-        self.assertIn("fixed point mismatch", prompt)
-        self.assertIn("accepted / rejected / inconclusive", prompt)
-        self.assertIn("<FIXTURE_ROOT>/output/", prompt)
-        self.assertNotIn("/tmp/", prompt)
-        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
-        self.assertIn("摄影机保持固定", sh010)
-        self.assertIn("对白必须保持“好了，就这样。”", sh020)
-        self.assertIn("exactly one circular button", product)
-        self.assertIn("Forbidden transfer", action)
-
-    def test_core_blackbox_fixture_enforces_first_external_generation_boundary(self) -> None:
-        prompt = read(REPO / "tests" / "blackbox" / "video-core-independent-prompt.md")
-        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-core-001"
-        brief = read(fixture / "source" / "brief.md")
-        self.assertIn("第一批图片包交付后", prompt)
-        self.assertIn("本阶段**不得**同时打依赖 CHR01 / LOC01 生成结果的视频镜头包", prompt)
-        self.assertIn("严格四视图", prompt)
-        self.assertIn("不允许为了“规范完整”增加", prompt)
-        self.assertIn("output/project/", prompt)
-        self.assertNotIn("/tmp/", prompt)
-        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
-        self.assertIn("不要提前打视频生成包", brief)
-        self.assertIn("不创建一级 `audio/`、`delivery/`、`assets/`", brief)
-        self.assertIn("本轮不要求真正生成任何图片或视频", brief)
-
-    def test_resume_blackbox_fixture_is_fixed_and_enforces_serial_handoff(self) -> None:
-        prompt = read(REPO / "tests" / "blackbox" / "video-resume-independent-prompt.md")
-        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-resume-001"
-        project = fixture / "source" / "project"
-        video_home = read(project / "VIDEO.md")
-        shots = read(project / "video" / "script" / "SHOTS.md")
-        expected_hashes = {
-            "character-candidate-a.png": "60a2cace19dd196bc363997471b22fd9ce724d07415d2e572f8de5c71945be44",
-            "character-candidate-b.png": "8d4474a424c581edca12148977ab97e4ba9b09224f7fcd6f03fb04073dd32799",
-            "scene-candidate-a.png": "247765fe27d9befba066fa160fdbb2333fda3796f573bf170959b87d1e5f2e8d",
-            "scene-candidate-b.png": "30ff1d04518f208b6b00fdf5497544190217dede877811efa07088801974ef7a",
-        }
-        self.assertIn("恢复而不是重建", prompt)
-        self.assertIn("必须实际检查候选内容", prompt)
-        self.assertIn("不得**因为参考图已经齐全就提前把 SH020 当成可执行任务", prompt)
-        self.assertIn("当前工作", video_home)
-        self.assertIn("等待用户返回 CHR01 / LOC01 四视图候选", video_home)
-        self.assertIn("SC01_SH010 当前采用结果", shots)
-        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
-        for name, expected in expected_hashes.items():
-            data = (fixture / "source" / "returned" / name).read_bytes()
-            self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
-
-    def test_video_review_blackbox_fixture_requires_temporal_review_and_actual_exit(self) -> None:
-        prompt = read(REPO / "tests" / "blackbox" / "video-review-independent-prompt.md")
-        fixture = REPO / "tests" / "blackbox" / "fixtures" / "video-review-001"
-        project = fixture / "source" / "project"
-        video_home = read(project / "VIDEO.md")
-        shot = read(project / "video" / "shots" / "SC01_SH010" / "SHOT.md")
-        expected_hashes = {
-            "SC01_SH010_candidate-a.mp4": "64bddfdeb34a90832b8b2a1fa09ef2421dae0d940ab41cc02fd5b3f7a049a28e",
-            "SC01_SH010_candidate-b.mp4": "af7eea451a9a83339933ea82bfea48b3d9c6ab0a88a54e4f26f65f73dfc91758",
-        }
-        self.assertIn("必须基于实际 MP4 内容检查", prompt)
-        self.assertIn("帧间稳定性", prompt)
-        self.assertIn("实际出口必须来自被采用视频的真实结束画面", prompt)
-        self.assertIn("不得把原计划出口直接复制成实际出口而不看视频", prompt)
-        self.assertIn("SH020 依赖 SH010 实际出口", video_home)
-        self.assertIn("当前采用", shot)
-        self.assertIn("尚无", shot)
-        self.assertEqual(read(fixture / ".gitignore").strip(), "output/")
-        for name, expected in expected_hashes.items():
-            data = (fixture / "source" / "returned" / name).read_bytes()
-            self.assertEqual(hashlib.sha256(data).hexdigest(), expected, name)
-        self.assertEqual(
-            hashlib.sha256((project / "video" / "materials" / "characters" / "CHR01_four-view.png").read_bytes()).hexdigest(),
-            "60a2cace19dd196bc363997471b22fd9ce724d07415d2e572f8de5c71945be44",
-        )
-        self.assertEqual(
-            hashlib.sha256((project / "video" / "materials" / "scenes" / "LOC01_four-view.png").read_bytes()).hexdigest(),
-            "247765fe27d9befba066fa160fdbb2333fda3796f573bf170959b87d1e5f2e8d",
-        )
+    def test_blackbox_is_explicitly_deferred_until_new_topology_stabilizes(self) -> None:
+        note = read(REPO / "tests" / "blackbox" / "README.md")
+        self.assertIn("上一代黑盒 fixtures", note)
+        self.assertIn("test_production_workflow_cases.py", note)
+        self.assertIn("稳定 Skill 拓扑完成后", note)
 
     def test_media_review_helper_is_only_an_aid_not_full_video_acceptance(self) -> None:
         review_skill = read(STABLE / "video-review" / "SKILL.md")
         helper = read(STABLE / "video-review" / "scripts" / "media_review.py")
         self.assertIn("scripts/media_review.py", review_skill)
-        self.assertIn("不能替代完整播放、听音、口型或人物 / 场景内容验收", review_skill)
-        self.assertIn("机械 2×2 成功也不代表严格四视图语义通过", review_skill)
+        self.assertIn("只是辅助定位", review_skill)
+        self.assertIn("不能替代完整播放、听音、口型或视觉语义检查", review_skill)
         self.assertIn("不能替代完整播放", helper)
         self.assertIn("split-2x2", helper)
-        self.assertIn(".tmp/review/", review_skill)
 
     def test_delivery_qc_helper_uses_explicit_requirements_and_not_content_acceptance(self) -> None:
         editing_skill = read(STABLE / "video-editing" / "SKILL.md")
         technical = read(STABLE / "video-editing" / "references" / "TECHNICAL-QC.md")
         helper = read(STABLE / "video-editing" / "scripts" / "delivery_qc.py")
         self.assertIn("scripts/delivery_qc.py", editing_skill)
-        self.assertIn("期望值必须来自 `VIDEO.md` / 客户 / 比赛 / 平台要求", editing_skill)
+        self.assertIn("期望值必须来自当前视频交付要求", editing_skill)
         self.assertIn("脚本没有通用“标准成片”默认值", technical)
         self.assertIn("技术 QC 只确认媒体文件与显式交付参数", helper)
         self.assertIn("--video-codec", helper)
@@ -665,19 +550,17 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("--sample-rate", helper)
         self.assertIn("不能替代从头到尾观看成片", helper)
 
-    def test_video_home_is_project_definition_and_current_snapshot(self) -> None:
-        home = read(STABLE / "akira-video" / "references" / "project" / "VIDEO-HOME.md")
+    def test_video_home_is_single_video_record_and_current_snapshot(self) -> None:
+        home = read(STABLE / "video-production" / "references" / "project" / "VIDEO-HOME.md")
         for heading in (
-            "## 项目定义",
-            "## 交付要求",
-            "## 来源与限制",
-            "## 当前进度",
-            "## 当前工作",
-            "## 阻塞项",
-            "## 关键决定",
-            "## 导航",
+            "## 建议内容",
+            "## 长视频拆分",
+            "## 当前摘要",
+            "## 上游来源",
         ):
             self.assertIn(heading, home)
+        self.assertIn("唯一主要制作稿", home)
+        self.assertIn("当前状态摘要不重复最终采用关系", home)
 
 
 if __name__ == "__main__":

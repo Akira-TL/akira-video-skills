@@ -19,7 +19,7 @@ video/edit/      # 按需
 
 ## 专业能力
 
-Router 按当前真实制作任务加载：`video-script`、`video-design`、`video-audio`、`video-materials`、`video-shot`、`video-generation`、`video-review` 或 `video-editing`。多语言字幕 / 配音 / 旁白 / 成片版本按 `references/workflow/LOCALIZATION.md` 复用同一项目资产；品牌与产品项目按需增加 `video-advertising`；模型专用参数和提示词规则不进入 Router。
+Router 按当前真实制作任务加载：`video-script`、`video-visual-design`、`video-audio`、`video-visual-design`、`video-storyboard`、`video-generation`、`video-review` 或 `video-editing`。多语言字幕 / 配音 / 旁白 / 成片版本按 `references/workflow/LOCALIZATION.md` 复用同一项目资产；品牌与产品项目按需增加 `video-advertising`；模型专用参数和提示词规则不进入 Router。
 
 ## 外部生成
 

@@ -8,7 +8,7 @@
 
 不要为了“素材库完整”预生成所有角色、所有道具、所有可能状态。
 
-角色 / 场景已经完成视觉设计时，先读取 `video-design/references/foundation/DESIGN-OUTPUTS.md` 理解哪些参考是基础身份、状态或镜头专属内容，再决定当前项目真正需要生成哪些长期素材。
+人物 / 地点已经完成视觉设计时，先读取 [`../foundation/DESIGN-OUTPUTS.md`](../foundation/DESIGN-OUTPUTS.md) 理解哪些参考是基础身份、状态或 Shot 专属内容，再决定当前项目真正需要生成哪些长期资产。
 
 ## 2. 只规划长期复用对象
 
@@ -58,7 +58,7 @@
 
 素材很少时直接浏览目录即可。
 
-只有当 `video/materials/` 已经多到难以查找时，才增加一个简短 `README.md` 作为索引；不要默认建立复杂 `ASSET_MANIFEST` 或机器数据库。
+只有当当前 `video/shared/` 或 `Vxxx/materials/` 已经多到难以查找时，才增加简短 `README.md` 作为索引；不要默认建立复杂 `ASSET_MANIFEST` 或机器数据库。
 
 ## 完成标准
 

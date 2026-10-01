@@ -149,9 +149,9 @@ Animatic / 粗剪可以使用：
 
 最终整片旁白通常归档为：
 
-`video/edit/voiceover.wav`
+`Vxxx/edit/voiceover.wav`
 
-如果旁白属于某个角色且要长期跨项目 / 多段复用，基础声音参考仍放 `video/materials/voices/`。
+如果旁白属于某个角色且要跨视频 / 多段复用，基础声音参考放 `video/shared/voices/`；只属于当前 V 时放 `Vxxx/materials/voices/`。
 
 ## 11. 修改脚本后重新生成
 

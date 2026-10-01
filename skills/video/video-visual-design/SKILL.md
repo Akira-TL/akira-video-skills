@@ -1,110 +1,63 @@
 ---
-name: video-design
-description: 设计 AI 视频中的角色与场景视觉方案；当脚本只说明“需要一个什么样的人/场景”，但还没有形成可稳定生成的外形、服装、材质、色彩、空间、光线和视觉识别系统时使用。
+name: video-visual-design
+description: 设计并维护 AI 视频可复用的视觉对象与参考资产；当需要把人物、地点、道具、虚构机械或整体视觉要求具体化，并按真实镜头需求准备生图 Prompt、四视图和长期参考版本时使用。
 ---
 
-# Video Design
+# Video Visual Design
 
-本 Skill 负责把剧情与制作需求转换成**可复用、可辨认、可生成的角色和场景视觉设计**。它不直接承担最终图片生成，也不替代 `video-script` 的人物表演 / 场景剧情定义。
+本 Skill 统一负责**视觉设计 + 视觉参考资产准备**。人物、地点、道具和虚构机械属于同一视觉开发流程的不同对象类型，不拆成多个必经 Skill；它们都服务当前剧情与导演目标。
 
-设计结果长期放在对应复用素材旁，例如：
+设计回答“它应该是什么”，Generation Prompt 回答“这次让模型生成什么”，已确认参考图回答“实际采用了什么视觉外观”。三者语义不同，任何一层都不能自动覆盖另外两层。
 
-- `video/materials/characters/CHR01_design.md`
-- `video/materials/scenes/LOC01_design.md`
+## 1. 读取当前表达目标
 
-随后由 `video-materials` 把设计转成长期提示词、严格四视图和参考图片。
+优先读取当前 `Vxxx/VIDEO.md`、必要的场景正文、已有资产记录、上游事实和用户提供的视觉参考。Director 提供的是整片级表达目标；本 Skill 负责把这些目标具体化成可辨认、可复用、适合 AI 生成的视觉设计。
 
-## 1. 先读取设计约束
+项目需要统一视觉语言时按 [`references/foundation/ART-DIRECTION.md`](references/foundation/ART-DIRECTION.md)；高影响视觉分叉按 [`references/foundation/DESIGN-APPROVAL.md`](references/foundation/DESIGN-APPROVAL.md)。
 
-优先读取：
+## 2. 人物、地点与道具
 
-- `VIDEO.md`；
-- 当前 `SCRIPT.md` / `CHARACTERS.md` / `SCENES.md`；
-- 上游小说、章节、世界观或品牌资料中与当前对象真正有关的部分；
-- 已有视觉参考；
-- 目标视频风格、时代、世界规则和生成限制。
+- 人物设计按 [`references/character/CHARACTER-DESIGN.md`](references/character/CHARACTER-DESIGN.md)，关注轮廓、比例、面部识别、发型、服装、材质、配件和跨视频稳定特征；
+- 地点 / 环境按 [`references/environment/SCENE-DESIGN.md`](references/environment/SCENE-DESIGN.md)，关注空间结构、材质、颜色、固定锚点、基础光源和可行动空间；
+- 多视觉世界、复杂空间 / 机械分别按 [`references/environment/WORLD-DESIGN.md`](references/environment/WORLD-DESIGN.md) 与 [`references/environment/SPACE-MECHANISM.md`](references/environment/SPACE-MECHANISM.md)；
+- 基础光源、时间状态和材质反应按 [`references/environment/LIGHTING.md`](references/environment/LIGHTING.md)。镜头级机位用光与曝光由 `video-cinematography` 处理。
 
-只继承已经存在的事实与制作决定。脚本没有定义视觉细节时，本 Skill 可以提出设计方案，但不得把新设计反向冒充上游故事事实。
+人物、地点、道具都应从剧情功能和当前镜头需求推导，不为了“资产齐全”提前设计大量永远不会使用的状态或角度。
 
-项目需要统一整片视觉语言时，先读取 [`references/foundation/ART-DIRECTION.md`](references/foundation/ART-DIRECTION.md)，再进入具体角色 / 场景设计。
+## 3. 资产归属
 
-## 2. 角色设计
+默认优先判断是否值得跨视频复用：
 
-角色设计不能停在“年轻女性”“中年男人”“帅气少年”这类泛化描述。
+- 跨视频复用 → `video/shared/<category>/`；
+- 只属于当前视频但跨镜头复用 → `Vxxx/materials/`；
+- 只服务一个 Generation / Shot → 留在对应正式 Generation 或 Shot 记录，不自动提升为长期资产。
 
-至少从当前剧情功能推导：
+资产记录说明设计约束、每个正式参考版本的来源和当前默认版本。外部导入图片可以直接成为资产，不要求为了统一结构虚构 Generation。
 
-- 角色在画面中的第一识别点；
-- 整体轮廓；
-- 年龄感、身高与身体比例；
-- 面部结构与稳定识别特征；
-- 发型结构；
-- 服装层级、剪裁、材质和配件；
-- 主色、辅助色与对比关系；
-- 职业、时代、生活状态如何通过外观被看见；
-- 哪些特征必须跨镜头保持；
-- 哪些服装 / 状态允许变化；
-- 哪些设计容易导致生成漂移，应简化。
+## 4. 视觉参考规划
 
-复杂角色设计按需读取 [`references/character/CHARACTER-DESIGN.md`](references/character/CHARACTER-DESIGN.md)。
+按真实生产需要判断是否需要基础身份图、严格四视图、服装 / 状态参考、地点多角度、道具结构图或其他长期参考。详细规划按 [`references/assets/ASSET-PLANNING.md`](references/assets/ASSET-PLANNING.md)、参考职责按 [`references/assets/REFERENCE-ROLES.md`](references/assets/REFERENCE-ROLES.md)、连续性按 [`references/assets/REFERENCE-CONTINUITY.md`](references/assets/REFERENCE-CONTINUITY.md)。
 
-## 3. 场景设计
+稳定人物 / 地点 / 道具参考的详细制作原则按 [`references/assets/REFERENCE-DESIGN.md`](references/assets/REFERENCE-DESIGN.md)，严格四视图模板按 [`references/assets/FOUR-VIEW-PROMPTS.md`](references/assets/FOUR-VIEW-PROMPTS.md)。四视图稳定已经确认的设计，不替代设计本身。
 
-场景设计不是“一个厨房”“一个未来城市”这样的名词，而要形成能够支撑镜头和连续性的空间。
+用户提供、品牌官方或第三方参考进入生成 / 交付前，按 [`references/assets/SOURCE-RIGHTS.md`](references/assets/SOURCE-RIGHTS.md) 保留必要来源与使用边界；公开可访问不自动等于可直接对外交付。
 
-至少从当前剧情功能推导：
+## 5. 生图 Prompt 只落 Generation / Input Version
 
-- 场景承担什么叙事功能；
-- 空间尺度与大体布局；
-- 建筑 / 家具 / 自然结构；
-- 主要材质；
-- 主色与辅助色；
-- 主光来源、方向和时间感；
-- 关键视觉锚点；
-- 角色和关键道具可以怎样在空间里活动；
-- 哪些部分必须跨镜头稳定；
-- 哪些细节只属于某个镜头，不进入公共场景设计。
+本 Skill 可以编写生图 Prompt，但**正式送去生成的唯一正文必须保存在对应 G / I 的 Prompt 文件中**。资产记录只引用该 Prompt 来源，不在人物 / 地点 / 道具目录维护第二份相同 Prompt。
 
-复杂场景按需读取 [`references/environment/SCENE-DESIGN.md`](references/environment/SCENE-DESIGN.md)。主光方向、day / night、人物肤色、产品反光或跨镜头曝光需要稳定时，读取 [`references/environment/LIGHTING.md`](references/environment/LIGHTING.md)。项目存在多个视觉世界时读取 [`references/environment/WORLD-DESIGN.md`](references/environment/WORLD-DESIGN.md)；主场景空间关系或陌生机械会直接影响多个镜头时读取 [`references/environment/SPACE-MECHANISM.md`](references/environment/SPACE-MECHANISM.md)。
+通用生图写法按 [`references/assets/IMAGE-PROMPTS.md`](references/assets/IMAGE-PROMPTS.md)。当前模型能力和输入限制在实际生成时核验，不把供应商专用 Adapter 变成长期 Skill。
 
-## 4. 设计方向不足时先做候选
+## 6. 返回图片与资产版本
 
-当选择会明显改变主角色视觉身份、整片视觉语言、主要场景或大量后续素材，而上游资料没有答案时，按 [`references/foundation/DESIGN-APPROVAL.md`](references/foundation/DESIGN-APPROVAL.md) 区分“Agent 可直接补全的实现细节”和“应先由用户选择 / 明确授权的高影响创意分叉”。
+返回图片先由 `video-review` 检查。被正式采用为参考的二进制资产从 `v01` 起固定版本，不覆盖已投入生成的文件；新参考产生新版本。资产记录至少能查到：
 
+- `CHR01_ref_v01` 来自哪个 `shared/Gxxx takeNN` 或哪个外部文件；
+- 后续版本各自来源；
+- 当前默认使用哪一版。
 
-当输入只提供功能而没有明确视觉方向时，先提出少量真正不同的视觉方案，而不是立刻随机补细节。
-
-候选之间应在轮廓、材质、时代感、色彩或空间语言上有真实差异，并说明各自：
-
-- 为什么符合当前故事 / 角色；
-- 识别度；
-- 多镜头一致性风险；
-- AI 生成稳定性；
-- 与已有角色 / 场景是否容易混淆。
-
-没有必要时不制造大量候选。用户或当前制作决定选定方向后，再把选中设计写成长期设计文件。
-
-## 5. 设计文件
-
-正式写 `VISUAL_DIRECTION.md`、`CHRxx_design.md`、`LOCxx_design.md` 或按需的虚构道具设计时，使用 [`references/foundation/DESIGN-TEMPLATES.md`](references/foundation/DESIGN-TEMPLATES.md) 保持职责边界；模板不要求项目创建所有文件。
-
-
-角色 `*_design.md` 只保存视觉设计当前有效版本，场景同理。Git 保存历史，不创建 `design_final2.md` 等伪版本。
-
-设计文件可以引用上游来源和视觉参考，但不复制整段小说、人物百科或场景历史。
-
-## 6. 交给 video-materials
-
-角色 / 场景设计如何转成基础身份、四视图、服装 / 光照状态等长期参考，按 [`references/foundation/DESIGN-OUTPUTS.md`](references/foundation/DESIGN-OUTPUTS.md)；这些都是按真实镜头需求选择，不要求每个对象生成完整套装。
-
-
-设计确认后：
-
-1. `video-materials` 根据设计建立长期图片提示词；
-2. 需要稳定身份 / 结构时，按严格四视图模板生成参考图；
-3. 返回的图片和提示词与设计文件共置或放在同一类别目录；
-4. 镜头专属动作、摄影和临时状态仍归对应镜头。
+更新当前默认版本不会改写历史视频 / Generation 已经固定引用的具体资产版本。文本设计由 Git 保存历史；需要追溯某个 Generation 当时的设计依据时，记录真正包含该设计内容的 Git revision。
 
 ## 完成标准
 
-角色或场景已经从“功能描述”变成具体、可辨认、跨镜头可保持、且适合 AI 生成的视觉设计；下一步可以直接进入参考素材提示词和四视图生成。
+当前需要的视觉对象已经具体化到足以支持 Storyboard / Cinematography / Generation；缺失参考已经被明确为具体 Generation 目标；没有为了模板完整提前制造不需要的素材。

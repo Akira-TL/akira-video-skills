@@ -36,7 +36,7 @@ Akira Video 采用“一个 Agent 连贯推进一支视频”的生产模型，�
 - `video-editing`：组织最终采用素材的剪辑、合成、全片声音、字幕 / 图文与交付 QC。
 - `video-advertising`：只在真实品牌 / 产品项目中按需提供事实与广告边界。
 
-因此不再把 `video-brief`、`video-materials`、角色 / 环境 / 道具分别拆成必经 Skill，不再单独建立 `video-continuity`，也不再维护 Runway / Veo / Seedance 模型 Adapter 系列。
+因此不再把 `video-brief`、`video-visual-design`、角色 / 环境 / 道具分别拆成必经 Skill，不再单独建立 `video-continuity`，也不再维护 Runway / Veo / Seedance 模型 Adapter 系列。
 
 ## Production 决策循环
 
