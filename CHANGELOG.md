@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 用三个完整制作案例验证新生产模型并扩展 `video-generation/scripts/generation_pack.py`：支持 `Vxxx/Gxxx_Ixx` / `shared/Gxxx_Ixx` 作用域包、交付输入冻结、G 内连续 Take、普通文件与多文件 Take、幂等 `receive`、用户实际改输入后的正式 I 映射、分批返回、中断恢复，以及正式接收后自动精确清理；新增回归覆盖一次性短片、两集共享资产版本升级和返工恢复。
 - 归档下一阶段 Akira Video 生产模型：采用单 Agent / `video-production` 唯一流程负责人、共享资产 + 单支视频记录、Generation 与 Shot 解耦的 G / I / take 追溯、幂等返回接收与自动临时包清理；补齐简单视频 Shot 表 / 正式剪辑单一采用源、共享资产版本来源、可独立评审 Take、Generation Prompt 唯一来源及清包前唯一信息检查；详细决策见 `docs/adr/0001`–`0003`，当前 Skill 重构另行实施。
 - 初始化 Akira Video Skills 独立产品仓。
 - 同步仓库级 README / CONTEXT 到当前完整能力面：明确视觉 / 灯光、声音、外部生成交接、三个窄用途 CLI、统一模型适配器契约与 `tests/blackbox/` 独立验收入口，并修正 `Scene / Location` 术语映射。

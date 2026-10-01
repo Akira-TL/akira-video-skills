@@ -2,7 +2,7 @@
 
 一次性生成包是给用户拿到外部 AI 平台执行的一次性派生包。它只从正式项目内容复制 / 编译，不成为长期事实源。
 
-具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件层操作优先调用本 Skill 自带 `scripts/generation_pack.py`：`init` 创建项目内 `.tmp/<name>` 并确保 `.tmp/` 被项目 `.gitignore` 忽略；`copy` 只复制项目内正式文件，并拒绝把 `.git/`、`.tmp/` 等仓库 / 临时内部状态当作打包来源；`returns` 创建返回目录；`status` 检查包内容；`next-take` 从正式镜头目录计算下一个单调递增 `takeNN`；`archive --confirm-reviewed` 只把已经过 `video-review` 的选中返回文件复制到正式 `video/` 路径，并保留原返回文件与输出 SHA-256；`zip` 生成同一项目 `.tmp/<name>.zip`；`cleanup` 只有在显式确认无唯一信息、且返回结果已正式归档后才删除。脚本不生成 README / Prompt，也不替代人工选择素材或审片结论。
+具体 README / 图片 / 视频 / 声音任务文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件层操作优先调用本 Skill 自带 `scripts/generation_pack.py`：`init` 创建项目内包并确保 `.tmp/` 被忽略；`copy` 只复制项目内正式输入；`seal` 冻结即将交付的包内容；`returns` 创建返回目录；`status` 检查包内容；`zip` 生成同作用域派生压缩包；`receive` 将可靠归属于某个 scope / G / I 的所有返回候选幂等接收到正式 Generation、分配 G 内连续 Take、建立 Take → I 映射并在确认无唯一临时信息后自动清包。作用域化包使用 `.tmp/V001/G003_I02/` 或 `.tmp/shared/G003_I02/`。脚本不决定 Prompt 内容、素材职责、Review 结论或最终采用关系；`next-take`、`archive --confirm-reviewed` 与手动 `cleanup` 仅保留已有镜头归档流程兼容。
 
 ## 先按依赖分批
 
@@ -135,31 +135,28 @@ zip 仍保存在同一个项目 `.tmp/` 中，例如：
 
 ## 7. 用户生成后导回
 
-一批返回文件需要先暂存时，放在当前 pack 内的 `returns/`，例如：
+返回候选暂存在当前作用域包的 `returns/`：
 
 ```text
-.tmp/SC01-generation-pack/
+.tmp/V001/G003_I02/
 └── returns/
-    ├── SC01_SH010_take01.mp4
-    └── SC01_SH020_take01.mp4
+    ├── platform-result-a.mp4
+    └── platform-result-b.mp4
 ```
 
 然后：
 
-1. 根据返回文件名确定归属；文件名不规范但有明确一一对应关系时可以整理，多个返回文件无法可靠对应对象 / 镜头时停止并向用户确认，不按上传顺序猜；
-2. 保留原始返回文件，先进入 `video-review`；
-3. 图片有多个候选时先完成选择，只有选中的结果归档为对应长期稳定名；未选候选默认留在临时 pack 等待清理；
-4. `video-review` 明确接受后，优先使用 `generation_pack.py archive --confirm-reviewed` 把选中返回文件**复制**到正式归属位置；脚本禁止目的地仍位于 `.tmp/`，默认拒绝覆盖既有正式文件，并返回 SHA-256 / 文件大小供核对；
-5. 图片长期素材归入对应 `video/materials/<category>/`；
-6. 镜头视频、镜头专属图片 / 音频归入对应镜头；
-7. 如果文件名不符合约定但归属明确，正式归档时整理为项目命名；
-8. 更新必要的 `VIDEO.md` 当前工作。
+1. 先用可靠信息确认 scope / G / I；不能根据画面内容或上传顺序猜归属；
+2. `receive` 把同一返回批次的所有候选正式保存为 G 内连续 `takeNN`，保留原平台文件名 / 标识作为辅助来源记录；切换 I 不重置 Take；
+3. 单个媒体文件通常就是一个 Take；同一候选确实由视频、音轨、字幕等配套文件组成时，可以把一个返回子目录作为一个 Take 文件集合；
+4. 所有候选正式接收后再进入 `video-review`；Generation 只记录检查结论和问题范围，不维护 selected take；
+5. 图片 Take 被采用为人物 / 地点 / 道具参考时，由对应资产记录写明具体资产版本来源；视频实际采用的 Take / 时间范围在尚无正式剪辑时可记于唯一 Shot 表，建立正式剪辑时间线后以剪辑记录为最终采用源；
+6. 如果用户实际改了 Prompt、参考或关键设置，先把真实输入正式保存为正确 I，再接收结果；无法确定实际输入时保留临时包待核对；
+7. Receive 中途失败可以重跑，已预留 / 已保存的 Take 不重新编号；正式接收成功但清理失败只重试清理，不重新导入。
 
-返回文件也不能因为“暂存在 pack”就成为长期唯一副本。
+## 8. 自动清理临时包
 
-## 8. 删除临时包
-
-只有当返回结果已经进入正式项目、包里没有唯一提示词 / 唯一参考图、且没有尚未导回的生成结果时，才删除整个一次性生成包。
+Receive 只有在返回候选和 Take → I 映射已经正式保存，并确认包中没有尚未正式保存的唯一 Prompt、替换参考、实际设置或返回结果后，才自动删除精确对应的 `.tmp/<scope>/Gxxx_Iyy/` 与派生 zip。上一批包删除不代表该 I 被关闭；同一 I 后续仍可创建新的交付包并接收更多候选。
 
 一次性生成包默认不进入 Git。
 

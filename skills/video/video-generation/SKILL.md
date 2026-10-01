@@ -39,17 +39,19 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 
 ## 4. 整理一次性生成包
 
-正式打包前读取 [`references/planning/GENERATION-PACK.md`](references/planning/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、返回命名、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/planning/PACK-TEMPLATES.md`](references/planning/PACK-TEMPLATES.md) 生成自包含任务文件。项目内 pack 初始化、正式文件复制、returns 目录、状态检查、zip 与安全清理优先复用本 Skill 自带的 [`scripts/generation_pack.py`](scripts/generation_pack.py)，不要为每个项目重新写临时打包脚本；该 CLI 只处理文件生命周期，不决定 Prompt、参考职责或审片结论。
+正式打包前读取 [`references/planning/GENERATION-PACK.md`](references/planning/GENERATION-PACK.md)，按图片 / 声音 / 视频包的依赖分批、最小参考集、导回和删除边界执行；需要直接交给用户时使用 [`references/planning/PACK-TEMPLATES.md`](references/planning/PACK-TEMPLATES.md) 生成自包含任务文件。项目内 pack 初始化、正式文件复制、输入冻结、returns、状态检查、zip、幂等 Receive 与自动收尾优先复用本 Skill 自带的 [`scripts/generation_pack.py`](scripts/generation_pack.py)，不要为每个项目重新写临时打包脚本。作用域化 Generation 包使用 `V001/G003_I02` 或 `shared/G003_I02` 这类 ID 路径；CLI 只处理文件生命周期与 G / I / Take 追溯，不决定 Prompt 内容、参考职责、Review 结论或最终采用关系。
 
 
-在项目 `.tmp/` 下创建描述性目录。包默认保持简单：
+在项目 `.tmp/` 下创建作用域明确的目录。新 Generation 流程优先使用：
 
 ```text
-.tmp/<generation-pack>/
+.tmp/V001/G003_I02/
 ├── README.md
-├── <prompt files>
-└── materials/
+├── prompt.md
+└── references/
 ```
+
+共享资产生成使用 `.tmp/shared/G003_I02/`。人类助记后缀不参与 ID 解析；包内 Prompt 与上传素材必须是正式输入版本的可重建副本。
 
 只复制当前这批生成需要的提示词与参考素材。README 至少写清：
 
@@ -59,17 +61,13 @@ description: 为 AI 图片或视频生成准备可直接使用的提示词与一
 - 返回文件名；
 - 需要用户特别检查的硬性约束。
 
-图片素材返回时使用对应长期文件名；镜头视频返回命名前先用 `generation_pack.py next-take` 查询对应镜头下一个未使用的单调递增 `takeNN`，不要手工猜编号或因为切换模型重新从 `take01` 开始。
+返回候选不预先假定最终采用位置。作用域化 Generation 由 `receive` 在 G 内连续分配 `takeNN`，切换 I 不重置；Take 只是可独立评审候选，最终资产 / Shot / 剪辑采用关系由消费该结果的正式记录维护。旧的 `next-take` / `archive` 命令仅保留兼容已有镜头归档流程。
 
 ## 5. 导回结果
 
-用户带回生成结果后先检查文件对应关系，再把正式结果放回对应归属目录：
+用户带回生成结果后先可靠确认它属于哪个 scope / G / I。作用域化 Generation 优先使用 `generation_pack.py receive`：先把全部返回候选正式保存为该 G 的 Take，并建立 Take → I 映射，再进入 `video-review`；失败候选同样先保存，不因为质量差就留在临时包里。Receive 可安全重跑，中断后复用已保留的 Take 编号；正式保存与映射成功后，还要确认用户修改后的 Prompt、替换参考、实际设置或返回结果没有只存在于临时包，才自动删除对应 `.tmp/<scope>/Gxxx_Iyy/` 及派生 zip。
 
-- 复用素材 → `video/materials/<category>/`；
-- 镜头结果 → `video/shots/<shot-id>/`；
-- 镜头专属声音/图片 → 同一个镜头目录。
-
-只有 `video-review` 已明确接受某个返回文件后，才使用 `generation_pack.py archive --confirm-reviewed` 把它复制到正式归属位置；该动作保留 `returns/` 原文件并返回 SHA-256，不覆盖既有正式文件。完成全部正式归档并确认临时包不再含唯一信息后，再用 `cleanup` 删除一次性生成包。
+如果用户实际生成时改过输入，不能硬挂回原 I：先把真实 Prompt / 参考 / 设置正式保存为正确输入版本，再通过 `receive --input <Ixx>` 和必要的 `--actual-source` 映射后接收。最终哪个 Take / 时间范围被人物资产、Shot、音轨或剪辑采用，不写回 Generation 的 selected 状态。旧的 `archive --confirm-reviewed` 与手动 `cleanup` 只保留给已有流程兼容。
 
 ## 6. 迭代纪律
 
