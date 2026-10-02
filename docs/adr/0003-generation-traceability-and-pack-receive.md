@@ -1,8 +1,11 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 0004-colocated-generations-and-batch-delivery.md
 ---
 
 # Generation 与 Shot 解耦，并以 G / I / take 追溯生成尝试
+
+> G / I / Take 追溯和 Generation / Shot 解耦继续有效；本文的 `.tmp`、单 G 打包与自动清理决定已由 ADR 0004 取代。
 
 AI 模型的生成任务与最终镜头不是父子关系：一次生成可以包含多个计划 / 实际镜头，一个最终镜头也可以由多个生成结果拼接。因此 Generation 独立于 Shot 保存；G / I / take 只记录生成意图、正式输入和实际输出，最终采用关系由消费结果的资产、镜头、音频或剪辑记录维护。
 

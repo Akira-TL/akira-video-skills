@@ -20,7 +20,7 @@ description: 初始化 Akira Video 项目的最小文件与目录骨架；当当
 
 ## 2. 最小结构
 
-新视频至少建立 `video/videos/Vxxx_<human-label>/VIDEO.md`。只有真实需要时再创建 `video/shared/`、`Vxxx/scenes/`、`Vxxx/materials/`、`Vxxx/generations/`、`Vxxx/shots/` 或 `Vxxx/edit/`；不要为了模板完整创建空目录。
+新视频至少建立 `video/Vxxx_<human-label>/VIDEO.md`。只有真实需要时再创建 `video/shared/`、`Vxxx/scenes/`、`Vxxx/materials/`、`Vxxx/generations/`、`Vxxx/shots/`、`Vxxx/edit/` 或 `video/batches/`；不要为了模板完整创建空目录。
 
 ## 3. 初始化 VIDEO.md
 

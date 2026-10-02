@@ -1,8 +1,11 @@
 ---
-status: accepted
+status: superseded
+superseded_by: 0004-colocated-generations-and-batch-delivery.md
 ---
 
 # 视频项目采用共享资产层与单支视频制作层
+
+> 本 ADR 的 `video/videos/` 与独立 `shared/generations/` 目录决定已由 ADR 0004 取代；本文保留作为历史设计记录。
 
 视频项目把跨视频可复用资产与每一支独立交付视频分开。项目级 `video/INDEX.md` 只在需要多视频导航时存在；每支视频始终位于 `video/videos/Vxxx_<human-label>/` 并拥有自己的 `VIDEO.md`。对象身份只认稳定 V ID，助记后缀只服务人类阅读，Agent / 文件引用不能依赖后缀。
 

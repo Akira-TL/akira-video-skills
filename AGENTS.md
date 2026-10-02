@@ -13,17 +13,17 @@
 ## 项目存储原则
 
 - 多视频导航按需使用 `video/INDEX.md`。
-- 每支视频始终位于 `video/videos/Vxxx_<human-label>/VIDEO.md`；正式身份只认 `Vxxx`，助记后缀不参与引用。
-- 跨视频复用人物 / 地点 / 道具 / 声音 / 参考放 `video/shared/`；本视频专属复用内容放 `Vxxx/materials/`。
-- 正式 Generation 放 `Vxxx/generations/Gxxx*/` 或 `video/shared/generations/Gxxx*/`；Prompt 正文只属于对应 `Ixx`，Take 在 G 内单调递增。
+- 每支视频直接位于 `video/Vxxx_<human-label>/VIDEO.md`；不增加 `video/videos/` 中间层，正式身份只认 `Vxxx`，助记后缀不参与引用。
+- 跨视频复用人物 / 地点 / 道具 / 声音放 `video/shared/<category>/<object-id>/`；对象自己的 G 直接放在对象目录中。当前视频专属复用对象放 `Vxxx/materials/` 并遵守相同共置规则。
+- 直接服务视频 / Shot 的 Generation 放 `Vxxx/generations/Gxxx*/`；可复用对象的 Generation 放在该对象目录内。Prompt 与生成 Take 始终共置于同一个 G，Generated media 不再复制成第二份资产文件。
 - Shot 与 Generation 多对多。简单视频可以只在 `VIDEO.md` / 场景文件维护唯一 Shot 表；复杂 Shot 才建立独立记录。
 - 建立正式剪辑时间线后，最终视频实际采用 Take / 时间范围 / 复用 / 拼接关系只由剪辑记录维护。
-- `.tmp/<scope>/Gxxx_Iyy/` 只是可重建 outbound pack；Receive 正式保存真实输入 / Take 后自动精确清理。
+- 外部生成按 `video/batches/Bxxx/` 批量交付；一个批次可包含多个 G/I，共享参考只复制一次，并就地生成保留的 `Bxxx.tar.gz`。Receive 不自动删除批次目录或压缩包。
 
 ## 版本与命名
 
 - Git 保存文本历史；正式投入生成的二进制参考使用 `v01` 起的不可覆盖版本。
-- 核心 ID 为 `Vxxx`、`Gxxx`、`Ixx`、`takeNN`、`SCxx`、`SHxxx`、`CHRxx`、`LOCxx`、`PROPxx`、`PRODxx`。
+- 核心 ID 为 `Vxxx`、`Bxxx`、`Gxxx`、`Ixx`、`takeNN`、`SCxx`、`SHxxx`、`CHRxx`、`LOCxx`、`PROPxx`、`PRODxx`。
 - 文件名不默认编码供应商、模型、seed、FPS、全部参数或 Prompt hash。
 - 禁止 `final2` / `new_final` 等伪版本链。
 

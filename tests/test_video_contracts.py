@@ -151,32 +151,30 @@ class VideoRepositoryContractTests(unittest.TestCase):
         for marker in required:
             self.assertIn(marker, text)
 
-    def test_generation_pack_stays_inside_project_tmp(self) -> None:
+    def test_generation_batches_are_retained_multi_generation_tar_gz(self) -> None:
         pack = read(STABLE / "video-generation" / "references" / "planning" / "GENERATION-PACK.md")
-        self.assertIn(".tmp/V001/G003_I02/", pack)
-        self.assertIn("receive", pack)
-        self.assertIn("Take → I", pack)
+        for marker in (
+            "video/batches/B001/",
+            "B001.tar.gz",
+            "一个批次可以包含多个 Generation",
+            "共享参考只复制一次",
+            "Receive 不删除批次目录或 tar.gz",
+            "不为每个 Generation 创建 handoff",
+        ):
+            self.assertIn(marker, pack)
+        self.assertNotIn(".tmp/V001/", pack)
+        self.assertNotIn(".zip", pack)
 
-        roots = (STABLE, IN_PROGRESS, DOCS, REPO / "AGENTS.md", REPO / "CONTEXT.md", REPO / "README.md")
-        offenders: list[str] = []
-        for root in roots:
-            paths = [root] if root.is_file() else root.rglob("*")
-            for path in paths:
-                if not path.is_file() or path.suffix not in {".md", ".toml", ".yaml"}:
-                    continue
-                if "/tmp/" in read(path):
-                    offenders.append(str(path.relative_to(REPO)))
-        self.assertEqual(offenders, [])
-
-    def test_project_layout_has_no_top_level_audio_or_delivery_tree(self) -> None:
+    def test_project_layout_keeps_v_directly_under_video_and_colocates_asset_generations(self) -> None:
         layout = read(STABLE / "video-init" / "references" / "project" / "PROJECT-LAYOUT.md")
         self.assertNotIn("video/audio/", layout)
         self.assertNotIn("video/delivery/", layout)
-        self.assertIn("video/", layout)
+        self.assertNotIn("└── videos/", layout)
+        self.assertIn("V001_<human-label>/", layout)
         self.assertIn("shared/", layout)
-        self.assertIn("videos/", layout)
-        self.assertIn("generations/", layout)
-        self.assertIn(".tmp/", layout)
+        self.assertIn("characters/CHR01/", layout)
+        self.assertIn("G001/", layout)
+        self.assertIn("batches/", layout)
 
     def test_naming_preserves_scene_location_and_take_semantics(self) -> None:
         naming = read(STABLE / "video-init" / "references" / "project" / "NAMING.md")
@@ -184,7 +182,8 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("`G001`", naming)
         self.assertIn("`I01`", naming)
         self.assertIn("Take 在一个 G 内单调递增", naming)
-        self.assertIn("`CHR01_ref_v01.png`", naming)
+        self.assertIn("`B001`", naming)
+        self.assertIn("G001/take02.png", naming)
 
     def test_product_shot_contract_preserves_real_product_identity(self) -> None:
         product_shots = read(STABLE / "video-advertising" / "references" / "PRODUCT-SHOTS.md")
@@ -196,14 +195,15 @@ class VideoRepositoryContractTests(unittest.TestCase):
         ):
             self.assertIn(marker, product_shots)
 
-    def test_generation_pack_is_self_contained_and_reproducible(self) -> None:
+    def test_generation_batch_is_self_contained_without_per_g_handoff(self) -> None:
         templates = read(STABLE / "video-generation" / "references" / "planning" / "PACK-TEMPLATES.md")
         for marker in (
-            "包内所有上传素材都复制到当前包的 `materials/`",
-            "任务文件只引用包内相对路径",
-            "不使用软链接作为交付素材",
-            "先修改正式归属文件",
-            "不只在旧 `.tmp/` 包里临时改字",
+            "一个批次根目录只保留一份 README.md",
+            "tasks/<task>/prompt.md",
+            "references/",
+            "returns/<task>/",
+            "共享参考只保留一份",
+            "不为每个 G 建 handoff",
         ):
             self.assertIn(marker, templates)
 
@@ -293,7 +293,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
         self.assertIn("后期修复后的片段不要覆盖原 `takeNN.mp4`", derivatives)
         self.assertIn("文件不是当前采用结果", lifecycle)
         self.assertIn("文件不是用户唯一原始输入", lifecycle)
-        self.assertIn("不要让 `.tmp/.../returns/` 里的文件成为项目唯一正式副本", lifecycle)
+        self.assertIn("batch returns 不是正式媒体归属", lifecycle)
 
     def test_existing_media_is_reused_without_forcing_regeneration(self) -> None:
         importing = read(STABLE / "video-production" / "references" / "project" / "IMPORT-MEDIA.md")
@@ -333,7 +333,7 @@ class VideoRepositoryContractTests(unittest.TestCase):
     def test_authority_chain_blocks_generated_errors_from_becoming_facts(self) -> None:
         authority = read(STABLE / "video-production" / "references" / "workflow" / "AUTHORITY.md")
         self.assertIn("提示词不是新的事实源", authority)
-        self.assertIn("一次性生成包只复制 / 编译当前任务所需内容", authority)
+        self.assertIn("`video/batches/Bxxx/`", authority)
         self.assertIn("实际可见出口", authority)
         self.assertIn("不能自动升级为正式事实", authority)
         self.assertIn("在第一个真正错误的归属层修复", authority)
@@ -394,10 +394,10 @@ class VideoRepositoryContractTests(unittest.TestCase):
     def test_external_generation_waiting_is_scoped_and_resumable(self) -> None:
         waiting = read(STABLE / "video-production" / "references" / "workflow" / "WAITING-RESUME.md")
         self.assertIn("只阻塞依赖它的分支", waiting)
-        self.assertIn("不重复打同一 I", waiting)
+        self.assertIn("不重复建立同一次执行批次", waiting)
         self.assertIn("部分 / 一批返回", waiting)
         self.assertIn("不能根据画面内容或上传顺序猜归属", waiting)
-        self.assertIn("正式接收成功但清理失败", waiting)
+        self.assertIn("批次目录与 tar.gz 保留", waiting)
 
     def test_cross_package_reference_paths_require_declared_dependencies(self) -> None:
         pattern = re.compile(r"(video-[a-z0-9-]+)/references/")

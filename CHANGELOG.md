@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 重构视频项目与外部生成组织：单支 `Vxxx` 直接位于 `video/`，移除 `video/videos/` 中间层；共享人物 / 地点等对象拥有自己的 Generation，正式 Prompt 与 Generated Take 共置，资产逻辑版本直接引用 `Gxxx/takeNN` 而不复制第二份媒体；外部生成改为 `video/batches/Bxxx/` 多 G/I 批次，一次执行只生成并保留一个就地 `Bxxx.tar.gz`，共享参考只复制一次、Receive 不再自动清理批次。
 - 增加人物角色、环境 / 场景与场面调度（Blocking）专用 Prompt 模板：分别覆盖人物身份 / 全身角色、空场环境 / 空间结构，以及世界空间中的角色站位、运动路径和摄影轴；严格四视图模板继续作为人物 / 场景结构稳定基准。
 - 用当前制作案例收口新拓扑迁移残留：删除仍暴露旧 Shot-owned Take 流程的 `next-take` / `archive` CLI，统一共享资产、`Vxxx`、G/I/Take 与 `Vxxx/edit/` 路径说明；媒体审片与交付 QC 测试改为在当前测试项目中自生成媒体，不再依赖已删除的旧黑盒 fixture；增加回归阻止稳定文档重新发布旧顶层 `video/materials/`、`video/shots/`、`video/edit/` 等路径。
 - 用三个完整制作案例验证新生产模型并扩展 `video-generation/scripts/generation_pack.py`：支持 `Vxxx/Gxxx_Ixx` / `shared/Gxxx_Ixx` 作用域包、交付输入冻结、G 内连续 Take、普通文件与多文件 Take、幂等 `receive`、用户实际改输入后的正式 I 映射、分批返回、中断恢复，以及正式接收后自动精确清理；新增回归覆盖一次性短片、两集共享资产版本升级和返工恢复。

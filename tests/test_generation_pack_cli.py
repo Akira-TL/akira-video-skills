@@ -3,9 +3,9 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+import tarfile
 import tempfile
 import unittest
-import zipfile
 from pathlib import Path
 
 
@@ -13,19 +13,44 @@ REPO = Path(__file__).resolve().parents[1]
 SCRIPT = REPO / "skills" / "video" / "video-generation" / "scripts" / "generation_pack.py"
 
 
-class GenerationPackCliTests(unittest.TestCase):
+class GenerationBatchCliTests(unittest.TestCase):
     def setUp(self) -> None:
         self.tempdir = tempfile.TemporaryDirectory(dir=REPO / "tests")
         self.root = Path(self.tempdir.name)
         self.project = self.root / "project"
-        (self.project / "video" / "shared" / "characters").mkdir(parents=True)
-        (self.project / "video" / "shared" / "characters" / "CHR01_prompt.md").write_text(
-            "# CHR01 prompt\n",
-            encoding="utf-8",
+        self.project.mkdir()
+        self.video_g1 = self.make_generation(
+            "video/V001_short/generations/G001",
+            "V001 shot generation\n",
         )
+        self.video_g2 = self.make_generation(
+            "video/V001_short/generations/G002",
+            "V001 second shot generation\n",
+        )
+        self.reference = (
+            self.project
+            / "video"
+            / "shared"
+            / "characters"
+            / "CHR01"
+            / "G001"
+            / "take01.png"
+        )
+        self.reference.parent.mkdir(parents=True)
+        self.reference.write_bytes(b"character-reference")
 
     def tearDown(self) -> None:
         self.tempdir.cleanup()
+
+    def make_generation(self, relative: str, prompt: str) -> Path:
+        generation = self.project / relative
+        generation.mkdir(parents=True)
+        (generation / "GENERATION.md").write_text(
+            f"# {generation.name}\n\n## I01\nPrompt: prompt_i01.md\n",
+            encoding="utf-8",
+        )
+        (generation / "prompt_i01.md").write_text(prompt, encoding="utf-8")
+        return generation
 
     def run_cli(self, *args: str, expected: int = 0) -> dict[str, object]:
         completed = subprocess.run(
@@ -42,104 +67,122 @@ class GenerationPackCliTests(unittest.TestCase):
         self.assertTrue(completed.stdout.strip(), completed.stderr)
         return json.loads(completed.stdout)
 
-    def test_init_copy_status_and_zip(self) -> None:
-        result = self.run_cli("init", str(self.project), "character-pack")
-        self.assertTrue(result["ok"])
-        self.assertIn(".tmp/", (self.project / ".gitignore").read_text(encoding="utf-8"))
-
-        copy_result = self.run_cli(
-            "copy",
+    def add_task(
+        self,
+        batch: str,
+        generation: str,
+        *,
+        reference: str | None = None,
+    ) -> dict[str, object]:
+        args = [
+            "add",
             str(self.project),
-            "character-pack",
-            "video/shared/characters/CHR01_prompt.md",
-            "--dest",
-            "CHR01.md",
-        )
-        self.assertEqual(copy_result["relative_destination"], "CHR01.md")
-        self.assertEqual(
-            (self.project / ".tmp" / "character-pack" / "CHR01.md").read_text(encoding="utf-8"),
-            "# CHR01 prompt\n",
-        )
+            batch,
+            generation,
+            "--input",
+            "I01",
+        ]
+        if reference:
+            args += ["--reference", reference]
+        return self.run_cli(*args)
 
-        (self.project / ".tmp" / "character-pack" / "README.md").write_text(
-            "# Pack\n",
-            encoding="utf-8",
-        )
-        status = self.run_cli("status", str(self.project), "character-pack")
-        self.assertTrue(status["ok"])
-        self.assertEqual(status["symlinks"], [])
-        self.assertEqual(status["returns_files"], [])
+    def test_build_one_batch_for_multiple_generations_as_tar_gz(self) -> None:
+        init = self.run_cli("init", str(self.project), "B001")
+        batch = self.project / "video" / "batches" / "B001"
+        self.assertEqual(Path(str(init["batch"])), batch)
+        self.assertTrue(batch.is_dir())
+        self.assertFalse((self.project / ".tmp").exists())
+        self.assertIn("video/batches/", (self.project / ".gitignore").read_text(encoding="utf-8"))
 
-        zipped = self.run_cli("zip", str(self.project), "character-pack")
-        archive = Path(str(zipped["zip"]))
+        first = self.add_task(
+            "B001",
+            "video/V001_short/generations/G001",
+            reference="video/shared/characters/CHR01/G001/take01.png",
+        )
+        second = self.add_task(
+            "B001",
+            "video/V001_short/generations/G002",
+            reference="video/shared/characters/CHR01/G001/take01.png",
+        )
+        self.assertNotEqual(first["task"], second["task"])
+
+        built = self.run_cli("build", str(self.project), "B001")
+        archive = Path(str(built["archive"]))
+        self.assertEqual(archive, batch / "B001.tar.gz")
         self.assertTrue(archive.is_file())
-        with zipfile.ZipFile(archive) as zf:
-            self.assertEqual(sorted(zf.namelist()), ["CHR01.md", "README.md"])
+        self.assertTrue(batch.is_dir())
 
-    def test_copy_rejects_outside_project_and_external_symlink(self) -> None:
-        self.run_cli("init", str(self.project), "safe-pack")
-        outside = self.root / "outside-secret.txt"
-        outside.write_text("secret\n", encoding="utf-8")
+        with tarfile.open(archive, "r:gz") as tf:
+            names = sorted(tf.getnames())
+        self.assertIn("B001/README.md", names)
+        self.assertTrue(any(name.endswith("/prompt.md") for name in names))
+        self.assertEqual(
+            sum(name.endswith("references/take01.png") for name in names),
+            1,
+        )
+        self.assertFalse(any("handoff" in name.lower() for name in names))
+        self.assertFalse(any(name.endswith(".akira-batch.json") for name in names))
+
+    def test_receive_imports_multiple_tasks_and_keeps_batch_and_archive(self) -> None:
+        self.run_cli("init", str(self.project), "B002")
+        first = self.add_task("B002", "video/V001_short/generations/G001")
+        second = self.add_task("B002", "video/V001_short/generations/G002")
+        built = self.run_cli("build", str(self.project), "B002")
+
+        batch = self.project / "video" / "batches" / "B002"
+        returns = batch / "returns"
+        first_returns = returns / str(first["task"])
+        second_returns = returns / str(second["task"])
+        first_returns.mkdir(parents=True, exist_ok=True)
+        second_returns.mkdir(parents=True, exist_ok=True)
+        (first_returns / "candidate-a.mp4").write_bytes(b"first")
+        (second_returns / "candidate-b.mp4").write_bytes(b"second")
+
+        result = self.run_cli("receive", str(self.project), "B002")
+        self.assertEqual(set(result["received_tasks"]), {first["task"], second["task"]})
+        self.assertEqual((self.video_g1 / "take01.mp4").read_bytes(), b"first")
+        self.assertEqual((self.video_g2 / "take01.mp4").read_bytes(), b"second")
+        self.assertTrue(batch.is_dir())
+        self.assertTrue(Path(str(built["archive"])).is_file())
+
+        repeated = self.run_cli("receive", str(self.project), "B002")
+        self.assertTrue(repeated["already_received"])
+        self.assertFalse((self.video_g1 / "take02.mp4").exists())
+        self.assertFalse((self.video_g2 / "take02.mp4").exists())
+
+    def test_build_refuses_package_drift_after_build(self) -> None:
+        self.run_cli("init", str(self.project), "B003")
+        task = self.add_task("B003", "video/V001_short/generations/G001")
+        self.run_cli("build", str(self.project), "B003")
+        batch = self.project / "video" / "batches" / "B003"
+        prompt = batch / "tasks" / str(task["task"]) / "prompt.md"
+        prompt.write_text("changed after build\n", encoding="utf-8")
+        returns = batch / "returns" / str(task["task"])
+        returns.mkdir(parents=True, exist_ok=True)
+        (returns / "candidate.mp4").write_bytes(b"candidate")
+
+        error = self.run_cli("receive", str(self.project), "B003", expected=2)
+        self.assertIn("batch inputs changed after build", str(error["error"]))
+
+    def test_reference_must_be_formal_project_file(self) -> None:
+        self.run_cli("init", str(self.project), "B004")
+        outside = self.root / "outside.png"
+        outside.write_bytes(b"outside")
 
         error = self.run_cli(
-            "copy",
+            "add",
             str(self.project),
-            "safe-pack",
+            "B004",
+            "video/V001_short/generations/G001",
+            "--input",
+            "I01",
+            "--reference",
             str(outside),
             expected=2,
         )
-        self.assertFalse(error["ok"])
         self.assertIn("escapes project root", str(error["error"]))
 
-        link = self.project / "video" / "shared" / "characters" / "external.txt"
-        link.symlink_to(outside)
-        error = self.run_cli(
-            "copy",
-            str(self.project),
-            "safe-pack",
-            "video/shared/characters/external.txt",
-            expected=2,
-        )
-        self.assertFalse(error["ok"])
-        self.assertIn("escapes project root", str(error["error"]))
-
-    def test_copy_rejects_repository_and_temporary_internal_sources(self) -> None:
-        self.run_cli("init", str(self.project), "internal-pack")
-        (self.project / ".git").mkdir()
-        (self.project / ".git" / "config").write_text("secret\n", encoding="utf-8")
-        (self.project / ".tmp" / "derived.txt").write_text("derived\n", encoding="utf-8")
-
-        for source in (".git/config", ".tmp/derived.txt"):
-            error = self.run_cli(
-                "copy",
-                str(self.project),
-                "internal-pack",
-                source,
-                expected=2,
-            )
-            self.assertIn("formal project file", str(error["error"]))
-
-        absolute_tmp = self.project / ".tmp" / "derived.txt"
-        error = self.run_cli(
-            "copy",
-            str(self.project),
-            "internal-pack",
-            str(absolute_tmp),
-            expected=2,
-        )
-        self.assertIn("formal project file", str(error["error"]))
-
-    def test_zip_refuses_pack_after_returns_arrive(self) -> None:
-        self.run_cli("init", str(self.project), "video-pack")
-        self.run_cli("returns", str(self.project), "video-pack")
-        returned = self.project / ".tmp" / "video-pack" / "returns" / "SH010_take01.mp4"
-        returned.write_bytes(b"synthetic-return")
-
-        error = self.run_cli("zip", str(self.project), "video-pack", expected=2)
-        self.assertFalse(error["ok"])
-        self.assertIn("contains returned files", str(error["error"]))
-
-    def test_cli_exposes_generation_scoped_receive_without_obsolete_shot_take_commands(self) -> None:
+    def test_cli_does_not_expose_per_generation_zip_or_cleanup_flow(self) -> None:
         completed = subprocess.run(
             [sys.executable, str(SCRIPT), "--help"],
             text=True,
@@ -147,52 +190,21 @@ class GenerationPackCliTests(unittest.TestCase):
             cwd=REPO,
         )
         self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("build", completed.stdout)
         self.assertIn("receive", completed.stdout)
-        self.assertNotIn("next-take", completed.stdout)
-        self.assertNotIn("archive", completed.stdout)
+        self.assertNotIn("zip", completed.stdout)
+        self.assertNotIn("seal", completed.stdout)
+        self.assertNotIn("cleanup", completed.stdout)
 
-    def test_cleanup_requires_explicit_confirmations(self) -> None:
-        self.run_cli("init", str(self.project), "cleanup-pack")
-        self.run_cli("returns", str(self.project), "cleanup-pack")
-        returned = self.project / ".tmp" / "cleanup-pack" / "returns" / "result.png"
-        returned.write_bytes(b"result")
-
-        error = self.run_cli(
-            "cleanup",
-            str(self.project),
-            "cleanup-pack",
-            expected=2,
-        )
-        self.assertIn("--confirm-no-unique-info", str(error["error"]))
-
-        error = self.run_cli(
-            "cleanup",
-            str(self.project),
-            "cleanup-pack",
-            "--confirm-no-unique-info",
-            expected=2,
-        )
-        self.assertIn("--confirm-returns-archived", str(error["error"]))
-
-        result = self.run_cli(
-            "cleanup",
-            str(self.project),
-            "cleanup-pack",
-            "--confirm-no-unique-info",
-            "--confirm-returns-archived",
-        )
-        self.assertTrue(result["ok"])
-        self.assertFalse((self.project / ".tmp" / "cleanup-pack").exists())
-
-    def test_init_refuses_to_recreate_existing_pack(self) -> None:
-        self.run_cli("init", str(self.project), "existing-pack")
+    def test_init_refuses_existing_batch(self) -> None:
+        self.run_cli("init", str(self.project), "B005")
         error = self.run_cli(
             "init",
             str(self.project),
-            "existing-pack",
+            "B005",
             expected=2,
         )
-        self.assertIn("resume or inspect it instead of recreating", str(error["error"]))
+        self.assertIn("batch already exists", str(error["error"]))
 
 
 if __name__ == "__main__":

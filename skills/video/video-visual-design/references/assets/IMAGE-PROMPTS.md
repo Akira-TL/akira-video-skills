@@ -72,10 +72,10 @@
 
 ## 9. 正式提示词归属
 
-正式送给模型的 Prompt 只保存在对应 Generation / Input Version，例如 `shared/G003/prompt_i01.md`；资产记录只引用来源，不复制相同正文。
+正式送给模型的 Prompt 只保存在对应 Generation / Input Version，例如 `video/shared/characters/CHR01/G003/prompt_i01.md`；生成出的 Take 也留在同一个 G。资产记录只引用 G/Take，不复制相同 Prompt 或 Generated media。
 
 同一 Generation 目标下 Prompt 或关键输入改变时建立新的 I；生成目标改变才新建 G。资产本身的文本设计继续由 Git 保存历史。
 
 ## 完成标准
 
-提示词能从设计稳定地产生需要的参考图，而不是每次重新随机设计对象；模型换掉后，长期提示词的核心身份和结构仍然可复用。
+Prompt 能从稳定设计编译出需要的参考图，而不是每次重新随机设计对象；模型换掉后，设计中的核心身份和结构仍可重新编译到新的正式 G/I Prompt。

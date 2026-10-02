@@ -159,7 +159,7 @@
 `Vxxx/edit/voiceover.en-US.wav`
 `Vxxx/edit/voiceover.ja-JP.wav`。
 
-临时候选仍留一次性生成包；选中后再用稳定语言名。
+批次返回候选保留在对应 `Bxxx/returns/<task>/` 执行快照；正式采用结果仍回到原 G / 后期归属，不从批次目录直接作为最终媒体。
 
 ## 12. 字幕从最终声音 / 文本生成
 

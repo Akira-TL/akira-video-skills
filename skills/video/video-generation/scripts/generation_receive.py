@@ -133,14 +133,3 @@ def render_receive_section(generation_dir: Path, log: dict[str, Any]) -> None:
     else:
         updated = text.rstrip() + "\n\n" + section + "\n"
     generation_md.write_text(updated, encoding="utf-8")
-
-
-def cleanup_received_pack(pack: Path, archive: Path) -> tuple[bool, str | None]:
-    try:
-        if pack.exists():
-            shutil.rmtree(pack)
-        if archive.exists():
-            archive.unlink()
-    except OSError as exc:
-        return False, str(exc)
-    return True, None

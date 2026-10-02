@@ -28,8 +28,8 @@ description: 设计并维护 AI 视频可复用的视觉对象与参考资产；
 
 默认优先判断是否值得跨视频复用：
 
-- 跨视频复用 → `video/shared/<category>/`；
-- 只属于当前视频但跨镜头复用 → `Vxxx/materials/`；
+- 跨视频复用 → `video/shared/<category>/<object-id>/`；对象自己的 G 直接建在对象目录；
+- 只属于当前视频但跨镜头复用 → `Vxxx/materials/`；需要生成时同样把 G 放在具体对象目录内；
 - 只服务一个 Generation / Shot → 留在对应正式 Generation 或 Shot 记录，不自动提升为长期资产。
 
 资产记录说明设计约束、每个正式参考版本的来源和当前默认版本。外部导入图片可以直接成为资产，不要求为了统一结构虚构 Generation。
@@ -50,13 +50,9 @@ description: 设计并维护 AI 视频可复用的视觉对象与参考资产；
 
 ## 6. 返回图片与资产版本
 
-返回图片先由 `video-review` 检查。被正式采用为参考的二进制资产从 `v01` 起固定版本，不覆盖已投入生成的文件；新参考产生新版本。资产记录至少能查到：
+返回图片先由 `video-review` 检查。Generated media 不再为了资产采用复制第二份文件；资产记录可以维护 `v01`、`v02` 等逻辑版本，但直接指向对象目录中的原 G/take，例如 `v01 → G001/take02.png`。外部导入或人工处理的正式参考才直接以用途名保存在对象目录。
 
-- `CHR01_ref_v01` 来自哪个 `shared/Gxxx takeNN` 或哪个外部文件；
-- 后续版本各自来源；
-- 当前默认使用哪一版。
-
-更新当前默认版本不会改写历史视频 / Generation 已经固定引用的具体资产版本。文本设计由 Git 保存历史；需要追溯某个 Generation 当时的设计依据时，记录真正包含该设计内容的 Git revision。
+更新当前默认版本不会改写历史视频 / Generation 已固定引用的具体 G/take。文本设计由 Git 保存历史；需要追溯某个 Generation 当时的设计依据时，记录真正包含该设计内容的 Git revision。
 
 ## 完成标准
 

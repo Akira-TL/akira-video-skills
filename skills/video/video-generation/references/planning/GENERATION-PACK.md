@@ -1,112 +1,81 @@
-# 一次性生成包
+# 生成批次与外部执行
 
-一次性生成包用于把已经正式记录的生成输入交给外部 AI 平台执行。它是项目内 `.tmp/` 下的可重建派生物，不拥有 Prompt、参考素材、生成结果或最终采用关系。
+生成批次把当前可以一起执行的多个正式 G/I 组织成一次外部生成交付。批次只是执行快照；Prompt、参考来源和最终 Take 的正式归属仍在原项目对象与 Generation。
 
-具体包内文件格式见 [`PACK-TEMPLATES.md`](PACK-TEMPLATES.md)。文件操作优先使用本 Skill 自带的 `scripts/generation_pack.py`。
+## 1. 一个批次可以包含多个 Generation
 
-## 1. 先固定 Generation 与 Input Version
-
-打包前先确定结果将归属的 Generation（G）和 Input Version（I）：
-
-- 单支视频生成：`Vxxx/generations/Gxxx*/`；
-- 跨视频共享资产生成：`video/shared/generations/Gxxx*/`；
-- Prompt 正文只保存在对应 I 的正式文件中；
-- 真正影响本次执行的参考版本和必要设置也归当前 I。
-
-一次性交付包按作用域命名：
-
-- `.tmp/V001/G003_I02/`；
-- `.tmp/shared/G003_I02/`。
-
-如果用户在交付后实际修改了 Prompt、参考或关键设置，返回结果不能继续冒充原 I。先把真实输入正式保存为正确 I，再用 `receive --input ... --actual-source ...` 建立真实归属。
-
-## 2. 按真实依赖分批
-
-一个交付批次只包含当前已经具备全部输入的任务。
+同一轮实际外部生成中，只要任务之间没有真实先后依赖，就应放进同一个 `Bxxx`，而不是每个 G 单独打包。
 
 例如：
 
-人物设计
-→ 身份参考图 Generation
-→ 用户外部生成并返回
-→ Receive
-→ Review
-→ 资产记录采用为具体参考版本
-→ 再执行依赖该参考版本的视频 Generation。
+- CHR01 身份图 G001；
+- LOC01 空场环境 G001；
+- V001 的两个独立 Shot G003 / G004；
 
-如果下游还缺角色图、地点图、产品资料、声音参考或前一镜实际出口，就只推进已经具备输入的分支。彼此独立的任务可以并行；存在真实依赖的任务分批交付。
+如果它们输入都已齐全，可以进入同一个 B。真正依赖前一任务返回结果的下游 G 留到下一批。
 
-## 3. 包内只复制执行所需内容
+## 2. 批次位置
 
-推荐最小结构：
+批次固定在项目内：
 
 ```text
-.tmp/V001/G003_I02/
+video/batches/B001/
 ├── README.md
-├── prompt.md
-├── materials/
-└── returns/
+├── tasks/
+│   ├── CHR01_G001_I01/
+│   │   └── prompt.md
+│   └── V001_G003_I02/
+│       └── prompt.md
+├── references/
+│   ├── CHR01_identity.png
+│   └── LOC01_four-view.png
+├── returns/
+│   ├── CHR01_G001_I01/
+│   └── V001_G003_I02/
+└── B001.tar.gz
 ```
 
-不同任务不要求机械使用完全相同的文件名；但包内必须让用户能够直接判断：
+`video/batches/` 默认由 CLI 写入 `.gitignore`。它不放到 `.tmp/`，也不在 Receive 后自动删除。
 
-- 本次要生成什么；
-- Prompt 是哪一份正式 I 的副本；
-- 需要上传哪些参考文件以及各自职责；
-- 哪些执行设置需要人工确认；
-- 返回结果应放到哪里。
+## 3. 共享参考只复制一次
 
-`generation_pack.py copy` 只从项目正式文件复制输入。包内不得依赖项目绝对路径、包外软链接或另一个临时包。
+一个批次中的多个任务可以共同使用同一份人物、地点、产品或动作参考。共享参考只复制一次到 `references/`，各 task 在 README / Prompt 中引用同一批次相对路径；不要为每个 Generation 再复制一套相同参考。
 
-## 4. 参考素材保持最小充分
+## 4. 每个 G 只带执行 Prompt
 
-参考只复制当前任务真正需要的版本，并明确职责，例如人物身份、服装 / 状态、地点空间、产品 / 道具结构、动作、摄影、风格或声音。
+`tasks/<task>/prompt.md` 是对应正式 `prompt_iXX.md` 的执行快照。一个批次根目录只保留一份 README；不为每个 Generation 创建 handoff、instructions 或第二份 README。
 
-来源可以是：
+正式 Prompt 仍只维护在原 G/I。若 build 后实际要改 Prompt、参考或关键设置，先回正式 G 建立正确的新 I，再建立新的 B；不要直接修改旧批次并把结果挂回原 I。
 
-- `video/shared/` 下已经确认的跨视频资产版本；
-- 当前 `Vxxx/materials/` 下的视频专属复用资产；
-- 当前 G/I 明确需要的其他正式项目文件。
+## 5. 就地生成 tar.gz
 
-同一职责的参考发生冲突时先解决冲突再打包。不要整目录复制 `video/shared/` 或 `Vxxx/materials/`。
+`generation_pack.py build` 直接把当前 B 的 README、tasks 和 references 打成同目录 `B001.tar.gz`。不需要额外 staging 目录，也不使用 zip。
 
-## 5. 交付与返回
+原批次目录继续保留，tar.gz 只是方便一次性交付的压缩表示。
 
-常用顺序：
+## 6. 返回与 Receive
 
-1. `init` 创建对应 `.tmp/<scope>/Gxxx_Iyy/`；
-2. `copy` 复制正式 Prompt、参考和必要说明；
-3. `seal` 冻结即将交付的包内输入；
-4. 需要单文件交付时使用 `zip`；
-5. `returns` 建立返回目录；
-6. 用户把同一批可靠归属于该 G/I 的候选全部放入 `returns/`；
-7. `receive` 正式接收。
+用户把每个 task 的所有候选放入对应 `returns/<task>/`。`receive` 按批次 metadata 把候选导回各自正式 Generation，并分配 G 内连续 `takeNN`。
 
-不要在外部生成前预分配 Shot 目录里的 `takeNN`。Take 由 Receive 在目标 G 内按已有最大编号连续分配，切换 I 不重置编号。
+生成出的 Take 留在原 G 中，与 `GENERATION.md` 和 `prompt_iXX.md` 共置。图片被采用为人物 / 地点参考时，资产记录直接指向该 G/take，不复制第二份媒体。
 
-## 6. Receive 是正式入口
+Receive 不删除批次目录或 tar.gz。批次目录与 tar.gz 保留，方便回看当时一次实际外部执行到底包含哪些任务和参考。
 
-`receive` 对同一返回批次可安全重跑，并完成：
+## 7. 批次输入冻结
 
-- 确认 scope / G / I；
-- 把每个可独立 Review 的返回候选保存为对应 G 的 `takeNN`；
-- 对天然由视频、音轨、字幕等文件共同组成的一个候选保存为一个 Take 文件集合；
-- 建立 Take → I 映射；
-- 把必要接收信息写回 Generation 记录；
-- 成功后精确清理对应临时包。
+build 时记录 README、tasks 与 references 的内容摘要。Receive 前若这些输入发生变化，CLI 会拒绝接收，并要求把真实输入正式化为新的 G/I / Batch；不通过隐藏 snapshot 或临时副本猜测真实输入。
 
-Receive 不决定最终采用关系。所有 Take 接收后再进入 `video-review`；图片 Take 被采用为资产参考时由资产记录写明具体版本来源；视频 Take 在正式时间线建立前可由唯一 Shot 表暂记候选 / 计划来源，建立正式时间线后最终采用只由剪辑记录维护。
+## 8. 常用 CLI
 
-## 7. 清理与恢复
-
-Receive 只有在返回候选、Take → I 映射和真实输入都已经正式保存，并确认临时包中没有唯一信息后，才清理精确对应的 `.tmp/<scope>/Gxxx_Iyy/` 与派生压缩包。
-
-如果正式接收已经完成但清理失败，直接重跑同一 `receive`；不得重新导入或重新分配 Take。
-
-`cleanup` 只用于人工恢复或废弃包清理，并要求显式确认没有唯一信息。它不是正常返回流程的替代入口。
-
-一次性生成包默认不进入 Git。
+```text
+generation_pack.py init <project> B001
+generation_pack.py add <project> B001 video/V001_demo/generations/G003 --input I02 --reference video/shared/characters/CHR01/G001/take02.png
+generation_pack.py add <project> B001 video/V001_demo/generations/G004 --input I01 --reference video/shared/characters/CHR01/G001/take02.png
+generation_pack.py build <project> B001
+generation_pack.py status <project> B001
+generation_pack.py receive <project> B001
+```
 
 ## 完成标准
 
-用户拿到包即可执行当前 G/I；返回候选能够可靠映射回正式 Generation；删除整个临时包不会损失任何长期项目信息。
+一次实际外部执行只有一个清楚的 B 批次；多个 G/I 能共享参考；用户拿到一个 `tar.gz` 即可执行；返回结果进入各自原 G，批次自身保留且不成为第二份正式媒体来源。

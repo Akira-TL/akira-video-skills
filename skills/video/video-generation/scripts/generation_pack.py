@@ -7,15 +7,14 @@ import json
 import re
 import shutil
 import sys
+import tarfile
 import uuid
-import zipfile
 from pathlib import Path
 from typing import Any
 
 from generation_receive import (
     ReceiveError,
     candidate_entries,
-    cleanup_received_pack,
     copy_candidate,
     load_receive_log,
     next_take_number,
@@ -24,14 +23,17 @@ from generation_receive import (
     write_receive_log,
 )
 
-PACK_PART_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
-SCOPED_PACK_RE = re.compile(r"^(shared|V\d+)/(G\d+)_(I\d+)$")
+
+BATCH_RE = re.compile(r"^B\d{3}(?:_[A-Za-z0-9._-]+)?$")
 INPUT_RE = re.compile(r"^I\d+$")
-PACK_META = ".akira-pack.json"
-PACK_SNAPSHOT = ".akira-pack-snapshot"
+GENERATION_RE = re.compile(r"^G\d+(?:_[A-Za-z0-9._-]+)?$")
+OWNER_RE = re.compile(r"^(V\d+|CHR\d+|LOC\d+|PROP\d+|PROD\d+)")
+BATCH_META = ".akira-batch.json"
+
 
 class PackError(RuntimeError):
     pass
+
 
 def _project_root(raw: str) -> Path:
     root = Path(raw).expanduser().resolve()
@@ -39,25 +41,23 @@ def _project_root(raw: str) -> Path:
         raise PackError(f"project root does not exist: {root}")
     return root
 
-def _pack_name(raw: str) -> str:
-    path = Path(raw)
-    if path.is_absolute() or ".." in path.parts or not path.parts:
-        raise PackError("pack name must be a project-local relative path without '..'")
-    for part in path.parts:
-        if not PACK_PART_RE.fullmatch(part):
-            raise PackError(
-                "each pack path component must match [A-Za-z0-9][A-Za-z0-9._-]*"
-            )
-    return path.as_posix()
+
+def _batch_name(raw: str) -> str:
+    if "/" in raw or "\\" in raw or not BATCH_RE.fullmatch(raw):
+        raise PackError("batch name must look like B001 or B001_label")
+    return raw
 
 
-def _pack_path(project: Path, name: str) -> Path:
-    return project / ".tmp" / Path(name)
+def _batch_root(project: Path, name: str) -> Path:
+    return project / "video" / "batches" / name
 
 
-def _zip_path(project: Path, name: str) -> Path:
-    rel = Path(name)
-    return project / ".tmp" / rel.parent / f"{rel.name}.zip"
+def _archive_path(project: Path, name: str) -> Path:
+    return _batch_root(project, name) / f"{name}.tar.gz"
+
+
+def _meta_path(batch: Path) -> Path:
+    return batch / BATCH_META
 
 
 def _ensure_within(path: Path, root: Path, *, label: str) -> Path:
@@ -71,65 +71,44 @@ def _ensure_within(path: Path, root: Path, *, label: str) -> Path:
 
 def _safe_relative(raw: str, *, label: str) -> Path:
     path = Path(raw)
-    if path.is_absolute() or ".." in path.parts:
+    if path.is_absolute() or ".." in path.parts or not path.parts:
         raise PackError(f"{label} must be a project-relative path without '..': {raw}")
-    if not path.parts:
-        raise PackError(f"{label} cannot be empty")
     return path
 
 
-def _reject_internal_source(rel_source: Path) -> None:
-    if rel_source.parts[0] in {".git", ".tmp"}:
-        raise PackError(
-            f"source must be a formal project file, not repository or temporary state: {rel_source}"
-        )
-
-
-def _ensure_tmp_ignored(project: Path) -> bool:
+def _ensure_batches_ignored(project: Path) -> bool:
     gitignore = project / ".gitignore"
     current = gitignore.read_text(encoding="utf-8") if gitignore.exists() else ""
     lines = current.splitlines()
-    if ".tmp/" in lines:
+    marker = "video/batches/"
+    if marker in lines:
         return False
     text = current
     if text and not text.endswith("\n"):
         text += "\n"
-    text += ".tmp/\n"
+    text += marker + "\n"
     gitignore.write_text(text, encoding="utf-8")
     return True
 
 
-def _walk_files(root: Path, *, include_internal: bool = False) -> list[Path]:
-    if not root.exists():
-        return []
-    result: list[Path] = []
-    for path in sorted(root.rglob("*")):
-        if not (path.is_file() or path.is_symlink()):
-            continue
-        rel = path.relative_to(root)
-        if not include_internal and rel.parts and rel.parts[0] in {PACK_META, PACK_SNAPSHOT}:
-            continue
-        result.append(path)
-    return result
+def _load_meta(batch: Path) -> dict[str, Any]:
+    path = _meta_path(batch)
+    if not path.is_file():
+        raise PackError(f"batch metadata is missing: {path}")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        raise PackError(f"batch metadata is unreadable: {path}") from exc
+    if data.get("schema") != 2 or not isinstance(data.get("tasks"), dict):
+        raise PackError(f"batch metadata has invalid structure: {path}")
+    return data
 
 
-def _relative_files(root: Path) -> list[str]:
-    return [str(path.relative_to(root)) for path in _walk_files(root)]
-
-
-def _symlinks(root: Path) -> list[str]:
-    return [
-        str(path.relative_to(root))
-        for path in _walk_files(root)
-        if path.is_symlink()
-    ]
-
-
-def _returns_files(pack: Path) -> list[str]:
-    returns = pack / "returns"
-    if not returns.exists():
-        return []
-    return [str(path.relative_to(pack)) for path in _walk_files(returns)]
+def _write_meta(batch: Path, meta: dict[str, Any]) -> None:
+    _meta_path(batch).write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
 
 def _sha256(path: Path) -> str:
@@ -140,533 +119,496 @@ def _sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def _meta_path(pack: Path) -> Path:
-    return pack / PACK_META
-
-
-def _load_meta(pack: Path) -> dict[str, Any]:
-    path = _meta_path(pack)
-    if not path.is_file():
-        raise PackError(f"pack metadata is missing: {path}")
-    try:
-        return json.loads(path.read_text(encoding="utf-8"))
-    except (json.JSONDecodeError, OSError) as exc:
-        raise PackError(f"pack metadata is unreadable: {path}") from exc
-
-
-def _write_meta(pack: Path, meta: dict[str, Any]) -> None:
-    _meta_path(pack).write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
-
-
-def _visible_input_files(pack: Path) -> list[Path]:
-    result: list[Path] = []
-    for path in _walk_files(pack):
-        rel = path.relative_to(pack)
-        if rel.parts and rel.parts[0] == "returns":
-            continue
-        result.append(path)
-    return result
-
-
-def _seal_pack(pack: Path) -> dict[str, Any]:
-    meta = _load_meta(pack)
-    if meta.get("sealed"):
-        return meta
-    if _returns_files(pack):
-        raise PackError("cannot seal outbound pack after returned files have arrived")
-    symlinks = _symlinks(pack)
-    if symlinks:
-        raise PackError("pack contains symlinks; make it self-contained before sealing")
-
-    snapshot = pack / PACK_SNAPSHOT
-    if snapshot.exists():
-        shutil.rmtree(snapshot)
-    snapshot.mkdir(parents=True)
-
-    inputs: list[str] = []
-    for source in _visible_input_files(pack):
-        rel = source.relative_to(pack)
-        dest = snapshot / rel
-        dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, dest)
-        inputs.append(str(rel))
-
-    meta["sealed"] = True
-    meta["sealed_inputs"] = sorted(inputs)
-    _write_meta(pack, meta)
-    return meta
-
-
-def _snapshot_diff(pack: Path) -> dict[str, list[str]]:
-    meta = _load_meta(pack)
-    if not meta.get("sealed"):
-        raise PackError("pack is not sealed; seal or zip it before external generation")
-    snapshot = pack / PACK_SNAPSHOT
-    if not snapshot.is_dir():
-        raise PackError("sealed pack snapshot is missing")
-
-    original = {str(path.relative_to(snapshot)): path for path in _walk_files(snapshot)}
-    current = {str(path.relative_to(pack)): path for path in _visible_input_files(pack)}
-
-    added = sorted(set(current) - set(original))
-    removed = sorted(set(original) - set(current))
-    changed: list[str] = []
-    for rel in sorted(set(original) & set(current)):
-        left, right = original[rel], current[rel]
-        if left.is_symlink() or right.is_symlink() or not filecmp.cmp(left, right, shallow=False):
-            changed.append(rel)
-    return {"added": added, "removed": removed, "changed": changed}
-
-
-def _parse_actual_sources(project: Path, values: list[str] | None) -> dict[str, Path]:
-    result: dict[str, Path] = {}
-    for raw in values or []:
-        if "=" not in raw:
-            raise PackError("--actual-source must use PACK_REL=PROJECT_REL")
-        pack_raw, project_raw = raw.split("=", 1)
-        pack_rel = _safe_relative(pack_raw, label="pack input")
-        project_rel = _safe_relative(project_raw, label="formal input source")
-        _reject_internal_source(project_rel)
-        formal = _ensure_within(project / project_rel, project, label="formal input source")
-        if not formal.is_file() or formal.is_symlink():
-            raise PackError(f"formal input source is not a regular file: {formal}")
-        result[pack_rel.as_posix()] = formal
-    return result
-
-
-def _verify_input_drift(
-    project: Path,
-    pack: Path,
-    overrides: dict[str, Path],
-) -> dict[str, list[str]]:
-    diff = _snapshot_diff(pack)
-    if diff["removed"]:
-        raise PackError(
-            "pack input files were removed after sealing; formalize the actual input before receive: "
-            + ", ".join(diff["removed"])
-        )
-    drifted = set(diff["added"]) | set(diff["changed"])
-    missing = sorted(drifted - set(overrides))
-    if missing:
-        raise PackError(
-            "pack inputs changed after handoff; save the actual input formally and map it with "
-            "--actual-source before receive: " + ", ".join(missing)
-        )
-    for rel in sorted(drifted):
-        current = pack / rel
-        formal = overrides[rel]
-        if current.is_symlink() or not current.is_file():
-            raise PackError(f"changed pack input is not a regular file: {rel}")
-        if not filecmp.cmp(current, formal, shallow=False):
-            raise PackError(
-                f"changed pack input does not match its formalized source: {rel} != {formal}"
-            )
-    return diff
-
-
-def _parse_scoped_pack(name: str) -> tuple[str, str, str]:
-    match = SCOPED_PACK_RE.fullmatch(name)
-    if not match:
-        raise PackError(
-            "receive requires scoped pack name like V001/G003_I02 or shared/G003_I02"
-        )
-    return match.group(1), match.group(2), match.group(3)
-
-
-def _resolve_id_dir(parent: Path, object_id: str, *, label: str) -> Path:
-    if not parent.is_dir():
-        raise PackError(f"{label} parent directory does not exist: {parent}")
-    matches = [
-        path for path in parent.iterdir()
-        if path.is_dir() and (path.name == object_id or path.name.startswith(f"{object_id}_"))
-    ]
-    if not matches:
-        raise PackError(f"{label} {object_id} does not exist under {parent}")
-    if len(matches) > 1:
-        raise PackError(f"{label} {object_id} is ambiguous under {parent}")
-    return matches[0]
-
-
-def _resolve_generation_dir(project: Path, scope: str, generation: str) -> Path:
-    if scope == "shared":
-        base = project / "video" / "shared"
+def _formal_file(project: Path, raw: str, *, label: str) -> tuple[Path, Path]:
+    candidate = Path(raw).expanduser()
+    if candidate.is_absolute():
+        resolved = _ensure_within(candidate, project, label=label)
+        rel = resolved.relative_to(project)
     else:
-        base = _resolve_id_dir(project / "video" / "videos", scope, label="video")
-    return _resolve_id_dir(base / "generations", generation, label="generation")
+        rel = _safe_relative(raw, label=label)
+        if rel.parts[0] in {".git", ".tmp"} or rel.parts[:2] == ("video", "batches"):
+            raise PackError(f"{label} must be a formal project file: {rel}")
+        resolved = _ensure_within(project / rel, project, label=label)
+    if not resolved.is_file():
+        raise PackError(f"{label} is not a regular file: {resolved}")
+    return resolved, rel
+
+
+def _generation_dir(project: Path, raw: str) -> tuple[Path, Path]:
+    rel = _safe_relative(raw, label="generation directory")
+    if rel.parts[0] != "video" or rel.parts[:2] == ("video", "batches"):
+        raise PackError("generation directory must be a formal path under video/")
+    generation = _ensure_within(project / rel, project / "video", label="generation directory")
+    if not generation.is_dir():
+        raise PackError(f"generation directory does not exist: {generation}")
+    if not GENERATION_RE.fullmatch(generation.name):
+        raise PackError(f"generation directory must use a Gxxx identity: {generation.name}")
+    if not (generation / "GENERATION.md").is_file():
+        raise PackError(f"GENERATION.md is required: {generation}")
+    return generation, rel
+
+
+def _task_key(generation_rel: Path, input_id: str) -> str:
+    generation_id = generation_rel.name.split("_", 1)[0]
+    owner = None
+    for part in reversed(generation_rel.parts[:-1]):
+        match = OWNER_RE.match(part)
+        if match:
+            owner = match.group(1)
+            break
+    prefix = f"{owner}_" if owner else ""
+    return f"{prefix}{generation_id}_{input_id}"
+
+
+def _reference_spec(raw: str) -> tuple[Path | None, str]:
+    if "=" not in raw:
+        return None, raw
+    left, right = raw.split("=", 1)
+    dest = _safe_relative(left, label="reference destination")
+    if dest.parts[0] == "references":
+        dest = Path(*dest.parts[1:])
+    if not dest.parts:
+        raise PackError("reference destination cannot be empty")
+    return dest, right
+
+
+def _copy_reference(
+    project: Path,
+    batch: Path,
+    meta: dict[str, Any],
+    raw: str,
+) -> str:
+    requested_dest, source_raw = _reference_spec(raw)
+    source, source_rel = _formal_file(project, source_raw, label="reference")
+    existing = meta.setdefault("references", {})
+    source_key = source_rel.as_posix()
+    if source_key in existing:
+        return str(existing[source_key])
+
+    rel_dest = requested_dest or Path(source.name)
+    dest = batch / "references" / rel_dest
+    _ensure_within(dest.parent, batch / "references", label="reference destination")
+    if dest.exists():
+        if dest.is_file() and filecmp.cmp(source, dest, shallow=False):
+            existing[source_key] = (Path("references") / rel_dest).as_posix()
+            return str(existing[source_key])
+        raise PackError(
+            f"reference destination collision; use DEST=SOURCE to disambiguate: {rel_dest}"
+        )
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source, dest)
+    stored = (Path("references") / rel_dest).as_posix()
+    existing[source_key] = stored
+    return stored
+
+
+def _package_files(batch: Path) -> list[Path]:
+    result: list[Path] = []
+    for root_name in ("README.md", "tasks", "references"):
+        root = batch / root_name
+        if root.is_file():
+            result.append(root)
+        elif root.is_dir():
+            result.extend(
+                sorted(
+                    path
+                    for path in root.rglob("*")
+                    if path.is_file() and not path.is_symlink()
+                )
+            )
+    return result
+
+
+def _hash_package(batch: Path) -> dict[str, str]:
+    return {
+        path.relative_to(batch).as_posix(): _sha256(path)
+        for path in _package_files(batch)
+    }
+
+
+def _write_readme(batch: Path, name: str, meta: dict[str, Any]) -> None:
+    lines = [
+        f"# {name} 生成批次",
+        "",
+        "本目录是一批外部生成任务的执行快照。每个任务只保留本次实际使用的 Prompt；共享参考只保存一份。",
+        "",
+        "## 任务",
+        "",
+        "| 任务 | 正式 Generation | Input | Prompt | 参考 | 返回目录 |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    for task_name, task in meta["tasks"].items():
+        refs = ", ".join(task.get("references", [])) or "无"
+        lines.append(
+            f"| {task_name} | {task['generation']} | {task['input']} | "
+            f"tasks/{task_name}/prompt.md | {refs} | returns/{task_name}/ |"
+        )
+    lines.extend(
+        [
+            "",
+            "## 执行",
+            "",
+            "1. 按任务读取对应 prompt.md。",
+            "2. 任务需要的上传素材从 references/ 取；同一参考不会为每个 Generation 重复复制。",
+            "3. 每个任务的所有候选结果放入对应 returns/<任务>/。",
+            "4. 返回后运行批次 Receive；正式 Take 会进入原 Generation，并与 Prompt 共置。",
+            "",
+            "本批次只有这一份执行说明，不为每个 Generation 创建 handoff / instructions 副本。",
+            "",
+        ]
+    )
+    (batch / "README.md").write_text("\n".join(lines), encoding="utf-8")
 
 
 def cmd_init(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    if pack.exists():
-        raise PackError(f"pack already exists; resume or inspect it instead of recreating: {pack}")
-    ignored_added = _ensure_tmp_ignored(project)
-    pack.mkdir(parents=True)
+    name = _batch_name(args.name)
+    batch = _batch_root(project, name)
+    if batch.exists():
+        raise PackError(f"batch already exists: {batch}")
+    ignored_added = _ensure_batches_ignored(project)
+    batch.mkdir(parents=True)
     _write_meta(
-        pack,
+        batch,
         {
-            "schema": 1,
-            "pack_id": uuid.uuid4().hex,
+            "schema": 2,
+            "batch_id": uuid.uuid4().hex,
             "name": name,
-            "sealed": False,
-            "copies": [],
+            "built": False,
+            "tasks": {},
+            "references": {},
         },
     )
     return {
         "ok": True,
         "action": "init",
-        "project": str(project),
-        "pack": str(pack),
+        "batch": str(batch),
         "gitignore_updated": ignored_added,
     }
 
 
-def cmd_copy(args: argparse.Namespace) -> dict[str, Any]:
+def cmd_add(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    if not pack.is_dir():
-        raise PackError(f"pack does not exist; run init first: {pack}")
-    meta = _load_meta(pack)
-    if meta.get("sealed"):
-        raise PackError("pack is already sealed; create a new input version instead of editing it")
+    name = _batch_name(args.name)
+    batch = _batch_root(project, name)
+    if not batch.is_dir():
+        raise PackError(f"batch does not exist: {batch}")
+    meta = _load_meta(batch)
+    if meta.get("built"):
+        raise PackError("batch is already built; create a new Bxxx batch for another external run")
 
-    source_arg = Path(args.source).expanduser()
-    if source_arg.is_absolute():
-        source_input = source_arg
-        try:
-            rel_source = source_input.resolve().relative_to(project)
-        except ValueError as exc:
-            raise PackError(f"source escapes project root: {source_input}") from exc
-    else:
-        rel_source = _safe_relative(args.source, label="source")
-        _reject_internal_source(rel_source)
-        source_input = project / rel_source
-    source = _ensure_within(source_input, project, label="source")
-    if source_arg.is_absolute():
-        rel_source = source.relative_to(project)
-        _reject_internal_source(rel_source)
-    if not source.is_file():
-        raise PackError(f"source is not a regular file: {source}")
+    input_id = args.input
+    if not INPUT_RE.fullmatch(input_id):
+        raise PackError(f"invalid input version: {input_id}")
 
-    if args.dest:
-        rel_dest = _safe_relative(args.dest, label="destination")
-    else:
-        rel_dest = Path("materials") / source.name
+    generation, generation_rel = _generation_dir(project, args.generation)
+    prompt = generation / f"prompt_{input_id.lower()}.md"
+    if not prompt.is_file():
+        raise PackError(f"formal prompt does not exist for {input_id}: {prompt}")
 
-    dest = pack / rel_dest
-    _ensure_within(dest.parent, pack, label="destination")
-    if dest.exists() and not args.overwrite:
-        raise PackError(f"destination already exists; use --overwrite only when intentional: {dest}")
-    if dest.is_symlink():
-        raise PackError(f"refusing to overwrite symlink destination: {dest}")
+    task_name = args.task or _task_key(generation_rel, input_id)
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", task_name):
+        raise PackError("task name must contain only letters, numbers, dot, underscore or hyphen")
 
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copy2(source, dest)
+    tasks = meta["tasks"]
+    if task_name in tasks:
+        existing = tasks[task_name]
+        if existing["generation"] == generation_rel.as_posix() and existing["input"] == input_id:
+            return {
+                "ok": True,
+                "action": "add",
+                "task": task_name,
+                "already_added": True,
+                "references": existing.get("references", []),
+            }
+        raise PackError(f"task name already belongs to another Generation: {task_name}")
 
-    copies = [item for item in meta.get("copies", []) if item.get("destination") != rel_dest.as_posix()]
-    copies.append({"source": rel_source.as_posix(), "destination": rel_dest.as_posix()})
-    meta["copies"] = copies
-    _write_meta(pack, meta)
+    task_dir = batch / "tasks" / task_name
+    task_dir.mkdir(parents=True)
+    shutil.copy2(prompt, task_dir / "prompt.md")
 
+    references = [
+        _copy_reference(project, batch, meta, raw)
+        for raw in (args.reference or [])
+    ]
+    (batch / "returns" / task_name).mkdir(parents=True, exist_ok=True)
+    tasks[task_name] = {
+        "generation": generation_rel.as_posix(),
+        "input": input_id,
+        "prompt_source": prompt.relative_to(project).as_posix(),
+        "references": references,
+    }
+    _write_meta(batch, meta)
     return {
         "ok": True,
-        "action": "copy",
-        "source": str(source),
-        "destination": str(dest),
-        "relative_destination": str(rel_dest),
+        "action": "add",
+        "task": task_name,
+        "generation": generation_rel.as_posix(),
+        "input": input_id,
+        "prompt": str(task_dir / "prompt.md"),
+        "references": references,
     }
 
 
-def cmd_returns(args: argparse.Namespace) -> dict[str, Any]:
+def cmd_build(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    if not pack.is_dir():
-        raise PackError(f"pack does not exist: {pack}")
-    returns = pack / "returns"
-    if returns.exists() and returns.is_symlink():
-        raise PackError(f"returns path must not be a symlink: {returns}")
-    returns.mkdir(exist_ok=True)
-    return {"ok": True, "action": "returns", "returns": str(returns)}
+    name = _batch_name(args.name)
+    batch = _batch_root(project, name)
+    if not batch.is_dir():
+        raise PackError(f"batch does not exist: {batch}")
+    meta = _load_meta(batch)
+    if not meta["tasks"]:
+        raise PackError("batch has no Generation tasks")
 
+    archive = _archive_path(project, name)
+    if meta.get("built") and archive.is_file():
+        current = _hash_package(batch)
+        if current == meta.get("built_hashes", {}):
+            return {
+                "ok": True,
+                "action": "build",
+                "already_built": True,
+                "batch": str(batch),
+                "archive": str(archive),
+                "files": sorted(current),
+            }
+        if not args.overwrite:
+            raise PackError("batch inputs changed after build; create a new batch or use --overwrite intentionally")
 
-def cmd_seal(args: argparse.Namespace) -> dict[str, Any]:
-    project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    if not pack.is_dir():
-        raise PackError(f"pack does not exist: {pack}")
-    meta = _seal_pack(pack)
+    _write_readme(batch, name, meta)
+    for path in _package_files(batch):
+        if path.is_symlink():
+            raise PackError(f"batch contains symlink: {path}")
+
+    hashes = _hash_package(batch)
+    if archive.exists() and not args.overwrite:
+        raise PackError(f"archive already exists: {archive}")
+    if archive.exists():
+        archive.unlink()
+
+    with tarfile.open(archive, "w:gz") as tf:
+        for path in _package_files(batch):
+            rel = path.relative_to(batch)
+            tf.add(path, arcname=(Path(name) / rel).as_posix(), recursive=False)
+
+    meta["built"] = True
+    meta["built_hashes"] = hashes
+    _write_meta(batch, meta)
     return {
         "ok": True,
-        "action": "seal",
-        "pack": str(pack),
-        "pack_id": meta["pack_id"],
-        "inputs": meta.get("sealed_inputs", []),
+        "action": "build",
+        "batch": str(batch),
+        "archive": str(archive),
+        "files": sorted(hashes),
     }
 
 
-def _status(project: Path, name: str) -> dict[str, Any]:
-    pack = _pack_path(project, name)
-    if not pack.is_dir():
-        raise PackError(f"pack does not exist: {pack}")
-    meta = _load_meta(pack)
-    files = _relative_files(pack)
-    symlinks = _symlinks(pack)
-    returns_files = _returns_files(pack)
-    return {
-        "ok": not symlinks,
-        "action": "status",
-        "project": str(project),
-        "pack": str(pack),
-        "pack_id": meta["pack_id"],
-        "sealed": bool(meta.get("sealed")),
-        "files": files,
-        "symlinks": symlinks,
-        "returns_files": returns_files,
-        "zip": str(_zip_path(project, name)) if _zip_path(project, name).exists() else None,
-    }
+def _returns_files(batch: Path, task_name: str) -> list[str]:
+    root = batch / "returns" / task_name
+    if not root.is_dir():
+        return []
+    return [
+        path.relative_to(root).as_posix()
+        for path in sorted(root.iterdir())
+        if not path.name.startswith(".")
+    ]
 
 
 def cmd_status(args: argparse.Namespace) -> dict[str, Any]:
-    return _status(_project_root(args.project), _pack_name(args.name))
-
-
-def cmd_zip(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    status = _status(project, name)
-    if status["symlinks"]:
-        raise PackError("pack contains symlinks; make it self-contained before zipping")
-    if status["returns_files"]:
-        raise PackError("pack contains returned files; do not create an outbound zip after results arrive")
-
-    _seal_pack(pack)
-    archive = _zip_path(project, name)
-    if archive.exists() and not args.overwrite:
-        raise PackError(f"zip already exists; use --overwrite only when intentional: {archive}")
-
-    archive.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        for path in _walk_files(pack):
-            rel = path.relative_to(pack)
-            if rel.parts and rel.parts[0] == "returns":
-                continue
-            if path.is_symlink():
-                raise PackError(f"pack contains symlink: {path}")
-            zf.write(path, rel)
-
+    name = _batch_name(args.name)
+    batch = _batch_root(project, name)
+    if not batch.is_dir():
+        raise PackError(f"batch does not exist: {batch}")
+    meta = _load_meta(batch)
     return {
         "ok": True,
-        "action": "zip",
-        "pack": str(pack),
-        "zip": str(archive),
-        "files": _relative_files(pack),
+        "action": "status",
+        "batch": str(batch),
+        "built": bool(meta.get("built")),
+        "archive": str(_archive_path(project, name)) if _archive_path(project, name).is_file() else None,
+        "tasks": {
+            key: {
+                **value,
+                "returns": _returns_files(batch, key),
+            }
+            for key, value in meta["tasks"].items()
+        },
     }
+
+
+def _verify_built_inputs(batch: Path, meta: dict[str, Any]) -> None:
+    if not meta.get("built"):
+        raise PackError("batch is not built; build the tar.gz before external generation")
+    current = _hash_package(batch)
+    expected = meta.get("built_hashes", {})
+    if current != expected:
+        added = sorted(set(current) - set(expected))
+        removed = sorted(set(expected) - set(current))
+        changed = sorted(
+            key for key in set(current) & set(expected) if current[key] != expected[key]
+        )
+        details = []
+        if added:
+            details.append("added=" + ",".join(added))
+        if removed:
+            details.append("removed=" + ",".join(removed))
+        if changed:
+            details.append("changed=" + ",".join(changed))
+        raise PackError(
+            "batch inputs changed after build; formalize the actual G/I and build a new batch: "
+            + "; ".join(details)
+        )
+
+
+def _receive_task(
+    project: Path,
+    batch: Path,
+    meta: dict[str, Any],
+    task_name: str,
+) -> tuple[bool, list[dict[str, Any]]]:
+    task = meta["tasks"][task_name]
+    generation, generation_rel = _generation_dir(project, task["generation"])
+    if generation_rel.as_posix() != task["generation"]:
+        raise PackError(f"Generation path changed unexpectedly: {task['generation']}")
+
+    log = load_receive_log(generation)
+    log_key = f"batch:{meta['batch_id']}:{task_name}"
+    entry = log["packs"].get(log_key)
+    if entry is not None and entry.get("status") == "complete":
+        return True, list(entry.get("takes", []))
+
+    returns = batch / "returns" / task_name
+    candidates = candidate_entries(returns)
+    next_number = next_take_number(generation)
+    takes: list[dict[str, Any]] = []
+    for offset, source in enumerate(candidates):
+        dest = take_destination(generation, next_number + offset, source)
+        takes.append(
+            {
+                "source": source.name,
+                "take": dest.name,
+                "kind": "bundle" if source.is_dir() else "file",
+            }
+        )
+
+    entry = {
+        "pack_name": f"{meta['name']}/{task_name}",
+        "input": task["input"],
+        "status": "in_progress",
+        "takes": takes,
+    }
+    log["packs"][log_key] = entry
+    write_receive_log(generation, log)
+
+    for item in takes:
+        source = returns / item["source"]
+        dest = generation / item["take"]
+        copy_candidate(source, dest)
+
+    entry["status"] = "files_saved"
+    write_receive_log(generation, log)
+    render_receive_section(generation, log)
+    entry["status"] = "complete"
+    write_receive_log(generation, log)
+    return False, takes
 
 
 def cmd_receive(args: argparse.Namespace) -> dict[str, Any]:
     project = _project_root(args.project)
-    name = _pack_name(args.name)
-    scope, generation, pack_input = _parse_scoped_pack(name)
-    generation_dir = _resolve_generation_dir(project, scope, generation)
-    actual_input = args.input or pack_input
-    if not INPUT_RE.fullmatch(actual_input):
-        raise PackError(f"invalid input version: {actual_input}")
+    name = _batch_name(args.name)
+    batch = _batch_root(project, name)
+    if not batch.is_dir():
+        raise PackError(f"batch does not exist: {batch}")
+    meta = _load_meta(batch)
+    _verify_built_inputs(batch, meta)
 
-    log = load_receive_log(generation_dir)
-    pack = _pack_path(project, name)
-    if not pack.exists():
-        previous = [
-            entry for entry in log["packs"].values()
-            if entry.get("pack_name") == name and entry.get("status") == "complete"
-        ]
-        if previous:
-            return {
-                "ok": True,
-                "action": "receive",
-                "already_received": True,
-                "cleanup_pending": False,
-                "takes": previous[-1].get("takes", []),
-            }
-        raise PackError(f"pack does not exist: {pack}")
+    selected = args.task or list(meta["tasks"])
+    unknown = [task for task in selected if task not in meta["tasks"]]
+    if unknown:
+        raise PackError("unknown batch task: " + ", ".join(unknown))
 
-    meta = _load_meta(pack)
-    if meta.get("name") != name:
-        raise PackError("pack metadata name does not match requested pack")
-    if not meta.get("sealed"):
-        raise PackError("pack is not sealed; seal or zip it before external generation")
+    received_tasks: list[str] = []
+    details: dict[str, Any] = {}
+    newly_received = False
+    for task_name in selected:
+        returns = batch / "returns" / task_name
+        has_returns = returns.is_dir() and any(
+            not path.name.startswith(".") for path in returns.iterdir()
+        )
+        task = meta["tasks"][task_name]
+        generation, _ = _generation_dir(project, task["generation"])
+        log = load_receive_log(generation)
+        log_key = f"batch:{meta['batch_id']}:{task_name}"
+        complete = (
+            log_key in log["packs"]
+            and log["packs"][log_key].get("status") == "complete"
+        )
+        if not has_returns and not complete:
+            continue
+        already, takes = _receive_task(project, batch, meta, task_name)
+        received_tasks.append(task_name)
+        details[task_name] = {"already_received": already, "takes": takes}
+        newly_received = newly_received or not already
 
-    overrides = _parse_actual_sources(project, args.actual_source)
-    drift = _verify_input_drift(project, pack, overrides)
+    if not received_tasks:
+        raise PackError("batch has no returned candidates yet")
 
-    pack_id = str(meta["pack_id"])
-    entry = log["packs"].get(pack_id)
-    if entry is not None and entry.get("pack_name") != name:
-        raise PackError("receive log pack identity collision")
-
-    if entry is None:
-        candidates = candidate_entries(pack / "returns")
-        next_number = next_take_number(generation_dir)
-        takes: list[dict[str, Any]] = []
-        for offset, source in enumerate(candidates):
-            dest = take_destination(generation_dir, next_number + offset, source)
-            takes.append(
-                {
-                    "source": source.name,
-                    "take": dest.name,
-                    "kind": "bundle" if source.is_dir() else "file",
-                }
-            )
-        entry = {
-            "pack_name": name,
-            "input": actual_input,
-            "status": "in_progress",
-            "takes": takes,
-            "input_drift": drift,
-            "actual_sources": {
-                key: str(path.relative_to(project)) for key, path in overrides.items()
-            },
-        }
-        log["packs"][pack_id] = entry
-        write_receive_log(generation_dir, log)
-    else:
-        if entry.get("input") != actual_input:
-            raise PackError(
-                f"pack was already reserved for {entry.get('input')}, not {actual_input}"
-            )
-
-    returns = pack / "returns"
-    for item in entry["takes"]:
-        source = returns / item["source"]
-        dest = generation_dir / item["take"]
-        if not source.exists():
-            if dest.exists():
-                continue
-            raise PackError(f"reserved returned candidate is missing: {source}")
-        copy_candidate(source, dest)
-
-    entry["status"] = "files_saved"
-    write_receive_log(generation_dir, log)
-    render_receive_section(generation_dir, log)
-    entry["status"] = "complete"
-    write_receive_log(generation_dir, log)
-
-    cleaned, cleanup_error = cleanup_received_pack(pack, _zip_path(project, name))
     return {
         "ok": True,
         "action": "receive",
-        "already_received": False,
-        "input": actual_input,
-        "takes": entry["takes"],
-        "cleanup_pending": not cleaned,
-        "cleanup_error": cleanup_error,
-    }
-
-
-def cmd_cleanup(args: argparse.Namespace) -> dict[str, Any]:
-    project = _project_root(args.project)
-    name = _pack_name(args.name)
-    pack = _pack_path(project, name)
-    if not pack.is_dir():
-        raise PackError(f"pack does not exist: {pack}")
-    if not args.confirm_no_unique_info:
-        raise PackError(
-            "cleanup requires --confirm-no-unique-info after verifying formal project files own all lasting information"
-        )
-
-    returns_files = _returns_files(pack)
-    if returns_files and not args.confirm_returns_archived:
-        raise PackError(
-            "returned files still exist; use --confirm-returns-archived only after they are formally archived"
-        )
-
-    shutil.rmtree(pack)
-    archive = _zip_path(project, name)
-    zip_removed = False
-    if archive.exists():
-        archive.unlink()
-        zip_removed = True
-
-    return {
-        "ok": True,
-        "action": "cleanup",
-        "pack_removed": str(pack),
-        "zip_removed": zip_removed,
-        "returns_files_before_cleanup": returns_files,
+        "batch": str(batch),
+        "received_tasks": received_tasks,
+        "already_received": not newly_received,
+        "tasks": details,
+        "archive_preserved": _archive_path(project, name).is_file(),
     }
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Manage project-local Akira Video one-time generation packs."
+        description="Build and receive retained multi-Generation Akira Video batches."
     )
     parser.add_argument("--json", action="store_true", help="emit one JSON object")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    init = sub.add_parser("init", help="create .tmp/<name> and ensure .tmp/ is gitignored")
+    init = sub.add_parser("init", help="create video/batches/Bxxx")
     init.add_argument("project")
     init.add_argument("name")
     init.set_defaults(func=cmd_init)
 
-    copy = sub.add_parser("copy", help="copy one formal project file into an existing pack")
-    copy.add_argument("project")
-    copy.add_argument("name")
-    copy.add_argument("source")
-    copy.add_argument("--dest")
-    copy.add_argument("--overwrite", action="store_true")
-    copy.set_defaults(func=cmd_copy)
+    add = sub.add_parser("add", help="add one formal G/I task to a batch")
+    add.add_argument("project")
+    add.add_argument("name")
+    add.add_argument("generation", help="formal project-relative Generation directory")
+    add.add_argument("--input", required=True, help="I01, I02, ...")
+    add.add_argument("--task", help="optional human-readable task key")
+    add.add_argument(
+        "--reference",
+        action="append",
+        help="formal project file, or DEST=SOURCE; repeat as needed",
+    )
+    add.set_defaults(func=cmd_add)
 
-    returns = sub.add_parser("returns", help="create the pack-local returns directory")
-    returns.add_argument("project")
-    returns.add_argument("name")
-    returns.set_defaults(func=cmd_returns)
+    build = sub.add_parser("build", help="write one retained tar.gz for the whole batch")
+    build.add_argument("project")
+    build.add_argument("name")
+    build.add_argument("--overwrite", action="store_true")
+    build.set_defaults(func=cmd_build)
 
-    seal = sub.add_parser("seal", help="freeze outbound pack inputs before external generation")
-    seal.add_argument("project")
-    seal.add_argument("name")
-    seal.set_defaults(func=cmd_seal)
-
-    status = sub.add_parser("status", help="inspect pack files, symlinks, returns, and zip")
+    status = sub.add_parser("status", help="inspect batch tasks, archive and returns")
     status.add_argument("project")
     status.add_argument("name")
     status.set_defaults(func=cmd_status)
 
     receive = sub.add_parser(
         "receive",
-        help="idempotently import all returned candidates for a scoped G/I and clean the pack",
+        help="import returned candidates for every ready task without deleting the batch",
     )
     receive.add_argument("project")
-    receive.add_argument("name", help="V001/G003_I02 or shared/G003_I02")
-    receive.add_argument(
-        "--input",
-        help="actual I used when the user changed inputs after handoff",
-    )
-    receive.add_argument(
-        "--actual-source",
-        action="append",
-        help="formalize changed input as PACK_REL=PROJECT_REL; repeat as needed",
-    )
+    receive.add_argument("name")
+    receive.add_argument("--task", action="append", help="receive only this task; repeat as needed")
     receive.set_defaults(func=cmd_receive)
-
-    zip_cmd = sub.add_parser("zip", help="seal and zip a self-contained outbound pack")
-    zip_cmd.add_argument("project")
-    zip_cmd.add_argument("name")
-    zip_cmd.add_argument("--overwrite", action="store_true")
-    zip_cmd.set_defaults(func=cmd_zip)
-
-    cleanup = sub.add_parser("cleanup", help="manual recovery cleanup with explicit confirmations")
-    cleanup.add_argument("project")
-    cleanup.add_argument("name")
-    cleanup.add_argument("--confirm-no-unique-info", action="store_true")
-    cleanup.add_argument("--confirm-returns-archived", action="store_true")
-    cleanup.set_defaults(func=cmd_cleanup)
 
     return parser
 
@@ -687,8 +629,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.json:
         print(json.dumps(result, ensure_ascii=False))
     else:
-        for key, value in result.items():
-            print(f"{key}={value}")
+        print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 

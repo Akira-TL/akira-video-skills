@@ -40,7 +40,7 @@ G / I / Take 负责追溯，不决定制作顺序。
 
 ## 5. 人工暂停点
 
-只在用户必须做高影响创意选择、需要外部生成、需要真实素材 / 权限 / 来源，或当前工作真正依赖尚未返回结果时停止对应分支。等待用户时给出可直接使用的 outbound pack 路径和需要带回的内容，并按 [`references/workflow/WAITING-RESUME.md`](references/workflow/WAITING-RESUME.md) 保持可恢复断点；其他独立工作继续推进。多语言字幕、旁白、配音或成片版本按 [`references/workflow/LOCALIZATION.md`](references/workflow/LOCALIZATION.md) 复用同一视频事实与资产，不复制整套项目。
+只在用户必须做高影响创意选择、需要外部生成、需要真实素材 / 权限 / 来源，或当前工作真正依赖尚未返回结果时停止对应分支。等待用户时给出可直接使用的 `video/batches/Bxxx/Bxxx.tar.gz` 与需要带回的 task 结果，并按 [`references/workflow/WAITING-RESUME.md`](references/workflow/WAITING-RESUME.md) 保持可恢复断点；其他独立工作继续推进。多语言字幕、旁白、配音或成片版本按 [`references/workflow/LOCALIZATION.md`](references/workflow/LOCALIZATION.md) 复用同一视频事实与资产，不复制整套项目。
 
 ## 6. 完成判断
 

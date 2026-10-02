@@ -10,22 +10,26 @@
 
 ```text
 video/
-├── INDEX.md                    # 多视频时按需
-├── shared/                     # 跨视频资产 / shared generations
-└── videos/
-    └── V001_<human-label>/
-        ├── VIDEO.md            # 当前视频主要制作稿
-        ├── scenes/             # 按规模
-        ├── materials/          # 本视频专属复用资产
-        ├── generations/
-        ├── shots/              # 个别复杂 Shot 按需
-        └── edit/               # 正式后期按需
-
-.tmp/V001/G003_I02/           # 自包含 outbound pack
-.tmp/shared/G003_I02/
+├── INDEX.md                         # 多视频时按需
+├── shared/
+│   ├── characters/CHR01/G001/      # 对象记录 + Prompt + Generated Take 共置
+│   └── locations/LOC01/G001/
+├── V001_<human-label>/
+│   ├── VIDEO.md
+│   ├── scenes/
+│   ├── materials/                  # 当前视频专属复用对象
+│   ├── generations/                # 直接服务视频 / Shot 的 G
+│   ├── shots/
+│   └── edit/
+└── batches/B001/
+    ├── README.md
+    ├── tasks/
+    ├── references/
+    ├── returns/
+    └── B001.tar.gz
 ```
 
-Generation 与 Shot 解耦：一个 G 可以覆盖多个 Shot，一个 Shot 可以由多个 G / Take 拼接。Prompt 正文只属于对应 Input Version；Take 只记录可独立 Review 的候选结果，最终采用关系由资产记录或正式剪辑记录维护。
+Generation 与 Shot 解耦：一个 G 可以覆盖多个 Shot，一个 Shot 可以由多个 G / Take 拼接。Prompt 与 Generated Take 保存在同一个 G；对象采用版本直接引用对应 G/take，不复制第二份媒体。一次实际外部执行使用一个 B 批次，可同时包含多个 G/I，并共享一份参考素材。
 
 ## Stable Skills
 
@@ -38,7 +42,7 @@ Generation 与 Shot 解耦：一个 G 可以覆盖多个 Shot，一个 Shot 可�
 - `video-storyboard`：Shot List、动作衔接、时长、计划连续性和 Animatic；
 - `video-cinematography`：机位、构图、运动、透视、焦点、曝光和镜头级用光；
 - `video-audio`：声音身份与声音设计；
-- `video-generation`：G/I、Prompt、outbound pack、幂等 Receive 和 Take；
+- `video-generation`：G/I、Prompt、多 G/I 生成批次、`tar.gz`、幂等 Receive 和 Take；
 - `video-review`：真实候选 QA、问题范围和返修判断；
 - `video-editing`：正式时间线、最终采用关系、后期和交付；
 - `video-advertising`：可选品牌 / 产品事实与广告边界。
@@ -57,4 +61,4 @@ skiloom validate . --json
 ./scripts/check.sh
 ```
 
-当前新拓扑的确定性制作案例位于 `tests/test_production_workflow_cases.py`，覆盖一次性短片、跨视频共享资产版本升级、真实输入变化、分批返回与中断恢复；其余契约与 CLI 回归分别由对应 `tests/test_*` 文件维护。
+当前新拓扑的确定性制作案例位于 `tests/test_production_workflow_cases.py`，覆盖单支视频直放 `video/Vxxx`、共享对象 Generation 共置、多 G/I 批次执行、资产版本直接引用 Take 与新 I / 新 Batch 迭代；其余契约与 CLI 回归分别由对应 `tests/test_*` 文件维护。
