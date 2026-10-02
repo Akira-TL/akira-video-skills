@@ -27,7 +27,7 @@ description: 把当前剧情和导演意图组织成可制作的 Shot List；当
 
 Storyboard 负责：为什么切、展示什么、动作如何衔接、持续多久。`video-cinematography` 负责：从哪里看、怎样构图 / 运动、透视 / 焦点和镜头级用光。二者共同修改同一 Shot，不是严格前后两个阶段。
 
-多人接触、递物、手部操作、复杂遮挡或机械交互按 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，先明确主动作角色、手、接触点和动作前后状态。
+多人接触、递物、手部操作、复杂遮挡或机械交互按 [`references/direction/INTERACTION.md`](references/direction/INTERACTION.md)，先明确主动作角色、手、接触点和动作前后状态。需要先固定人物在世界空间中的站位、朝向、运动路径和摄影轴时，按 [`references/direction/BLOCKING-PROMPTS.md`](references/direction/BLOCKING-PROMPTS.md) 生成场面调度（Blocking）参考。
 
 ## 4. 连续性与实际出口
 

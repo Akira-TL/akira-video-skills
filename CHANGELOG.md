@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- 增加人物角色、环境 / 场景与场面调度（Blocking）专用 Prompt 模板：分别覆盖人物身份 / 全身角色、空场环境 / 空间结构，以及世界空间中的角色站位、运动路径和摄影轴；严格四视图模板继续作为人物 / 场景结构稳定基准。
 - 用当前制作案例收口新拓扑迁移残留：删除仍暴露旧 Shot-owned Take 流程的 `next-take` / `archive` CLI，统一共享资产、`Vxxx`、G/I/Take 与 `Vxxx/edit/` 路径说明；媒体审片与交付 QC 测试改为在当前测试项目中自生成媒体，不再依赖已删除的旧黑盒 fixture；增加回归阻止稳定文档重新发布旧顶层 `video/materials/`、`video/shots/`、`video/edit/` 等路径。
 - 用三个完整制作案例验证新生产模型并扩展 `video-generation/scripts/generation_pack.py`：支持 `Vxxx/Gxxx_Ixx` / `shared/Gxxx_Ixx` 作用域包、交付输入冻结、G 内连续 Take、普通文件与多文件 Take、幂等 `receive`、用户实际改输入后的正式 I 映射、分批返回、中断恢复，以及正式接收后自动精确清理；新增回归覆盖一次性短片、两集共享资产版本升级和返工恢复。
 - 归档下一阶段 Akira Video 生产模型：采用单 Agent / `video-production` 唯一流程负责人、共享资产 + 单支视频记录、Generation 与 Shot 解耦的 G / I / take 追溯、幂等返回接收与自动临时包清理；补齐简单视频 Shot 表 / 正式剪辑单一采用源、共享资产版本来源、可独立评审 Take、Generation Prompt 唯一来源及清包前唯一信息检查；详细决策见 `docs/adr/0001`–`0003`，当前 Skill 重构另行实施。

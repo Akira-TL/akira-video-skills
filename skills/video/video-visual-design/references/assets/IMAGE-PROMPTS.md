@@ -32,7 +32,7 @@
 
 ## 3. 身份参考图
 
-身份参考图优先：
+人物身份 / 全身角色 / 状态参考的具体模板见 [`../character/CHARACTER-PROMPTS.md`](../character/CHARACTER-PROMPTS.md)。身份参考图优先：
 
 - 中性表情；
 - 容易辨认的姿态；
@@ -44,7 +44,7 @@
 
 ## 4. 场景参考图
 
-场景参考图优先稳定空间、材质、色彩和光线，不加入人物剧情动作。需要严格空间参考时使用场景四视图。
+环境 / 空场 / 空间结构参考的具体模板见 [`../environment/ENVIRONMENT-PROMPTS.md`](../environment/ENVIRONMENT-PROMPTS.md)。场景参考图优先稳定空间、材质、色彩和光线，不加入人物剧情动作。需要严格空间参考时使用场景四视图。
 
 ## 5. 产品 / 道具参考图
 

@@ -17,8 +17,8 @@ description: 设计并维护 AI 视频可复用的视觉对象与参考资产；
 
 ## 2. 人物、地点与道具
 
-- 人物设计按 [`references/character/CHARACTER-DESIGN.md`](references/character/CHARACTER-DESIGN.md)，关注轮廓、比例、面部识别、发型、服装、材质、配件和跨视频稳定特征；
-- 地点 / 环境按 [`references/environment/SCENE-DESIGN.md`](references/environment/SCENE-DESIGN.md)，关注空间结构、材质、颜色、固定锚点、基础光源和可行动空间；
+- 人物设计按 [`references/character/CHARACTER-DESIGN.md`](references/character/CHARACTER-DESIGN.md)，人物身份图 / 全身角色图 / 状态参考的专用生图模板按 [`references/character/CHARACTER-PROMPTS.md`](references/character/CHARACTER-PROMPTS.md)；
+- 地点 / 环境按 [`references/environment/SCENE-DESIGN.md`](references/environment/SCENE-DESIGN.md)，空场环境 / 环境状态 / 空间结构参考的专用生图模板按 [`references/environment/ENVIRONMENT-PROMPTS.md`](references/environment/ENVIRONMENT-PROMPTS.md)；
 - 多视觉世界、复杂空间 / 机械分别按 [`references/environment/WORLD-DESIGN.md`](references/environment/WORLD-DESIGN.md) 与 [`references/environment/SPACE-MECHANISM.md`](references/environment/SPACE-MECHANISM.md)；
 - 基础光源、时间状态和材质反应按 [`references/environment/LIGHTING.md`](references/environment/LIGHTING.md)。镜头级机位用光与曝光由 `video-cinematography` 处理。
 
